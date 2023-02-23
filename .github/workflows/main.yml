@@ -1,0 +1,24 @@
+name: updateEC2
+
+on:
+  push:
+    branches:
+      - 'main' # 메인이 푸쉬되었을 때 동작
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: SSH commands using password
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SERVER_SSH_HOST }} # 서버  ip주소
+          username: ${{ secrets.SERVER_SSH_USERNAME }} # 서버 유저이름
+          key: ${{ secrets.SERVER_SSH_KEY }} # AWS 연결 키
+          script:
+            ./update.sh # 서버에 있는 스크립트
