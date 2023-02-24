@@ -1,0 +1,575 @@
+{
+  "canvas": {
+    "version": "2.2.11",
+    "width": 2000,
+    "height": 2000,
+    "scrollTop": -86,
+    "scrollLeft": -25,
+    "zoomLevel": 0.9,
+    "show": {
+      "tableComment": true,
+      "columnComment": true,
+      "columnDataType": true,
+      "columnDefault": true,
+      "columnAutoIncrement": false,
+      "columnPrimaryKey": true,
+      "columnUnique": false,
+      "columnNotNull": true,
+      "relationship": true
+    },
+    "database": "MySQL",
+    "databaseName": "",
+    "canvasType": "ERD",
+    "language": "GraphQL",
+    "tableCase": "pascalCase",
+    "columnCase": "camelCase",
+    "highlightTheme": "VS2015",
+    "bracketType": "none",
+    "setting": {
+      "relationshipDataTypeSync": true,
+      "relationshipOptimization": false,
+      "columnOrder": [
+        "columnName",
+        "columnDataType",
+        "columnNotNull",
+        "columnUnique",
+        "columnAutoIncrement",
+        "columnDefault",
+        "columnComment"
+      ]
+    },
+    "pluginSerializationMap": {}
+  },
+  "table": {
+    "tables": [
+      {
+        "name": "user",
+        "comment": "유저 정보 테이블",
+        "columns": [
+          {
+            "name": "id",
+            "comment": "유저 식별자",
+            "dataType": "INT",
+            "default": "",
+            "option": {
+              "autoIncrement": false,
+              "primaryKey": true,
+              "unique": false,
+              "notNull": true
+            },
+            "ui": {
+              "active": false,
+              "pk": true,
+              "fk": false,
+              "pfk": false,
+              "widthName": 60,
+              "widthComment": 61.64396667480469,
+              "widthDataType": 60,
+              "widthDefault": 60
+            },
+            "id": "bf3bdf5e-af17-4205-beff-4741d0544675"
+          },
+          {
+            "name": "username",
+            "comment": "유저아이디",
+            "dataType": "VARCHAR(30)",
+            "default": "",
+            "option": {
+              "autoIncrement": false,
+              "primaryKey": false,
+              "unique": false,
+              "notNull": true
+            },
+            "ui": {
+              "active": false,
+              "pk": false,
+              "fk": false,
+              "pfk": false,
+              "widthName": 60,
+              "widthComment": 60,
+              "widthDataType": 79.36288452148438,
+              "widthDefault": 60
+            },
+            "id": "0802b734-b481-43fd-8a79-63f87b21baf9"
+          },
+          {
+            "name": "password",
+            "comment": "유저비밀번호 (암호화)",
+            "dataType": "CHAR(100)",
+            "default": "",
+            "option": {
+              "autoIncrement": false,
+              "primaryKey": false,
+              "unique": false,
+              "notNull": true
+            },
+            "ui": {
+              "active": false,
+              "pk": false,
+              "fk": false,
+              "pfk": false,
+              "widthName": 60,
+              "widthComment": 114.86592102050781,
+              "widthDataType": 62.73590087890625,
+              "widthDefault": 60
+            },
+            "id": "e50d9d75-4adc-4338-9815-42be0c4b8cb9"
+          },
+          {
+            "name": "nickname",
+            "comment": "닉네임",
+            "dataType": "VARCHAR2(30)",
+            "default": "",
+            "option": {
+              "autoIncrement": false,
+              "primaryKey": false,
+              "unique": false,
+              "notNull": true
+            },
+            "ui": {
+              "active": false,
+              "pk": false,
+              "fk": false,
+              "pfk": false,
+              "widthName": 60,
+              "widthComment": 60,
+              "widthDataType": 86.2918701171875,
+              "widthDefault": 60
+            },
+            "id": "6a616258-e250-4180-8c02-82c8e990b1c8"
+          },
+          {
+            "name": "created_at",
+            "comment": "생성일",
+            "dataType": "DATETIME",
+            "default": "",
+            "option": {
+              "autoIncrement": false,
+              "primaryKey": false,
+              "unique": false,
+              "notNull": true
+            },
+            "ui": {
+              "active": false,
+              "pk": false,
+              "fk": false,
+              "pfk": false,
+              "widthName": 60,
+              "widthComment": 60,
+              "widthDataType": 60,
+              "widthDefault": 60
+            },
+            "id": "956f6f42-a3c7-482a-8eb1-b900edc5ab4f"
+          },
+          {
+            "name": "updated_at",
+            "comment": "변경일",
+            "dataType": "DATETIME",
+            "default": "",
+            "option": {
+              "autoIncrement": false,
+              "primaryKey": false,
+              "unique": false,
+              "notNull": true
+            },
+            "ui": {
+              "active": false,
+              "pk": false,
+              "fk": false,
+              "pfk": false,
+              "widthName": 62.384918212890625,
+              "widthComment": 60,
+              "widthDataType": 60,
+              "widthDefault": 60
+            },
+            "id": "5bcd9b78-40bc-42c2-9b23-d8fd2d4a2856"
+          }
+        ],
+        "ui": {
+          "active": false,
+          "left": 94.7786,
+          "top": 75.4172,
+          "zIndex": 125,
+          "widthName": 60,
+          "widthComment": 87.55294799804688
+        },
+        "visible": true,
+        "id": "a861fa85-59fc-480b-a559-86d7d2933d19"
+      },
+      {
+        "name": "certification",
+        "comment": "인증 테이블",
+        "columns": [
+          {
+            "name": "id",
+            "comment": "인증키 식별자",
+            "dataType": "INT",
+            "default": "",
+            "option": {
+              "autoIncrement": false,
+              "primaryKey": false,
+              "unique": false,
+              "notNull": true
+            },
+            "ui": {
+              "active": false,
+              "pk": false,
+              "fk": false,
+              "pfk": false,
+              "widthName": 60,
+              "widthComment": 72.88896179199219,
+              "widthDataType": 60,
+              "widthDefault": 60
+            },
+            "id": "d405b34b-f7c1-482b-bfe4-6fe1cbad86d5"
+          },
+          {
+            "name": "type",
+            "comment": "인증타입",
+            "dataType": "CHAR(10)",
+            "default": "",
+            "option": {
+              "autoIncrement": false,
+              "primaryKey": false,
+              "unique": false,
+              "notNull": true
+            },
+            "ui": {
+              "active": false,
+              "pk": false,
+              "fk": false,
+              "pfk": false,
+              "widthName": 60,
+              "widthComment": 60,
+              "widthDataType": 60,
+              "widthDefault": 60
+            },
+            "id": "63880b36-1678-4fc5-a532-58ce7e0bf3e8"
+          },
+          {
+            "name": "key",
+            "comment": "인증키",
+            "dataType": "CHAR(20)",
+            "default": "",
+            "option": {
+              "autoIncrement": false,
+              "primaryKey": false,
+              "unique": false,
+              "notNull": true
+            },
+            "ui": {
+              "active": false,
+              "pk": false,
+              "fk": false,
+              "pfk": false,
+              "widthName": 60,
+              "widthComment": 60,
+              "widthDataType": 60,
+              "widthDefault": 60
+            },
+            "id": "bb936e19-6214-4eb3-aa56-fabe2e2fefc8"
+          },
+          {
+            "name": "code",
+            "comment": "인증값",
+            "dataType": "CHAR(20)",
+            "default": "",
+            "option": {
+              "autoIncrement": false,
+              "primaryKey": false,
+              "unique": false,
+              "notNull": false
+            },
+            "ui": {
+              "active": false,
+              "pk": false,
+              "fk": false,
+              "pfk": false,
+              "widthName": 60,
+              "widthComment": 60,
+              "widthDataType": 60,
+              "widthDefault": 60
+            },
+            "id": "33c6695e-eea0-4cd8-b820-6a7e06b570d4"
+          }
+        ],
+        "ui": {
+          "active": false,
+          "left": 745.1395,
+          "top": 85.9712,
+          "zIndex": 144,
+          "widthName": 67.01286315917969,
+          "widthComment": 61.64396667480469
+        },
+        "visible": true,
+        "id": "b3276eba-99b6-40b2-b81d-f96cf8b0cc17"
+      },
+      {
+        "name": "word",
+        "comment": "단어 리스트 테이블",
+        "columns": [
+          {
+            "name": "id",
+            "comment": "단어 식별자",
+            "dataType": "INT",
+            "default": "",
+            "option": {
+              "autoIncrement": false,
+              "primaryKey": true,
+              "unique": false,
+              "notNull": true
+            },
+            "ui": {
+              "active": false,
+              "pk": true,
+              "fk": false,
+              "pfk": false,
+              "widthName": 60,
+              "widthComment": 61.64396667480469,
+              "widthDataType": 60,
+              "widthDefault": 60
+            },
+            "id": "9df97196-59c6-4338-8472-61d56a820158"
+          },
+          {
+            "name": "book_id",
+            "comment": "단어장 식별자",
+            "dataType": "INT",
+            "default": "",
+            "option": {
+              "autoIncrement": false,
+              "primaryKey": false,
+              "unique": false,
+              "notNull": true
+            },
+            "ui": {
+              "active": false,
+              "pk": false,
+              "fk": true,
+              "pfk": false,
+              "widthName": 60,
+              "widthComment": 72.88896179199219,
+              "widthDataType": 60,
+              "widthDefault": 60
+            },
+            "id": "d15677e9-5165-4b22-afec-28718d61007d"
+          },
+          {
+            "name": "word",
+            "comment": "",
+            "dataType": "VARCHAR(100)",
+            "default": "",
+            "option": {
+              "autoIncrement": false,
+              "primaryKey": false,
+              "unique": false,
+              "notNull": false
+            },
+            "ui": {
+              "active": false,
+              "pk": false,
+              "fk": false,
+              "pfk": false,
+              "widthName": 60,
+              "widthComment": 60,
+              "widthDataType": 85.22587585449219,
+              "widthDefault": 60
+            },
+            "id": "cb005850-8f07-424d-8b01-8e4ccc7fc51c"
+          },
+          {
+            "name": "mean",
+            "comment": "",
+            "dataType": "VARCHAR(100)",
+            "default": "",
+            "option": {
+              "autoIncrement": false,
+              "primaryKey": false,
+              "unique": false,
+              "notNull": false
+            },
+            "ui": {
+              "active": false,
+              "pk": false,
+              "fk": false,
+              "pfk": false,
+              "widthName": 60,
+              "widthComment": 60,
+              "widthDataType": 85.22587585449219,
+              "widthDefault": 60
+            },
+            "id": "5011cdc6-e89d-409b-b912-69e8e22906b3"
+          }
+        ],
+        "ui": {
+          "active": false,
+          "left": 122.8891,
+          "top": 695.0004,
+          "zIndex": 142,
+          "widthName": 60,
+          "widthComment": 98.79794311523438
+        },
+        "visible": true,
+        "id": "13b86db8-7e43-4464-a5cd-355785f031b1"
+      },
+      {
+        "name": "wordbook",
+        "comment": "단어장 테이블",
+        "columns": [
+          {
+            "name": "id",
+            "comment": "단어장 식별자",
+            "dataType": "INT",
+            "default": "",
+            "option": {
+              "autoIncrement": false,
+              "primaryKey": true,
+              "unique": false,
+              "notNull": true
+            },
+            "ui": {
+              "active": false,
+              "pk": true,
+              "fk": false,
+              "pfk": false,
+              "widthName": 60,
+              "widthComment": 72.88896179199219,
+              "widthDataType": 60,
+              "widthDefault": 60
+            },
+            "id": "64fe2a4b-d722-4f60-92ef-c86cc53b6949"
+          },
+          {
+            "name": "user_id",
+            "comment": "유저 식별자",
+            "dataType": "INT",
+            "default": "",
+            "option": {
+              "autoIncrement": false,
+              "primaryKey": false,
+              "unique": false,
+              "notNull": true
+            },
+            "ui": {
+              "active": false,
+              "pk": false,
+              "fk": true,
+              "pfk": false,
+              "widthName": 60,
+              "widthComment": 61.64396667480469,
+              "widthDataType": 60,
+              "widthDefault": 60
+            },
+            "id": "eeca80b7-a548-40fa-8517-a0dbcbb9cb73"
+          },
+          {
+            "name": "name",
+            "comment": "",
+            "dataType": "VARCHAR(100)",
+            "default": "",
+            "option": {
+              "autoIncrement": false,
+              "primaryKey": false,
+              "unique": false,
+              "notNull": false
+            },
+            "ui": {
+              "active": false,
+              "pk": false,
+              "fk": false,
+              "pfk": false,
+              "widthName": 60,
+              "widthComment": 60,
+              "widthDataType": 85.22587585449219,
+              "widthDefault": 60
+            },
+            "id": "11044b8a-5815-4f59-87d5-5f527b5a8f05"
+          }
+        ],
+        "ui": {
+          "active": false,
+          "left": 122.1944,
+          "top": 432.2223,
+          "zIndex": 138,
+          "widthName": 60,
+          "widthComment": 72.88896179199219
+        },
+        "visible": true,
+        "id": "ca9ba2b0-6d77-4caa-bb9e-ef21b6821cb0"
+      }
+    ],
+    "indexes": []
+  },
+  "memo": {
+    "memos": [
+      {
+        "value": "인증용으로 사용하는 별개의 테이블",
+        "ui": {
+          "active": false,
+          "left": 1178.25,
+          "top": 84.75,
+          "zIndex": 97,
+          "width": 243,
+          "height": 100
+        },
+        "id": "056abd4b-2c57-442d-aec9-4d4c6eb94b52"
+      }
+    ]
+  },
+  "relationship": {
+    "relationships": [
+      {
+        "identification": false,
+        "relationshipType": "ZeroN",
+        "startRelationshipType": "Dash",
+        "start": {
+          "tableId": "ca9ba2b0-6d77-4caa-bb9e-ef21b6821cb0",
+          "columnIds": [
+            "64fe2a4b-d722-4f60-92ef-c86cc53b6949"
+          ],
+          "x": 314.75181882324216,
+          "y": 562.7223,
+          "direction": "bottom"
+        },
+        "end": {
+          "tableId": "13b86db8-7e43-4464-a5cd-355785f031b1",
+          "columnIds": [
+            "d15677e9-5165-4b22-afec-28718d61007d"
+          ],
+          "x": 315.4465188232422,
+          "y": 695.0004,
+          "direction": "top"
+        },
+        "constraintName": "fk_book_to_word",
+        "visible": true,
+        "id": "1bcc6846-d148-4320-973d-7811d6764296"
+      },
+      {
+        "identification": false,
+        "relationshipType": "ZeroN",
+        "startRelationshipType": "Dash",
+        "start": {
+          "tableId": "a861fa85-59fc-480b-a559-86d7d2933d19",
+          "columnIds": [
+            "bf3bdf5e-af17-4205-beff-4741d0544675"
+          ],
+          "x": 310.04995467529295,
+          "y": 267.4172,
+          "direction": "bottom"
+        },
+        "end": {
+          "tableId": "ca9ba2b0-6d77-4caa-bb9e-ef21b6821cb0",
+          "columnIds": [
+            "eeca80b7-a548-40fa-8517-a0dbcbb9cb73"
+          ],
+          "x": 314.75181882324216,
+          "y": 432.2223,
+          "direction": "top"
+        },
+        "constraintName": "fk_user_to_book",
+        "visible": true,
+        "id": "c54b7c9c-5964-46c5-ba6c-abf458b6bee1"
+      }
+    ]
+  }
+}
