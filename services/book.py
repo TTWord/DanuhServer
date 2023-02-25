@@ -1,12 +1,7 @@
 from flask import jsonify
+from model.book import Book
+import json
 
 def get_book_service():
-    # get book from database
-    book = [
-      {
-        "id": 1,
-        "name": "책",
-      }
-    ]
-    
-    return jsonify(book)
+    books = Book.get_books()
+    return jsonify(books)
