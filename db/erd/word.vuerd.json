@@ -189,7 +189,7 @@
           "active": false,
           "left": 94.7786,
           "top": 75.4172,
-          "zIndex": 125,
+          "zIndex": 2,
           "widthName": 60,
           "widthComment": 87.55294799804688
         },
@@ -297,7 +297,7 @@
           "active": false,
           "left": 745.1395,
           "top": 85.9712,
-          "zIndex": 144,
+          "zIndex": 5,
           "widthName": 67.01286315917969,
           "widthComment": 61.64396667480469
         },
@@ -405,7 +405,7 @@
           "active": false,
           "left": 122.8891,
           "top": 695.0004,
-          "zIndex": 142,
+          "zIndex": 4,
           "widthName": 60,
           "widthComment": 98.79794311523438
         },
@@ -413,7 +413,7 @@
         "id": "13b86db8-7e43-4464-a5cd-355785f031b1"
       },
       {
-        "name": "wordbook",
+        "name": "book",
         "comment": "단어장 테이블",
         "columns": [
           {
@@ -490,7 +490,7 @@
           "active": false,
           "left": 122.1944,
           "top": 432.2223,
-          "zIndex": 138,
+          "zIndex": 9,
           "widthName": 60,
           "widthComment": 72.88896179199219
         },
@@ -508,7 +508,7 @@
           "active": false,
           "left": 1178.25,
           "top": 84.75,
-          "zIndex": 97,
+          "zIndex": 1,
           "width": 243,
           "height": 100
         },
