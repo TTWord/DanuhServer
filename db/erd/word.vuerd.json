@@ -3,8 +3,8 @@
     "version": "2.2.11",
     "width": 2000,
     "height": 2000,
-    "scrollTop": -86,
-    "scrollLeft": -25,
+    "scrollTop": -9,
+    "scrollLeft": -679,
     "zoomLevel": 0.9,
     "show": {
       "tableComment": true,
@@ -247,7 +247,7 @@
             "id": "63880b36-1678-4fc5-a532-58ce7e0bf3e8"
           },
           {
-            "name": "key",
+            "name": "cert_key",
             "comment": "인증키",
             "dataType": "CHAR(20)",
             "default": "",
@@ -270,7 +270,7 @@
             "id": "bb936e19-6214-4eb3-aa56-fabe2e2fefc8"
           },
           {
-            "name": "code",
+            "name": "cert_code",
             "comment": "인증값",
             "dataType": "CHAR(20)",
             "default": "",
@@ -297,7 +297,7 @@
           "active": false,
           "left": 745.1395,
           "top": 85.9712,
-          "zIndex": 5,
+          "zIndex": 9,
           "widthName": 67.01286315917969,
           "widthComment": 61.64396667480469
         },
@@ -405,7 +405,7 @@
           "active": false,
           "left": 122.8891,
           "top": 695.0004,
-          "zIndex": 4,
+          "zIndex": 3,
           "widthName": 60,
           "widthComment": 98.79794311523438
         },
@@ -490,7 +490,7 @@
           "active": false,
           "left": 122.1944,
           "top": 432.2223,
-          "zIndex": 9,
+          "zIndex": 5,
           "widthName": 60,
           "widthComment": 72.88896179199219
         },
