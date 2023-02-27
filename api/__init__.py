@@ -15,5 +15,5 @@ api = Api(
     description="This is TTWord API Documentation.",
 )
 
-api.add_namespace(book_ns, '/book')
-api.add_namespace(word_ns, '/word')
+api.add_namespace(book_ns)
+api.add_namespace(word_ns)

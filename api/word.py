@@ -4,7 +4,7 @@ from flask_restx import Namespace, Resource, Api
 
 api = Namespace('words', description='Book related operations')
 
-@api.route('/')
+@api.route('')
 class Word(Resource):
     @api.doc('user_word')
     def get(self):
