@@ -1,8 +1,12 @@
-from flask import Blueprint, request
 from services.word import get_word_service
+from flask_restx import Namespace, Resource, Api
 
-word_route = Blueprint('word', __name__, url_prefix='/word')
 
-@word_route.route('/', methods=['GET'])
-def get_word():
-    return get_word_service()
+api = Namespace('words', description='Book related operations')
+
+@api.route('/')
+class Word(Resource):
+    @api.doc('user_word')
+    def get(self):
+        return get_word_service()
+    

@@ -1,8 +1,11 @@
-from flask import Blueprint
 from services.book import get_book_service
+from flask_restx import Namespace, Resource, Api
 
-book_route = Blueprint('book', __name__, url_prefix='/book')
 
-@book_route.route('/', methods=['GET'])
-def get_book():
-    return get_book_service()
+api = Namespace('books', description='Book related operations')
+
+@api.route('/')
+class Book(Resource):
+    def get(self):
+        return get_book_service()
+    
