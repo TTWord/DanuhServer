@@ -11,8 +11,12 @@ app.config["SECRET_KEY"] = config["SECRET_KEY"]
 app.config["JSON_AS_ASCII"] = False
 
 CORS(app)
+
 app.register_blueprint(main_route)
 
+@app.route("/")
+def root():
+    return "API Server is running."
 
 if __name__ == "__main__": 
     app.run(host="127.0.0.1", port=5001, debug=True)

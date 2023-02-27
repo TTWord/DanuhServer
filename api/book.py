@@ -9,3 +9,16 @@ class Book(Resource):
     def get(self):
         return get_book_service()
     
+    def post(self):
+        return "add_book"
+    
+@api.route('/<int:id>')
+class BookById(Resource):
+    def put(self, id):
+        return "update_book"
+    
+    def delete(self, id):
+        return "delete_book"
+    
+    
+    

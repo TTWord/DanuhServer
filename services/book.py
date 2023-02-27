@@ -4,4 +4,5 @@ import json
 
 def get_book_service():
     books = Book.get_books()
+    
     return jsonify(books)

@@ -21,7 +21,7 @@ class Book:
             result = cursor.fetchall()
             
             for row in result:
-                books.append(Book(id=row[0], name=row[1]))
+                books.append(Book(id=row[0], name=row[2]))
         
         db.disconnect()
         
