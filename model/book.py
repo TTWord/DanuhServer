@@ -22,8 +22,6 @@ class BookModel(Connect):
             cursor.execute(sql)
             result = cursor.fetchone()
             
-            print(result)
-            
             book = Book(id=result['id'], name=result['name'])
             
         return book.__dict__

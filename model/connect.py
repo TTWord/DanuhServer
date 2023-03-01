@@ -1,5 +1,8 @@
 from config import Database
 
+
+db = Database()
+
 class Connect:
     def __init__(self):
         self.db = Database()
