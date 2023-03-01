@@ -1,6 +1,8 @@
 from config import Database
+from utils.passwordEncryption import encrypt_password
 
-class User:
+
+class UserDao:
     def __init__(self, id, name):
         self.id = id
         self.name = name
@@ -19,21 +21,12 @@ class User:
     def check_password(self, password: str) -> bool:
         return flask_bcrypt.check_password_hash(self.password_hash, password)
     
-    @staticmethod
-    def get_books():
+    def create_user(self, user_info, connection):
         db = Database()
         
         db.connect()
         
-        books = []
         with db.connection.cursor() as cursor:
-            sql = 'SELECT * FROM book'
-            cursor.execute(sql)
-            result = cursor.fetchall()
-            
-            for row in result:
-                books.append(Book(id=row[0], name=row[1]))
-        
-        db.disconnect()
-        
-        return [book.__dict__ for book in books]
+            query = """
+                INSERT INTO 
+            """
