@@ -1,17 +1,7 @@
-from db.connect import Connect, Database
-    
-class Book:
-    def __init__(self, id: int, name: str, user_id: int = None, created_at: str = None, updated_at: str = None):
-        self.id = id
-        self.name = name
-        self.user_id = user_id
-        self.created_at = None
-        self.updated_at = None
+from db.connect import Connect
+from model.book_model import BookModel
 
-    def __repr__(self):
-        return f"Book({self.id}, {self.name})"
-
-class BookModel(Connect):
+class BookRepository(Connect):
     def find_all(self) -> list:
         books = []
         
@@ -20,7 +10,7 @@ class BookModel(Connect):
         result = self.cursor.fetchall()
         
         for row in result:
-            books.append(Book(id=row['id'], name=row['name']))
+            books.append(BookModel(id=row['id'], name=row['name']))
         
         return [book.__dict__ for book in books]
     
@@ -30,7 +20,7 @@ class BookModel(Connect):
         result = self.select_all('SELECT * FROM book WHERE user_id = {user_id}')
         
         for row in result:
-            books.append(Book(id=row['id'], name=row['name']))
+            books.append(BookModel(id=row['id'], name=row['name']))
         
         return [book.__dict__ for book in books]
     
@@ -41,7 +31,7 @@ class BookModel(Connect):
         self.cursor.execute(sql)
         result = self.cursor.fetchone()
             
-        book = Book(id=result['id'], name=result['name'])
+        book = BookModel(id=result['id'], name=result['name'])
             
         return book.__dict__
     
@@ -50,7 +40,7 @@ class BookModel(Connect):
         self.cursor.execute(sql)
         self.connection.commit()
         
-        book = Book(id=self.cursor.lastrowid, name=name)
+        book = BookModel(id=self.cursor.lastrowid, name=name)
         
         return book.__dict__
     
@@ -59,7 +49,7 @@ class BookModel(Connect):
         self.cursor.execute(sql)
         self.connection.commit()
         
-        book = Book(id=id, name=name)
+        book = BookModel(id=id, name=name)
         
         return book.__dict__
         

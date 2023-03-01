@@ -12,8 +12,8 @@ class Database:
         return f"Database({self.host}, {self.user}, {self.password}, {self.database})"
       
     def connect(self):
-        self.connect = pymysql.connect(host=self.host, user=self.user, password=self.password, database=self.database, charset='utf8mb4', cursorclass=pymysql.cursors.DictCursor)
-        return self.connect
+        self.connection = pymysql.connect(host=self.host, user=self.user, password=self.password, database=self.database, charset='utf8mb4', cursorclass=pymysql.cursors.DictCursor)
+        return self.connection
 
     def disconnect(self):
         self.connection.close()
@@ -21,7 +21,7 @@ class Database:
 
 class Connect:
     def __init__(self, database):
-        self.connect = database.connect
+        self.connect = database.connection
         self.cursor = self.connect.cursor()
         
     def select_all(self, sql):

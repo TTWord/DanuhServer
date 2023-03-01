@@ -2,7 +2,7 @@ from services.word_service import get_word_service
 from flask_restx import Namespace, Resource, Api
 
 
-api = Namespace('words', description='Book related operations')
+api = Namespace('word', description='Book related operations')
 
 @api.route('')
 class Word(Resource):

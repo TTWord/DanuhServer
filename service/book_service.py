@@ -1,5 +1,5 @@
 from flask import jsonify
-from model.book import BookModel
+from repository.book_repository import BookRepository
 from db.connect import Database
 
 class BookService:
@@ -8,7 +8,7 @@ class BookService:
         db = Database()
         db.connect()
         
-        books = BookModel(db).find_all()
+        books = BookRepository(db).find_all()
         
         db.disconnect()
         
@@ -18,6 +18,6 @@ class BookService:
     def get_book_by_id(id):
         db = Database()
         
-        book = BookModel(db).find_by_id(id)
+        book = BookRepository(db).find_by_id(id)
         
         return jsonify(book)

@@ -1,4 +1,4 @@
-from model.user import User
+from model.user_model import User
 from utils.passwordEncryption import encrypt_password, compare_passwords
 from utils.JwtToken import generate_token
 from flask import make_response

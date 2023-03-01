@@ -7,6 +7,7 @@ create table user(
     id INT PRIMARY KEY auto_increment,
     username VARCHAR(100),
     password VARCHAR(100),
+    nickname VARCHAR(100),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 )
