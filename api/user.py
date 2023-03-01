@@ -15,10 +15,11 @@ class UserSignUp(Resource):
         }
         return UserService.signup_service(data)
 
+
 @api.route('/signin')
 class UserSignIn(Resource):
     def post(self):
-        data = request.get_json()
+        # data = request.get_json()
         data = {
             "username": "username",
             "password": "password",
