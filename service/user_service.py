@@ -1,6 +1,6 @@
 from model.user_model import User
-from utils.passwordEncryption import encrypt_password, compare_passwords
-from utils.JwtToken import generate_token
+from util.passwordEncryption import encrypt_password, compare_passwords
+from util.JwtToken import generate_token
 from flask import make_response
 import os
 import datetime

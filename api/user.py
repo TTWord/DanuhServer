@@ -1,6 +1,6 @@
-from flask import Blueprint, request
+from flask import request
 from flask_restx import Namespace, Resource, Api
-from services.user_service import signup_service, signin_service
+from service.user_service import signup_service, signin_service
 
 api = Namespace('user', description='유저 API')
 
