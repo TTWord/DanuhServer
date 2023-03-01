@@ -3,7 +3,6 @@ from flask_cors import CORS
 from flask import Flask
 from config import config
 
-
 app = Flask(__name__)
 
 # Connect Config to app.config

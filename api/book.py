@@ -2,7 +2,7 @@ from services.book_service import BookService
 from flask_restx import Namespace, Resource, Api
 
 
-api = Namespace('books', description='단어장 API')
+api = Namespace('book', description='단어장 API')
 
 # getBookParser = api.parser()
 # getBookParser.add_argument('name', type=str, help='단어장 이름', location='args')
