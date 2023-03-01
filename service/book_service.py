@@ -12,7 +12,7 @@ class BookService:
         
         db.disconnect()
         
-        return jsonify(books)
+        return books
     
     @staticmethod
     def get_book_by_id(id):
@@ -20,4 +20,4 @@ class BookService:
         
         book = BookRepository(db).find_by_id(id)
         
-        return jsonify(book)
+        return book

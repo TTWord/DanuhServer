@@ -1,5 +1,3 @@
-from db.connect import Connect, Database
-    
 class BookModel:
     def __init__(self, id: int, name: str, user_id: int = None, created_at: str = None, updated_at: str = None):
         self.id = id

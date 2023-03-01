@@ -1,7 +1,9 @@
 from db.connect import Connect
 from model.book_model import BookModel
+from util.decorator.exporter import RepositoryExporter as exporter
 
 class BookRepository(Connect):
+    @exporter
     def find_all(self) -> list:
         books = []
         
@@ -12,7 +14,7 @@ class BookRepository(Connect):
         for row in result:
             books.append(BookModel(id=row['id'], name=row['name']))
         
-        return [book.__dict__ for book in books]
+        return books
     
     def find_all_by_user_id(self, user_id: int):
         books = []

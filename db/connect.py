@@ -17,7 +17,6 @@ class Database:
 
     def disconnect(self):
         self.connection.close()
-        
 
 class Connect:
     def __init__(self, database):
