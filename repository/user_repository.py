@@ -1,4 +1,4 @@
-from util.passwordEncryption import encrypt_password, compare_passwords
+from util.password_encryption import encrypt_password, compare_passwords
 
 # TODO : Model_info 클래스 객체
 #      : model 폴더에 생성
