@@ -15,7 +15,7 @@ class Database:
         return f"Database({self.host}, {self.user}, {self.password}, {self.database})"
       
     def connect(self):
-        self.connection = pymysql.connect(host=self.host, user=self.user, password=self.password, database=self.database, charset='utf8mb4')
+        self.connection = pymysql.connect(host=self.host, user=self.user, password=self.password, database=self.database, charset='utf8mb4', cursorclass=pymysql.cursors.DictCursor)
 
     def disconnect(self):
         self.connection.close()
