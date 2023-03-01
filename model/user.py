@@ -1,32 +1,31 @@
-from config import Database
-from utils.passwordEncryption import encrypt_password
+from utils.passwordEncryption import encrypt_password, compare_passwords
 
 
-class UserDao:
-    def __init__(self, id, name):
-        self.id = id
-        self.name = name
-
-    def __repr__(self):
-        return f"Book({self.id}, {self.name})"
-    
-    @property
-    def password(self):
-        raise AttributeError('password: write-only field')
-
-    @password.setter
-    def password(self, password):
-        self.password_hash = flask_bcrypt.generate_password_hash(password).decode('utf-8')
-
-    def check_password(self, password: str) -> bool:
-        return flask_bcrypt.check_password_hash(self.password_hash, password)
-    
-    def create_user(self, user_info, connection):
-        db = Database()
-        
-        db.connect()
-        
-        with db.connection.cursor() as cursor:
-            query = """
-                INSERT INTO 
+class User:    
+    def signup(self, user_info):        
+        with self.cursor as cursor:
+            # sql = """
+            #     SELECT * FROM user
+            # """
+            sql = f"""
+                INSERT INTO user (
+                    username, password, nickname
+                )
+                VALUES(
+                    {user_info['username']},
+                    {user_info['password']},
+                    {user_info['nickname']}
+                )
             """
+            cursor.execute(sql)
+            cursor.commit()
+
+    def find_user(self):
+        
+        with self.cursor as cursor:
+            sql = 'SELECT * FROM user'
+            cursor.execute(sql)
+            result = cursor.fetchall()
+            print("결과: ", result)
+        
+        return 0
