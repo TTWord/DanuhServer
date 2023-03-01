@@ -1,4 +1,4 @@
-from services.word_service import get_word_service
+from service.word_service import get_word_service
 from flask_restx import Namespace, Resource, Api
 
 

@@ -1,4 +1,4 @@
-from services.book_service import BookService
+from service.book_service import BookService
 from flask_restx import Namespace, Resource, Api
 
 

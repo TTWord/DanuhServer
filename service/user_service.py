@@ -1,4 +1,4 @@
-from model.user_model import User
+from repository.user_repository import UserRepository
 from util.passwordEncryption import encrypt_password, compare_passwords
 from util.JwtToken import generate_token
 from flask import make_response
@@ -7,7 +7,7 @@ import datetime
 
 
 def signup_service(userdata):
-    User().signup(userdata)
+    UserRepository().signup(userdata)
     return make_response({'message': 'succesfully inserted'}, 200)
     # try:
     #     email_check = User.objects[:1](email=userdata['email'])
