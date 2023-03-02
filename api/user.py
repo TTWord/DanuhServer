@@ -14,8 +14,12 @@ user_sign_up = api.model('회원 가입', {
     'nickname': fields.String(required=True, description='닉네임을 입력해주세요.', example='김흐긴')
 })
 
-# from flask import make_response
 
+# 백엔드가 에러 메시지를 사용자에게 띄워주면 안됨
+# 200 , 201, 204 성공
+# 403, NOt forbbiden
+# 404 Not Found
+# 409 conflict 로그인 실패
 @api.route('/signup')
 class UserSignUp(Resource):
     @api.expect(user_sign_up, validate=True)
@@ -41,6 +45,30 @@ class UserSignUp(Resource):
             "nickname": nickname
         }
         return UserService.signup_service(data)
+    
+    @api.expect(user_sign_up, validate=True)
+    @api.response(200, 'Success')
+    @api.response(403, 'Not forbbiden')
+    @api.response(404, 'Not found')
+    @api.response(405, 'Not allowed')
+    @api.response(400, 'Bad request')
+    @api.response(409, 'User already exists')   
+    def delete(self):
+        """
+        회원 탈퇴
+        """
+        input_data = request.get_json()
+
+        username = input_data['username']
+        password = input_data['password']
+        nickname = input_data['nickname']
+
+        data = {
+            "username": username,
+            "password": password,
+            "nickname": nickname
+        }
+        return UserService.delete_service(data)
     
 
 @api.route('/signin')
