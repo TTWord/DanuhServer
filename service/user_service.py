@@ -11,11 +11,15 @@ from db.connect import Database
 # 백엔드가 에러 메시지를 사용자에게 띄워주면 안됨
 class UserService:
     @staticmethod
-    def signup_service(userdata):
+    def signup_service(user_data):
         try:
             db = Database()
             db.connect()
-            UserRepository(db).signup(userdata)
+            is_user = UserRepository(db).get_user(user_data['username'])
+            if is_user:
+                return make_response({'message': 'user already exists'}, 409)
+            
+            UserRepository(db).sign_up(user_data)
             db.disconnect()
             return make_response({'message': 'succesfully inserted'}, 200)
         except Exception as e:
