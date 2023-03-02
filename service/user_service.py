@@ -12,25 +12,25 @@ from db.connect import Database
 class UserService:
     @staticmethod
     def signup_service(userdata):
-        db = Database()
-        db.connect()
-        response = UserRepository(db).find_user('123')
-        UserRepository(db).signup(userdata)
+        try:
+            db = Database()
+            db.connect()
+            UserRepository(db).signup(userdata)
+            db.disconnect()
+            return make_response({'message': 'succesfully inserted'}, 200)
+        except Exception as e:
+            return make_response({'message': str(e)}, 404)
 
-        db.disconnect()
-        # make_response({'message': 'succesfully inserted'}, 200)
-                # except Exception as e:
-        #     return make_response({'message': str(e)}, 404)
-        # return jsonify(response)
-        return make_response({'message': 'succesfully inserted'}, 200)
-
+    @staticmethod
     def signin_service(user_credentials):
-        db = Database()
-        db.connect()
-
-        response = UserRepository(db).find_user('123')
-
-        db.disconnect()
+        try:
+            db = Database()
+            db.connect()
+            UserRepository(db).signin(userdata)
+            db.disconnect()
+            return make_response({'message': 'succesfully inserted'}, 200)
+        except Exception as e:
+            return make_response({'message': str(e)}, 404)
         # try:
         #     email_check = User.objects[:1](email=user_credentials['email'])
         #     if not email_check:
