@@ -3,7 +3,6 @@ from db.connect import Connect
 
 class UserRepository(Connect): 
     # TODO : Send mail 추가
-    # 유저 생성
     def sign_up(self, user_info: dict) -> dict:
         sql = f"""
             INSERT INTO user (

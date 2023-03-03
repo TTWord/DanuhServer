@@ -1,6 +1,7 @@
 from flask import request
 from flask_restx import Namespace, Resource, Api, reqparse, fields
 from service.user_service import UserService
+from util.jwt_token import validate_token
 
 api = Namespace('user', description='유저 API')
 
@@ -92,3 +93,16 @@ class UserSignIn(Resource):
             "password": password,
         }
         return UserService.signin_service(data)
+    
+
+from flask import make_response
+@api.route('/get')
+class AuthGet(Resource):
+    """
+    로그인 확인
+    """
+    @api.response(200, 'Success')
+    @api.response(404, 'Login Failed')
+    @validate_token
+    def get(self):
+        return make_response({"message": "Login Success"}, 200)
