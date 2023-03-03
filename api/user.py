@@ -15,6 +15,12 @@ user_sign_up = api.model('회원 가입', {
     'nickname': fields.String(required=True, description='닉네임을 입력해주세요.', example='김흐긴')
 })
 
+email_content = api.model('이메일 값', {
+    'subject': fields.String(required=True, description='이메일 제목'),
+    'body': fields.String(required=True, description='이메일 본문'),
+    'from_email': fields.String(required=True, description='발신자 이메일 주소'),
+    'to_email': fields.String(required=True, description='수신자 이메일 주소')
+})
 
 # 백엔드가 에러 메시지를 사용자에게 띄워주면 안됨
 # 200 , 201, 204 성공
@@ -101,6 +107,11 @@ class AuthGet(Resource):
     """
     로그인 확인
     """
+    @api.response(200, 'Success')
+    @api.response(403, 'Not forbbiden')
+    @api.response(404, 'Not found')
+    @api.response(405, 'Not allowed')
+    @api.response(400, 'Bad request')
     @api.response(200, 'Success')
     @api.response(404, 'Login Failed')
     @validate_token
