@@ -7,8 +7,8 @@ from util.password_encryption import compare_passwords, encrypt_password
 import datetime
 
 
-# TODO: 상황에 따른 에러 메시지 
 class UserService:
+    # TODO: 메일 인증 추가, 인증 실패, 재전송, 인증성공
     @staticmethod
     def signup_service(user_data):
         try:

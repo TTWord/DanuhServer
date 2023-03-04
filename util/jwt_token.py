@@ -10,6 +10,7 @@ def generate_token(payload, secret):
 def decode_token(payload, secret):
     return jwt.decode(payload, secret, algorithms=["HS256"])
 
+# TODO: 데코레이터 학습
 def validate_token(func):
     secret = config['SECRET_KEY']
     @wraps(func)
@@ -22,7 +23,6 @@ def validate_token(func):
         
         if access_token is not None:
             token_info = access_token.split(" ")
-            token_type = token_info[0]
             access_token = token_info[1]
             try:
                 payload = jwt.decode(access_token, secret, "HS256")
