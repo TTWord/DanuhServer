@@ -4,6 +4,7 @@ from db.connect import Database
 from config import config
 from util.jwt_token import generate_token, decode_token
 from util.password_encryption import compare_passwords, encrypt_password
+from util.mail import EmailSender
 import datetime
 
 
@@ -65,3 +66,12 @@ class UserService:
         secret = config["SECRET_KEY"]
         data = decode_token(header, secret)
         return make_response(data, 200)
+    
+    @staticmethod
+    def send_mail(input_data):
+        from_email = input_data['from_email']
+        to_email = input_data['to_email']
+        subject = input_data['subject']
+        body = input_data['body']
+
+        return make_response(EmailSender.send_email(from_email, to_email, subject, body))
