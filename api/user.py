@@ -1,6 +1,7 @@
 from flask import request
 from flask_restx import Namespace, Resource, Api, reqparse, fields
 from service.user_service import UserService
+from util.jwt_token import validate_token
 
 api = Namespace('user', description='유저 API')
 
@@ -14,6 +15,12 @@ user_sign_up = api.model('회원 가입', {
     'nickname': fields.String(required=True, description='닉네임을 입력해주세요.', example='김흐긴')
 })
 
+email_content = api.model('이메일 값', {
+    'subject': fields.String(required=True, description='이메일 제목'),
+    'body': fields.String(required=True, description='이메일 본문'),
+    'from_email': fields.String(required=True, description='발신자 이메일 주소'),
+    'to_email': fields.String(required=True, description='수신자 이메일 주소')
+})
 
 # 백엔드가 에러 메시지를 사용자에게 띄워주면 안됨
 # 200 , 201, 204 성공
@@ -92,3 +99,21 @@ class UserSignIn(Resource):
             "password": password,
         }
         return UserService.signin_service(data)
+    
+
+from flask import make_response
+@api.route('/get')
+class AuthGet(Resource):
+    """
+    로그인 확인
+    """
+    @api.response(200, 'Success')
+    @api.response(403, 'Not forbbiden')
+    @api.response(404, 'Not found')
+    @api.response(405, 'Not allowed')
+    @api.response(400, 'Bad request')
+    @api.response(200, 'Success')
+    @api.response(404, 'Login Failed')
+    @validate_token
+    def get(self):
+        return make_response({"message": "Login Success"}, 200)
