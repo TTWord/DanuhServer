@@ -3,7 +3,10 @@ name: updateEC2
 on:
   push:
     branches:
-      - 'main' # 메인이 푸쉬되었을 때 동작
+      - 'main'  # 메인이 푸쉬되었을 때 동작
+  pull_request:
+    branches:
+      - 'main'  # 메인이 pull_request 시 동작
 
   workflow_dispatch:
 
