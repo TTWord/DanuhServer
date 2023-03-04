@@ -2,6 +2,7 @@ import json
 import decimal
 
 class Encoder(json.JSONEncoder):
-    def default(self, obj):
+    @staticmethod
+    def default(obj):
         if isinstance(obj, decimal.Decimal):
             return float(obj)
