@@ -6,10 +6,10 @@ import random
 
 
 # TODO: 메일 certification expire 구현(DB 스케줄러)
-#       
+#     : Authorization을 추가적으로 구현할 듯 ex) 핸드폰인증, Kakaotalk 인증 등등
 class EmailSender:
     @staticmethod
-    def send_email(to_email, subject, body):
+    def send_email(to_email, subject, body, verification_id):
         try:
             smtp_server = config['SMTP_SERVER']
             smtp_port = config['SMTP_PORT']
@@ -17,8 +17,7 @@ class EmailSender:
             smtp_password = config['SMTP_PASSWORD']
             stml_html = config['STML_HTML']
 
-            verification_code_1 = str(random.randint(0, 999)).zfill(3)
-            verification_code_2 = str(random.randint(0, 999)).zfill(3)
+            verification_code_1, verification_code_2 = verification_id.split(' ')
 
             msg = MIMEMultipart()
             msg['from'] = smtp_username
