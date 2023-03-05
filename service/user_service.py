@@ -9,7 +9,7 @@ import datetime
 
 
 class UserService:
-    # TODO: 메일 인증 추가, 인증 실패, 재전송, 인증성공
+    # TODO: 메일 인증 추가, 인증 실패, 인증성공
     @staticmethod
     def signup_service(user_data):
         try:
@@ -67,6 +67,8 @@ class UserService:
         data = decode_token(header, secret)
         return make_response(data, 200)
     
+
+    # TODO : 메일 번호 전송
     @staticmethod
     def send_mail(input_data):
         from_email = input_data['from_email']

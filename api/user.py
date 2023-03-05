@@ -16,10 +16,10 @@ user_sign_up = api.model('회원 가입', {
     'nickname': fields.String(required=True, description='닉네임을 입력해주세요.', example='김흐긴')
 })
 
+
 email_content = api.model('이메일 값', {
     'subject': fields.String(required=True, description='이메일 제목', example='김흐긴'),
     'body': fields.String(required=True, description='이메일 본문', example='Content'),
-    'from_email': fields.String(required=True, description='발신자 이메일 주소', example='kimjunghyun696@gmail.com'),
     'to_email': fields.String(required=True, description='수신자 이메일 주소', example= 'djsk721@naver.com')
 })
 
