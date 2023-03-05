@@ -31,9 +31,10 @@ create table word(
 
 create table certification(
     id INT PRIMARY KEY auto_increment,
-    type VARCHAR(100),
+    cert_type VARCHAR(100),
     cert_key VARCHAR(100),
     cert_code VARCHAR(100),
+    expired_time TIMESTAMP,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 )

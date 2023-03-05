@@ -2,11 +2,14 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from config import config
+import random
 
 
+# TODO: 메일 certification expire 구현(DB 스케줄러)
+#       
 class EmailSender:
     @staticmethod
-    def send_email(from_email, to_email, subject, body):
+    def send_email(to_email, subject, body):
         try:
             smtp_server = config['SMTP_SERVER']
             smtp_port = config['SMTP_PORT']
@@ -14,13 +17,18 @@ class EmailSender:
             smtp_password = config['SMTP_PASSWORD']
             stml_html = config['STML_HTML']
 
+            verification_code_1 = str(random.randint(0, 999)).zfill(3)
+            verification_code_2 = str(random.randint(0, 999)).zfill(3)
+
             msg = MIMEMultipart()
-            msg['From'] = from_email
+            msg['from'] = smtp_username
             msg['To'] = to_email
             msg['Subject'] = subject
             msg.attach(MIMEText(body, 'plain'))
 
             html = open(stml_html, encoding='utf-8').read()
+            html = html.replace("<span>input1</span>", f"<span>{verification_code_1}</span>")
+            html = html.replace("<span>input2</span>", f"<span>{verification_code_2}</span>")
             msg.attach(MIMEText(html, 'html'))
 
             with smtplib.SMTP(smtp_server, smtp_port) as server:
@@ -28,7 +36,7 @@ class EmailSender:
                 server.starttls()
                 server.ehlo()
                 server.login(smtp_username, smtp_password)
-                server.sendmail(from_email, to_email, msg.as_string())
+                server.sendmail(smtp_username, to_email, msg.as_string())
         except smtplib.SMTPAuthenticationError:
             return {'message': "Could not authenticate with the SMTP server."}, 401 
         except smtplib.SMTPConnectError:

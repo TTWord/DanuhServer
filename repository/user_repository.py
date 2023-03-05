@@ -2,7 +2,6 @@ from db.connect import Connect
 
 
 class UserRepository(Connect): 
-    # TODO : Send mail 추가
     def sign_up(self, user_info: dict) -> dict:
         sql = f"""
             INSERT INTO user (
