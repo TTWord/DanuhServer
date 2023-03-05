@@ -7,13 +7,14 @@ from util.jwt_token import validate_token
 api = Namespace('user', description='유저 API')
 
 user_sign_in = api.model('회원 로그인', {
-    'username': fields.String(required=True, description='아이디를 입력해주세요.', example='afsd721@google.com'),
-    'password': fields.String(required=True, description='비밀번호를 입력해주세요.', example='13131313'),
+    'username': fields.String(required=True, description='아이디', example='kimjunghyun696@google.com'),
+    'password': fields.String(required=True, description='비밀번호', example='13131313'),
 })
 
 user_sign_up = api.model('회원 가입', {
     **user_sign_in,
-    'nickname': fields.String(required=True, description='닉네임을 입력해주세요.', example='김흐긴')
+    'nickname': fields.String(required=True, description='닉네임', example='김흐긴'),
+    'certification_id': fields.String(required=True, description='인증ID', example='077 255')
 })
 
 email_content = api.model('이메일 인증', {
@@ -38,17 +39,7 @@ class UserSignUp(Resource):
         회원 가입
         """
         input_data = request.get_json()
-
-        username = input_data['username']
-        password = input_data['password']
-        nickname = input_data['nickname']
-
-        data = {
-            "username": username,
-            "password": password,
-            "nickname": nickname
-        }
-        return UserService.signup_service(data)
+        return UserService.signup_service(input_data)
     
     @api.expect(user_sign_up, validate=True)
     @api.response(200, 'Success')
@@ -62,16 +53,6 @@ class UserSignUp(Resource):
         회원 탈퇴
         """
         input_data = request.get_json()
-
-        username = input_data['username']
-        password = input_data['password']
-        nickname = input_data['nickname']
-
-        data = {
-            "username": username,
-            "password": password,
-            "nickname": nickname
-        }
         return UserService.delete_service(data)
     
 
@@ -88,18 +69,8 @@ class UserSignIn(Resource):
         로그인
         """
         input_data = request.get_json()
-        username = input_data['username']
-        password = input_data['password']
-
-        data = {
-            "username": username,
-            "password": password,
-        }
         return UserService.signin_service(data)
     
-
-# AuthGet과 
-from flask import make_response
 @api.route('/get')
 class AuthGet(Resource):
     @api.response(200, 'Success')
@@ -114,7 +85,7 @@ class AuthGet(Resource):
         """
         로그인 확인
         """
-        return make_response({"message": "Login Success"}, 200)
+        return {"message": "Login Success"}, 200
     
 
 @api.route('/sendmail')

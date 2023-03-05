@@ -4,8 +4,9 @@ from db.connect import Database
 from config import config
 from util.jwt_token import generate_token, decode_token
 from util.password_encryption import compare_passwords, encrypt_password
-from util.mail import EmailSender
+from util.certification import EmailSender
 import datetime
+import random
 
 
 class UserService:
@@ -15,8 +16,11 @@ class UserService:
         try:
             db = Database()
             with db.connect():
+                cert_info = UserRepository(db).auth_find_one_by_cert_key(user_data['username'])
+                if not cert_info['cert_code'] == user_data['certification_id']:
+                    return make_response({'message': 'Invalid verification code'}, 401 )
                 user_data['password'] = encrypt_password(user_data['password']).decode('utf-8')
-                UserRepository(db).sign_up(user_data)
+                UserRepository(db).add(user_data)
             return make_response({'message': 'Succesfully inserted'}, 200)
         except Exception as e:
             return make_response({'message': str(e)}, 404)
@@ -26,7 +30,7 @@ class UserService:
         try:
             db = Database()
             with db.connect():
-                user = UserRepository(db).get_user(user_credentials['username'])
+                user = UserRepository(db).find_one_by_user_id(user_credentials['username'])
 
             if not user:
                 return make_response({'message': 'User isn\'t exist'}, 409)
@@ -52,28 +56,39 @@ class UserService:
                 UserRepository(db).delete(user_data['username'])
             return make_response({'message': 'Succesfully deleted'}, 200)
         except Exception as e:
-            return make_response({'message': str(e)}, 404)
-    
-    # TODO : 추후 refectoring 필요(struecture 변경)
-    @staticmethod
-    def authorization_get(header):
-        if header == None:
-            return make_response({'message': 'Please login'}, 404)
-        secret = config["SECRET_KEY"]
-        data = decode_token(header, secret)
-        return make_response(data, 200)
-    
+            return make_response({'message': str(e)}, 404)    
 
     # TODO : 추후 refectoring 필요(struecture 변경)
+    #      : 회원가입 화면에서 이메일 인증을 받아 DB Certification 테이블에 저장
+    #      : 생성한 Certification 테이블의 id를 이용해 인증 메일을 확인.
+    #      : 회원가입 창에서 서비스가 이뤄지기에 타 인증방법 생기면 수정해줘야함
     @staticmethod
     def send_mail(input_data):
         db = Database()
         with db.connect():
-            is_user = UserRepository(db).get_user(input_data['user_id'])
+            is_user = UserRepository(db).find_one_by_user_id(input_data['user_id'])
             if is_user:
                 return make_response({'message': 'User already exists'}, 409)
-        to_email = input_data['to_email']
-        subject = input_data['subject']
-        body = input_data['body']
+            to_email = input_data['to_email']
+            subject = input_data['subject']
+            body = input_data['body']
+            verification_id = str(random.randint(0, 999)).zfill(3) + " " + str(random.randint(0, 999)).zfill(3)
+            response = EmailSender.send_email(to_email, subject, body, verification_id)
 
-        return make_response(EmailSender.send_email(to_email, subject, body))
+            now = datetime.datetime.now()
+            expiration_date = now + datetime.timedelta(days=1)
+            expiration_date_str = expiration_date.strftime('%Y-%m-%d %H:%M:%S')
+            verification_info = {
+                'cert_type': 'email',
+                'cert_key': input_data['user_id'],
+                'cert_code': verification_id,
+                'expired_time': expiration_date_str
+            }
+            response = EmailSender.send_email(to_email, subject, body, verification_id)
+            if response[1] == 200:
+                if UserRepository(db).auth_find_one_by_cert_key(verification_info['cert_key']):
+                    verification_id = UserRepository(db).auth_update(verification_info['cert_key'], verification_info['cert_code'])
+                else:
+                    verification_id = UserRepository(db).auth_add(verification_info)
+                return make_response({**verification_id, 'message': 'Succesfully send email'}, 200)
+        return make_response(response)
