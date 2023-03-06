@@ -16,6 +16,7 @@ class BookRepository(Connect):
         
         return books
     
+    @exporter
     def find_all_by_user_id(self, user_id: int):
         books = []
         
@@ -24,8 +25,9 @@ class BookRepository(Connect):
         for row in result:
             books.append(BookModel(id=row['id'], name=row['name']))
         
-        return [book.__dict__ for book in books]
+        return books
     
+    @exporter
     def find_one_by_id(self, id: int) -> dict:
         book = None
 
@@ -35,8 +37,9 @@ class BookRepository(Connect):
             
         book = BookModel(id=result['id'], name=result['name'])
             
-        return book.__dict__
+        return book
     
+    @exporter
     def add(self, name: str) -> dict:
         sql = f"INSERT INTO book (name) VALUES ('{name}')"
         self.cursor.execute(sql)
@@ -44,8 +47,9 @@ class BookRepository(Connect):
         
         book = BookModel(id=self.cursor.lastrowid, name=name)
         
-        return book.__dict__
+        return book
     
+    @exporter
     def update(self, id: int, name: str) -> dict:
         sql = f"UPDATE book SET name = '{name}' WHERE id = {id}"
         self.cursor.execute(sql)
@@ -53,8 +57,9 @@ class BookRepository(Connect):
         
         book = BookModel(id=id, name=name)
         
-        return book.__dict__
+        return book
         
+    @exporter
     def delete(self, id: int):
         sql = f"DELETE FROM book WHERE id = {id}"
         self.cursor.execute(sql)
