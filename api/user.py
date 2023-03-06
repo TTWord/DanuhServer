@@ -53,7 +53,7 @@ class UserSignUp(Resource):
         회원 탈퇴
         """
         input_data = request.get_json()
-        return UserService.delete_service(data)
+        return UserService.delete_service(input_data)
     
 
 @api.route('/signin')
@@ -69,7 +69,7 @@ class UserSignIn(Resource):
         로그인
         """
         input_data = request.get_json()
-        return UserService.signin_service(data)
+        return UserService.signin_service(input_data)
     
 @api.route('/get')
 class AuthGet(Resource):
