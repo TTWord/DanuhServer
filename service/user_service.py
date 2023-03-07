@@ -2,7 +2,7 @@ from repository.user_repository import UserRepository
 from flask import make_response
 from db.connect import Database
 from config import config
-from util.jwt_token import generate_token, decode_token
+from util.jwt_token import generate_token
 from util.password_encryption import compare_passwords, encrypt_password
 from util.certification import EmailSender
 import datetime
