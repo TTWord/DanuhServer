@@ -22,8 +22,15 @@ class UserRepository(Connect):
         self.connect.commit()
         return {'id': id}
     
-    def find_one_by_user_id(self, user_id: str) -> dict:
+    def find_one_by_username(self, user_id: str) -> dict:
         sql = f'SELECT * FROM user where username = "{user_id}"'
+        self.cursor.execute(sql)
+        user = self.cursor.fetchone()
+        
+        return user
+    
+    def find_one_by_user_id(self, id: int) -> dict:
+        sql = f'SELECT * FROM user where id = "{id}"'
         self.cursor.execute(sql)
         user = self.cursor.fetchone()
         
