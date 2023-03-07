@@ -10,7 +10,6 @@ import random
 
 
 class UserService:
-    # TODO: 메일 인증 추가, 인증 실패, 인증성공
     @staticmethod
     def signup_service(user_data):
         try:
@@ -59,9 +58,6 @@ class UserService:
             return make_response({'message': str(e)}, 404)    
 
     # TODO : 추후 refectoring 필요(struecture 변경)
-    #      : 회원가입 화면에서 이메일 인증을 받아 DB Certification 테이블에 저장
-    #      : 생성한 Certification 테이블의 id를 이용해 인증 메일을 확인.
-    #      : 회원가입 창에서 서비스가 이뤄지기에 타 인증방법 생기면 수정해줘야함
     @staticmethod
     def send_mail(input_data):
         db = Database()
