@@ -40,5 +40,19 @@ class Authorization:
     @staticmethod
     def reject_authorization(func):
         def wrapper(*args, **kwargs):
-            return make_response({"message": "Providing Token Rejected"}, 403)
+            try:
+                access_token = request.headers['Authorization']
+            except Exception as e:
+                return make_response({"message": "Token not provided"}, 403)
+        
+            if access_token is not None:
+                token_info = access_token.split(" ")
+                access_token = token_info[1]
+                try:
+                    jwt.decode(access_token, config["SECRET_KEY"], "HS256")
+                    return func(*args, **kwargs)
+                except jwt.InvalidTokenError:
+                    return make_response({"message": "Invalid token provided"}, 403)
+            else:
+                return make_response({"message": "Invalid token provided"}, 403)
         return wrapper
