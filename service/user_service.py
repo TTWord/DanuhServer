@@ -29,7 +29,7 @@ class UserService:
         try:
             db = Database()
             with db.connect():
-                user = UserRepository(db).find_one_by_user_id(user_credentials['username'])
+                user = UserRepository(db).find_one_by_username(user_credentials['username'])
 
             if not user:
                 return make_response({'message': 'User isn\'t exist'}, 409)
@@ -62,7 +62,7 @@ class UserService:
     def send_mail(input_data):
         db = Database()
         with db.connect():
-            is_user = UserRepository(db).find_one_by_user_id(input_data['user_id'])
+            is_user = UserRepository(db).find_one_by_username(input_data['user_id'])
             if is_user:
                 return make_response({'message': 'User already exists'}, 409)
             to_email = input_data['to_email']
