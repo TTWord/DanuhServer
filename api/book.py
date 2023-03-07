@@ -1,13 +1,9 @@
 from service.book_service import BookService
-from flask_restx import Namespace, Resource, Api, reqparse, fields
+from flask_restx import Namespace, Resource
 from util.decorator.authorization import Authorization
-
+from flask import request
 
 api = Namespace('book', description='단어장 API')
-
-input_text = api.model('예측', {
-    'text': fields.String(required=True, description='예측 값 입력', example='You can tell a stranger that this is shiitake mushrooms.')
-})
 
 # getBookParser = api.parser()
 # getBookParser.add_argument('name', type=str, help='단어장 이름', location='args')
@@ -15,21 +11,24 @@ input_text = api.model('예측', {
 @api.route("/")
 class Book(Resource):
     # @api.expect(getBookParser)
-    @Authorization.get_authorization
+    @Authorization.check_authorization
     def get(self, auth):
         """
         모든 단어장 조회
         설명입니다
         """
-        print(auth)
             
-        return BookService.get_books_all()
+        return BookService.get_books_by_user_id(auth)
     
-    def post(self):
-        return "add_book"
+    @Authorization.check_authorization
+    def post(self, auth):
+        data = request.get_json()
+        
+        return BookService.add_book(auth, data)
     
 @api.route('/<int:id>')
 class BookById(Resource):
+    @Authorization.reject_authorization
     def get(self, id):
         return BookService.get_book_by_id(id)
     
