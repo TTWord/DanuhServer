@@ -1,7 +1,6 @@
 from flask import request
 from flask_restx import Namespace, Resource, Api, reqparse, fields
 from service.user_service import UserService
-from util.jwt_token import validate_token
 
 
 api = Namespace('user', description='유저 API')
@@ -71,21 +70,22 @@ class UserSignIn(Resource):
         input_data = request.get_json()
         return UserService.signin_service(input_data)
     
-@api.route('/get')
-class AuthGet(Resource):
-    @api.response(200, 'Success')
-    @api.response(403, 'Not forbbiden')
-    @api.response(404, 'Not found')
-    @api.response(405, 'Not allowed')
-    @api.response(400, 'Bad request')
-    @api.response(200, 'Success')
-    @api.response(404, 'Login Failed')
-    @validate_token
-    def get(self):
-        """
-        로그인 확인
-        """
-        return {"message": "Login Success"}, 200
+
+# @api.route('/get')
+# class AuthGet(Resource):
+#     @api.response(200, 'Success')
+#     @api.response(403, 'Not forbbiden')
+#     @api.response(404, 'Not found')
+#     @api.response(405, 'Not allowed')
+#     @api.response(400, 'Bad request')
+#     @api.response(200, 'Success')
+#     @api.response(404, 'Login Failed')
+#     @Authorization.get_authorization
+#     def get(self):
+#         """
+#         로그인 확인
+#         """
+#         return {"message": "Login Success"}, 200
     
 
 @api.route('/sendmail')
