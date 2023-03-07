@@ -5,8 +5,7 @@ from config import config
 import random
 
 
-# TODO: 메일 certification expire 구현(DB 스케줄러)
-#     : Authorization을 추가적으로 구현할 듯 ex) 핸드폰인증, Kakaotalk 인증 등등
+#   TODO: Authorization을 추가적으로 구현할 듯 ex) 핸드폰인증, Kakaotalk 인증 등등
 class EmailSender:
     @staticmethod
     def send_email(to_email, subject, body, verification_id):
