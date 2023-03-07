@@ -1,7 +1,7 @@
 from service.book_service import BookService
 from flask_restx import Namespace, Resource, Api
 from flask import request
-from util.decorator.authorization import get_authorization
+from util.decorator.authorization import Authorization
 
 
 api = Namespace('book', description='단어장 API')
@@ -12,7 +12,7 @@ api = Namespace('book', description='단어장 API')
 @api.route("/")
 class Book(Resource):
     # @api.expect(getBookParser)
-    @get_authorization
+    @Authorization.get_authorization
     def get(self, auth):
         """
         모든 단어장 조회
