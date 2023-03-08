@@ -25,12 +25,11 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }} # AWS 연결 키
       - name: Python Kill
         run: sudo pkill -9 python
+      - name: Move to main directory
+        run: pwd
       - name: Move to app directory
         run: cd TTWordServer
-        working-directory: TTWordServer
       - name: Install dependencies
-        run: |
-          pip install -r requirements.txt
+        run: pip install -r requirements.txt
       - name: Start server
-        run: |
-          python3 app.py
+        run: nohup python -u app.py &
