@@ -34,7 +34,7 @@ class UserService:
             if not user:
                 return make_response({'message': 'User isn\'t exist'}, 409)
             else:
-                payload = {"id": user["id"], "username": user['username'],
+                payload = {"username": user['username'],
                            'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=60)}
                 secret = config["SECRET_KEY"]
                 if compare_passwords(user_credentials['password'], user['password']):
@@ -80,7 +80,6 @@ class UserService:
                 'cert_code': verification_id,
                 'expired_time': expiration_date_str
             }
-            response = EmailSender.send_email(to_email, subject, body, verification_id)
             if response[1] == 200:
                 if UserRepository(db).auth_find_one_by_cert_key(verification_info['cert_key']):
                     verification_id = UserRepository(db).auth_update(verification_info['cert_key'], verification_info['cert_code'])
