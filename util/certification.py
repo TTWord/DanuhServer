@@ -16,7 +16,7 @@ class EmailSender:
             smtp_password = config['SMTP_PASSWORD']
             stml_html = config['STML_HTML']
 
-            verification_code_1, verification_code_2 = verification_id[0:3], verification_id[3:6]
+            verification_code_1, verification_code_2 = verification_id[0:3], verification_id[3:]
 
             msg = MIMEMultipart()
             msg['from'] = smtp_username
