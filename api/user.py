@@ -5,8 +5,12 @@ from service.user_service import UserService
 
 api = Namespace('user', description='유저 API')
 
+user_name = api.model('유저이름', {
+    'username': fields.String(required=True, description='아이디', example='kimjunghyun696@google.com')
+})
+
 user_sign_in = api.model('회원 로그인', {
-    'username': fields.String(required=True, description='아이디', example='kimjunghyun696@google.com'),
+    **user_name,
     'password': fields.String(required=True, description='비밀번호', example='13131313'),
 })
 
@@ -40,7 +44,7 @@ class UserSignUp(Resource):
         input_data = request.get_json()
         return UserService.signup_service(input_data)
     
-    @api.expect(user_sign_up, validate=True)
+    @api.expect(user_name, validate=True)
     @api.response(200, 'Success')
     @api.response(403, 'Not forbbiden')
     @api.response(404, 'Not found')

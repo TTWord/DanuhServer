@@ -68,7 +68,7 @@ class UserService:
             to_email = input_data['to_email']
             subject = input_data['subject']
             body = input_data['body']
-            verification_id = str(random.randint(0, 999)).zfill(3) + " " + str(random.randint(0, 999)).zfill(3)
+            verification_id = str(random.randint(0, 999)).zfill(3) + str(random.randint(0, 999)).zfill(3)
             response = EmailSender.send_email(to_email, subject, body, verification_id)
 
             now = datetime.datetime.now()
