@@ -11,7 +11,7 @@ main_route = Blueprint('main', __name__, url_prefix="/api")
 
 api = Api(
     main_route,
-    version='0.4.0',
+    version='0.5.0',
     title='TTWordServer',
     contact='KimJungHyun',
     contact_email='kimjunghyun696@gmail.com',

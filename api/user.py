@@ -71,23 +71,6 @@ class UserSignIn(Resource):
         return UserService.signin_service(input_data)
     
 
-# @api.route('/get')
-# class AuthGet(Resource):
-#     @api.response(200, 'Success')
-#     @api.response(403, 'Not forbbiden')
-#     @api.response(404, 'Not found')
-#     @api.response(405, 'Not allowed')
-#     @api.response(400, 'Bad request')
-#     @api.response(200, 'Success')
-#     @api.response(404, 'Login Failed')
-#     @Authorization.get_authorization
-#     def get(self):
-#         """
-#         로그인 확인
-#         """
-#         return {"message": "Login Success"}, 200
-    
-
 @api.route('/sendmail')
 class SendMail(Resource):
     @api.expect(email_content, validate=True)
