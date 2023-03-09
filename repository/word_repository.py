@@ -49,19 +49,17 @@ class WordRepository(Connect):
         return word.__dict__
     
     def update(self, id: int, book_id: int, word: str, mean: str) -> dict:
-        print(id, book_id, word, mean)
-        
-        sql = f"UPDATE word SET book_id=2, word='Eternal Return', mean='영원한 회귀 였던것' WHERE id = 2"
+        sql = f"UPDATE word SET book_id={book_id}, word='{word}', mean='{mean}' WHERE id = {id}"
         self.cursor.execute(sql)
         self.connect.commit()
         
-        word = WordModel(id=id, word=word, mean=mean)
+        word = WordModel(id=id, book_id=book_id, word=word, mean=mean)
         
         return word.__dict__
         
     def delete(self, id: int):
         sql = f"DELETE FROM word WHERE id={id}"
         self.cursor.execute(sql)
-        self.connection.commit()
-        
+        self.connect.commit()
+
         return {'id': id}

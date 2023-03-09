@@ -48,7 +48,6 @@ class WordService:
                 word = WordRepository(db).find_one_by_id(id=id)
                 if not word:
                     return make_response({'message': 'word not in book'}, 401)
-                print("id : ", id, "\n", "data: ", data)
                 word = WordRepository(db).update(id=id, book_id=data["book_id"], word=data["word"], mean=data["mean"])
             return make_response({'message': 'Succesfully updated',
                                   "data": word}, 200)
@@ -64,6 +63,7 @@ class WordService:
                 word = WordRepository(db).find_one_by_id(id)
                 if not word:
                     return make_response({'message': str(e)}, 404)
-                word = WordRepository(db).delete(id=id)
+                result = WordRepository(db).delete(id=id)
+            return make_response({'message': "Succesfully deleted"}, 200)
         except Exception as e:
             return make_response({'message': str(e)}, 404)

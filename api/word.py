@@ -17,7 +17,7 @@ word_info = api.model('추가 정보', {
 })
 
 
-@api.route('/')
+@api.route('')
 class WordByBook(Resource):
     # @Authorization.get_authorization
     @api.response(200, 'Success')
