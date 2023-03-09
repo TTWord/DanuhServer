@@ -4,7 +4,7 @@ from util.decorator.authorization import Authorization
 from flask import request
 
 
-api = Namespace('word', description='단어장 API')
+api = Namespace('word', description='단어 API')
 
 book_id = api.model('id', {
     'book_id': fields.Integer(required=True, description='단어장 ID', example=1)
@@ -17,18 +17,17 @@ word_info = api.model('추가 정보', {
 })
 
 
-@api.route('/<int:book_id>')
+@api.route('/')
 class WordByBook(Resource):
     # @Authorization.get_authorization
     @api.response(200, 'Success')
-    def get(self, book_id):
+    def get(self):
         """
         모든 단어 조회
         """
 
-        # request.args['book_id']
-        
-        return WordService.get_words_by_book_id(book_id)
+        data = request.args
+        return WordService.get_words_by_book_id(data)
     
     # @Authorization.get_authorization
     @api.response(200, 'Success')
@@ -56,7 +55,8 @@ class WordById(Resource):
         """
         단어ID에 해당하는 단어 수정
         """
-        return WordService.update(id, word_info)
+        data = request.get_json()
+        return WordService.update(id, data)
     
     # @Authorization.get_authorization
     def delete(self, id):
