@@ -10,7 +10,7 @@ class WordRepository(Connect):
         result = self.cursor.fetchall()
         for row in result:
             words.append(WordModel(id=row['id'], book_id=row['book_id'], word=row['word']
-                         , mean=row['mean']))
+                         , mean=row['mean'], created_at=row['created_at'], updated_at=row['updated_at']))
         
         return [word.__dict__ for word in words]
                 
@@ -22,7 +22,7 @@ class WordRepository(Connect):
         result = self.cursor.fetchone()
             
         word = WordModel(id=result['id'], book_id=result['book_id'], word=result['word']
-                         , mean = result['mean'])
+                         , mean=result['mean'], created_at=result['created_at'], updated_at=result['updated_at'])
             
         return word.__dict__
     
@@ -35,7 +35,7 @@ class WordRepository(Connect):
         
         if result is not None:
             word = WordModel(id=result['id'], book_id=result['book_id'], word=result['word']
-                             , mean = result['mean'])
+                         , mean=result['mean'], created_at=result['created_at'], updated_at=result['updated_at'])
         
         return word.__dict__
     
@@ -48,8 +48,10 @@ class WordRepository(Connect):
         
         return word.__dict__
     
-    def update(self, id: int, word: str, mean: str) -> dict:
-        sql = f"UPDATE word SET word = '{word}' AND mean = '{mean}' WHERE id = {id}"
+    def update(self, id: int, book_id: int, word: str, mean: str) -> dict:
+        print(id, book_id, word, mean)
+        
+        sql = f"UPDATE word SET book_id=2, word='Eternal Return', mean='영원한 회귀 였던것' WHERE id = 2"
         self.cursor.execute(sql)
         self.connect.commit()
         

@@ -9,7 +9,7 @@ class WordService:
         try:
             db = Database()
             with db.connect():
-                words = WordRepository(db).find_all_by_book_id(1)
+                words = WordRepository(db).find_all_by_book_id(data['book_id'])
             return make_response({'message': 'Succesfully inserted',
                                   "data": words}, 200)
         except Exception as e:
@@ -45,10 +45,11 @@ class WordService:
             db = Database()
             with db.connect():
                 # 데이터 중복 검사
-                word = WordRepository(db).find_one_by_id(id =data['id'])
-                if word:
+                word = WordRepository(db).find_one_by_id(id=id)
+                if not word:
                     return make_response({'message': 'word not in book'}, 401)
-                word = WordRepository(db).update(id=id, word=data["word"], mean=data["mean"])
+                print("id : ", id, "\n", "data: ", data)
+                word = WordRepository(db).update(id=id, book_id=data["book_id"], word=data["word"], mean=data["mean"])
             return make_response({'message': 'Succesfully updated',
                                   "data": word}, 200)
         except Exception as e:
