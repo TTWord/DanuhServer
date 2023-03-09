@@ -21,10 +21,7 @@ user_sign_up = api.model('회원 가입', {
 })
 
 email_content = api.model('이메일 인증', {
-    'user_id': fields.String(required=True, description='유저 이름', example='kimjunghyun696@google.com'),
-    'to_email': fields.String(required=True, description='수신자 이메일 주소', example= 'djsk721@naver.com'),
-    'subject': fields.String(required=True, description='이메일 제목', example='김흐긴'),
-    'body': fields.String(required=True, description='이메일 본문', example='Content'),
+    'to_email': fields.String(required=True, description='수신자 이메일 주소', example= 'djsk721@naver.com')
 })
 
 
