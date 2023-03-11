@@ -34,7 +34,7 @@ class UserService:
             if not user:
                 return make_response({'message': 'User isn\'t exist'}, 409)
             else:
-                payload = {"username": user['username'],
+                payload = {"id": user["id"], "username": user['username'],
                            'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=60)}
                 secret = config["SECRET_KEY"]
                 if compare_passwords(user_credentials['password'], user['password']):

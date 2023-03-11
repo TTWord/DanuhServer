@@ -12,7 +12,7 @@ class BookRepository(Connect):
         for row in result:
             books.append(BookModel(id=row['id'], name=row['name']))
         
-        return books.__dict__
+        return [book.__dict__ for book in books]
     
     def find_all_by_user_id(self, user_id: int):
         books = []
@@ -20,9 +20,9 @@ class BookRepository(Connect):
         result = self.select_all(f'SELECT * FROM book WHERE user_id = {user_id}')
         
         for row in result:
-            books.append(BookModel(id=row['id'], name=row['name']))
+            books.append(BookModel(id=row['id'], name=row['name'], user_id=row['user_id'], created_at=row['created_at'], updated_at=row['updated_at']))
         
-        return books.__dict__
+        return [book.__dict__ for book in books]
     
     def find_one_by_id(self, id: int) -> dict:
         book = None
@@ -30,10 +30,12 @@ class BookRepository(Connect):
         sql = f'SELECT * FROM book WHERE id = {id}'
         self.cursor.execute(sql)
         result = self.cursor.fetchone()
-            
-        book = BookModel(id=result['id'], name=result['name'])
-            
-        return book.__dict__
+        
+        if result is not None:
+            book = BookModel(id=result['id'], name=result['name'], user_id=result['user_id'], created_at=result['created_at'], updated_at=result['updated_at'])
+            return book.__dict__
+        else:
+            return None
     
     def find_one_by_name_and_user_id(self, name: str, user_id: int) -> dict:
         book = None
@@ -43,9 +45,10 @@ class BookRepository(Connect):
         result = self.cursor.fetchone()
         
         if result is not None:
-            book = BookModel(id=result['id'], name=result['name'])
-        
-        return book.__dict__
+            book = BookModel(id=result['id'], name=result['name'], user_id=result['user_id'], created_at=result['created_at'], updated_at=result['updated_at'])
+            return book
+        else:
+            return None
     
     def add(self, user_id: int, name: str) -> dict:
         sql = f"INSERT INTO book (user_id, name) VALUES ({user_id}, '{name}')"
@@ -65,9 +68,9 @@ class BookRepository(Connect):
         
         return book.__dict__
         
-    def delete(self, id: int):
+    def delete(self, id: int) -> dict:
         sql = f"DELETE FROM book WHERE id = {id}"
         self.cursor.execute(sql)
-        self.connection.commit()
+        self.connect.commit()
         
         return {'id': id}

@@ -70,7 +70,7 @@ class UserSignIn(Resource):
         """
         input_data = request.get_json()
         return UserService.signin_service(input_data)
-    
+        
 
 @api.route('/sendmail')
 class SendMail(Resource):
