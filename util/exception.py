@@ -5,5 +5,6 @@ class CustomException(Exception):
         self.code = code
         self.data = data
 
+
     def get_response(self):
         return {'code': int(self.code), 'comment': str(self.comment), 'data': self.data}

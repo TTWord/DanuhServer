@@ -21,6 +21,7 @@ def response(func):
         }, data['code'])
         
     return wrapper
+    
 
 def custom_response(comment=None, data=None, code=200):
     return {
@@ -28,7 +29,7 @@ def custom_response(comment=None, data=None, code=200):
         "comment": comment,
         "data": data
     }
-        
+
 
 class BookService:
     @staticmethod

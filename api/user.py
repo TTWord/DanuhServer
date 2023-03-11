@@ -5,8 +5,12 @@ from service.user_service import UserService
 
 api = Namespace('user', description='유저 API')
 
+user_name = api.model('유저이름', {
+    'username': fields.String(required=True, description='아이디', example='kimjunghyun696@google.com')
+})
+
 user_sign_in = api.model('회원 로그인', {
-    'username': fields.String(required=True, description='아이디', example='kimjunghyun696@google.com'),
+    **user_name,
     'password': fields.String(required=True, description='비밀번호', example='13131313'),
 })
 
@@ -17,10 +21,7 @@ user_sign_up = api.model('회원 가입', {
 })
 
 email_content = api.model('이메일 인증', {
-    'user_id': fields.String(required=True, description='유저 이름', example='kimjunghyun696@google.com'),
-    'to_email': fields.String(required=True, description='수신자 이메일 주소', example= 'djsk721@naver.com'),
-    'subject': fields.String(required=True, description='이메일 제목', example='김흐긴'),
-    'body': fields.String(required=True, description='이메일 본문', example='Content'),
+    'to_email': fields.String(required=True, description='수신자 이메일 주소', example= 'djsk721@naver.com')
 })
 
 
@@ -40,7 +41,7 @@ class UserSignUp(Resource):
         input_data = request.get_json()
         return UserService.signup_service(input_data)
     
-    @api.expect(user_sign_up, validate=True)
+    @api.expect(user_name, validate=True)
     @api.response(200, 'Success')
     @api.response(403, 'Not forbbiden')
     @api.response(404, 'Not found')
@@ -69,24 +70,7 @@ class UserSignIn(Resource):
         """
         input_data = request.get_json()
         return UserService.signin_service(input_data)
-    
-
-# @api.route('/get')
-# class AuthGet(Resource):
-#     @api.response(200, 'Success')
-#     @api.response(403, 'Not forbbiden')
-#     @api.response(404, 'Not found')
-#     @api.response(405, 'Not allowed')
-#     @api.response(400, 'Bad request')
-#     @api.response(200, 'Success')
-#     @api.response(404, 'Login Failed')
-#     @Authorization.get_authorization
-#     def get(self):
-#         """
-#         로그인 확인
-#         """
-#         return {"message": "Login Success"}, 200
-    
+        
 
 @api.route('/sendmail')
 class SendMail(Resource):

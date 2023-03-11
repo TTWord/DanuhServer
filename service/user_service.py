@@ -62,13 +62,13 @@ class UserService:
     def send_mail(input_data):
         db = Database()
         with db.connect():
-            is_user = UserRepository(db).find_one_by_username(input_data['user_id'])
+            is_user = UserRepository(db).find_one_by_username(input_data['to_email'])
             if is_user:
                 return make_response({'message': 'User already exists'}, 409)
             to_email = input_data['to_email']
-            subject = input_data['subject']
-            body = input_data['body']
-            verification_id = str(random.randint(0, 999)).zfill(3) + " " + str(random.randint(0, 999)).zfill(3)
+            subject = config['STML_SUBJECT']
+            body = config['STML_BODY']
+            verification_id = str(random.randint(0, 999)).zfill(3) + str(random.randint(0, 999)).zfill(3)
             response = EmailSender.send_email(to_email, subject, body, verification_id)
 
             now = datetime.datetime.now()
@@ -76,11 +76,10 @@ class UserService:
             expiration_date_str = expiration_date.strftime('%Y-%m-%d %H:%M:%S')
             verification_info = {
                 'cert_type': 'email',
-                'cert_key': input_data['user_id'],
+                'cert_key': input_data['to_email'],
                 'cert_code': verification_id,
                 'expired_time': expiration_date_str
             }
-            response = EmailSender.send_email(to_email, subject, body, verification_id)
             if response[1] == 200:
                 if UserRepository(db).auth_find_one_by_cert_key(verification_info['cert_key']):
                     verification_id = UserRepository(db).auth_update(verification_info['cert_key'], verification_info['cert_code'])
