@@ -17,7 +17,6 @@ class Book(Resource):
         모든 단어장 조회
         설명입니다
         """
-            
         return BookService.get_books_by_user_id(auth)
     
     @Authorization.check_authorization
@@ -28,12 +27,16 @@ class Book(Resource):
     
 @api.route('/<int:id>')
 class BookById(Resource):
-    @Authorization.reject_authorization
-    def get(self, id):
-        return BookService.get_book_by_id(id)
+    @Authorization.check_authorization
+    def get(self, id, auth):
+        return BookService.get_book_by_id(auth, id)
     
-    def put(self, id):
-        return "update_book"
+    @Authorization.check_authorization
+    def put(self, id, auth):
+        data = request.get_json()
+        
+        return BookService.update_book(auth=auth, id=id, data=data)
     
-    def delete(self, id):
-        return "delete_book"
+    @Authorization.check_authorization
+    def delete(self, id, auth):
+        return BookService.delete_book(auth=auth, id=id)
