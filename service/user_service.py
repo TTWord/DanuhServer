@@ -17,7 +17,7 @@ class UserService:
             with db.connect():
                 cert_info = UserRepository(db).auth_find_one_by_cert_key(user_data['username'])
                 if not cert_info['cert_code'] == user_data['certification_id']:
-                    return make_response({'message': 'Invalid verification code'}, 401 )
+                    return make_response({'message': 'Invalid verification code'}, 400 )
                 user_data['password'] = encrypt_password(user_data['password']).decode('utf-8')
                 UserRepository(db).add(user_data)
             return make_response({'message': 'Succesfully inserted'}, 200)

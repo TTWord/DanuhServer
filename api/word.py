@@ -19,7 +19,7 @@ word_info = api.model('추가 정보', {
 
 @api.route('')
 class WordByBook(Resource):
-    # @Authorization.get_authorization
+    @Authorization.reject_authorization
     @api.response(200, 'Success')
     def get(self):
         """
@@ -29,7 +29,7 @@ class WordByBook(Resource):
         data = request.args
         return WordService.get_words_by_book_id(data)
     
-    # @Authorization.get_authorization
+    @Authorization.reject_authorization
     @api.response(200, 'Success')
     @api.expect(word_info)
     def post(self):
@@ -42,25 +42,25 @@ class WordByBook(Resource):
 
 @api.route('/<int:id>')
 class WordById(Resource):
-    # @Authorization.get_authorization
+    @Authorization.reject_authorization
     def get(self, id):
         """
         단어ID로 조회
         """
         return WordService.get_word_by_id(id)
 
-    # @Authorization.get_authorization
+    @Authorization.check_authorization
     @api.expect(word_info)
-    def put(self, id):
+    def put(self, id, auth):
         """
         단어ID에 해당하는 단어 수정
         """
         data = request.get_json()
-        return WordService.update(id, data)
+        return WordService.update(id, data, auth)
     
-    # @Authorization.get_authorization
-    def delete(self, id):
+    @Authorization.check_authorization
+    def delete(self, id, auth):
         """
         단어ID에 해당하는 단어 삭제
         """ 
-        return WordService.delete(id)
+        return WordService.delete(id, auth)
