@@ -6,8 +6,8 @@ Webpack을 사용하여 만든 프로젝트입니다.
 
 - 김정현
 - 박수봉
-- 노지훈
 
 ## using Library
 
 - Flask
+- flask_restx
