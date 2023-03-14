@@ -9,7 +9,7 @@ class Authorization:
             try:
                 access_token = request.headers['Authorization']
             except Exception as e:
-                return make_response({"message": "Token not provided"}, 403)
+                return make_response({"message": "Token not provided"}, 401)
         
             if access_token is not None:
                 token_info = access_token.split(" ")
@@ -18,9 +18,9 @@ class Authorization:
                     payload = jwt.decode(access_token, config["SECRET_KEY"], "HS256")
                     return func(auth = payload, *args, **kwargs)
                 except jwt.InvalidTokenError:
-                    return make_response({"message": "Invalid token provided"}, 403)
+                    return make_response({"message": "Invalid token provided"}, 401)
             else:
-                return make_response({"message": "Invalid token provided"}, 403)
+                return make_response({"message": "Invalid token provided"}, 401)
         return wrapper
             
     @staticmethod
@@ -43,7 +43,7 @@ class Authorization:
             try:
                 access_token = request.headers['Authorization']
             except Exception as e:
-                return make_response({"message": "Token not provided"}, 403)
+                return make_response({"message": "Token not provided"}, 401)
         
             if access_token is not None:
                 token_info = access_token.split(" ")
@@ -52,7 +52,7 @@ class Authorization:
                     jwt.decode(access_token, config["SECRET_KEY"], "HS256")
                     return func(*args, **kwargs)
                 except jwt.InvalidTokenError:
-                    return make_response({"message": "Invalid token provided"}, 403)
+                    return make_response({"message": "Invalid token provided"}, 401)
             else:
-                return make_response({"message": "Invalid token provided"}, 403)
+                return make_response({"message": "Invalid token provided"}, 401)
         return wrapper
