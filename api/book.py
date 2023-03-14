@@ -8,7 +8,7 @@ api = Namespace('book', description='단어장 API')
 # getBookParser = api.parser()
 # getBookParser.add_argument('name', type=str, help='단어장 이름', location='args')
     
-@api.route("/")
+@api.route("")
 class Book(Resource):
     # @api.expect(getBookParser)
     @Authorization.check_authorization

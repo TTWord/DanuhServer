@@ -42,7 +42,7 @@ class BookService:
     @staticmethod
     @response
     def get_books_by_user_id(auth, db: Database):
-        try:        
+        try:
             books = BookRepository(db).find_all_by_user_id(user_id = auth['id'])
             return custom_response("데이터 조회 성공", data=books)
         except:
