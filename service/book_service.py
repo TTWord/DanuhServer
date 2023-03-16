@@ -1,9 +1,13 @@
-from flask import jsonify, make_response
+from flask import make_response
 from repository.book_repository import BookRepository
+from repository.word_repository import WordRepository
 from db.connect import Database
-from repository.user_repository import UserRepository
 from util.http_status import get_http_status
 from util.exception import CustomException
+from config import config
+import requests
+import json
+
 
 def response(func):
     def wrapper(*args, **kwargs):
@@ -83,6 +87,37 @@ class BookService:
             
             book = book_repo.add(user_id = auth['id'], name = data["name"])
             
+            return custom_response("데이터 추가 성공", data=book)
+        except CustomException as e:
+            return e.get_response()
+        except:
+            return custom_response("단어장 추가 실패", code=500)
+    @staticmethod
+    @response
+    def generate_book(auth, data, db: Database):
+        try:
+            url = f"{config['AI_IP']}"
+            response = requests.post(url, json=data)
+            result = json.loads(response.content)
+            if data["name"] is None:
+                raise CustomException("데이터에 단어장 이름이 없습니다.")
+
+            book_repo = BookRepository(db)
+            
+            # 데이터 중복 검사
+            book = book_repo.find_one_by_name_and_user_id(name = data["name"], user_id = auth['id'])
+            
+            if book is not None:
+                raise CustomException("단어장 이름이 중복입니다.", code=409)
+            
+            book = book_repo.add(user_id = auth['id'], name = data["name"])
+
+            book_id = book["id"]
+            word_repo = WordRepository(db)
+
+            for word, mean in result['words'].items():
+                word_repo.add(book_id, word, mean)
+
             return custom_response("데이터 추가 성공", data=book)
         except CustomException as e:
             return e.get_response()

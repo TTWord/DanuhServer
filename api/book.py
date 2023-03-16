@@ -1,13 +1,17 @@
 from service.book_service import BookService
-from flask_restx import Namespace, Resource
+from flask_restx import Namespace, Resource, Api, reqparse, fields
 from util.decorator.authorization import Authorization
 from flask import request
 
+
 api = Namespace('book', description='단어장 API')
 
-# getBookParser = api.parser()
-# getBookParser.add_argument('name', type=str, help='단어장 이름', location='args')
-    
+input_text = api.model('단어장 생성', {
+    'name': fields.String(required=True, description='단어장 이름', example='단어장 이름'),
+    'text': fields.String(required=True, description='예측 값 입력', example='You can tell a stranger that this is shiitake mushrooms.')
+})
+
+
 @api.route("")
 class Book(Resource):
     # @api.expect(getBookParser)
@@ -25,6 +29,7 @@ class Book(Resource):
         
         return BookService.add_book(auth, data)
     
+
 @api.route('/<int:id>')
 class BookById(Resource):
     @Authorization.check_authorization
@@ -40,3 +45,12 @@ class BookById(Resource):
     @Authorization.check_authorization
     def delete(self, id, auth):
         return BookService.delete_book(auth=auth, id=id)
+
+
+@api.route('/generate')
+class BookMaker(Resource):
+    @api.expect(input_text, validate=True)
+    @Authorization.check_authorization
+    def post(self, auth):
+        data = request.get_json()
+        return BookService.generate_book(auth, data)
