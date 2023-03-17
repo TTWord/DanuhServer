@@ -16,11 +16,15 @@ word_info = api.model('추가 정보', {
     'mean': fields.String(required=True, description='의미', example='영원한 회귀'),
 })
 
+auth_header = api.parser()
+auth_header.add_argument('Authorization', type=str, location='headers', required=True, help='Bearer Access Token')
+
 
 @api.route('')
 class WordByBook(Resource):
-    @Authorization.reject_authorization
+    @api.expect(auth_header)
     @api.response(200, 'Success')
+    @Authorization.reject_authorization
     def get(self):
         """
         모든 단어 조회
@@ -29,9 +33,9 @@ class WordByBook(Resource):
         data = request.args
         return WordService.get_words_by_book_id(data)
     
-    @Authorization.reject_authorization
     @api.response(200, 'Success')
-    @api.expect(word_info)
+    @api.expect(word_info, auth_header)
+    @Authorization.reject_authorization
     def post(self):
         """
         단어 추가
@@ -42,25 +46,31 @@ class WordByBook(Resource):
 
 @api.route('/<int:id>')
 class WordById(Resource):
+    @api.response(200, 'Success')
+    @api.expect(word_info, auth_header)
     @Authorization.reject_authorization
     def get(self, id):
         """
-        단어ID로 조회
+        단어 ID로 단어 조회
         """
         return WordService.get_word_by_id(id)
 
+    @api.response(200, 'Success')
+    @api.expect(word_info, auth_header)
     @Authorization.check_authorization
     @api.expect(word_info)
     def put(self, id, auth):
         """
-        단어ID에 해당하는 단어 수정
+        단어 ID로 단어 수정
         """
         data = request.get_json()
         return WordService.update(id, data, auth)
     
+    @api.response(200, 'Success')
+    @api.expect(word_info, auth_header)
     @Authorization.check_authorization
     def delete(self, id, auth):
         """
-        단어ID에 해당하는 단어 삭제
+        단어 ID로 단어 삭제
         """ 
         return WordService.delete(id, auth)
