@@ -67,7 +67,7 @@ class WordById(Resource):
         return WordService.update(id, data, auth)
     
     @api.response(200, 'Success')
-    @api.expect(word_info, auth_header)
+    @api.expect(auth_header)
     @Authorization.check_authorization
     def delete(self, id, auth):
         """
