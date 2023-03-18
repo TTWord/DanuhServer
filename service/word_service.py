@@ -78,5 +78,6 @@ class WordService:
                 if not word:
                     return make_response({'message': str(e)}, 404)
                 word = WordRepository(db).delete(id=id)
+                return make_response({'message': 'Succesfully Deleted'}, 200)
         except Exception as e:
             return make_response({'message': str(e)}, 404)
