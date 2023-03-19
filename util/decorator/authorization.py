@@ -9,7 +9,7 @@ class Authorization:
             try:
                 access_token = request.headers['Authorization']
             except Exception as e:
-                return make_response({"message": "Token not provided"}, 401)
+                return make_response({"message": "Token not provided", }, 401)
         
             if access_token is not None:
                 token_info = access_token.split(" ")

@@ -1,55 +1,32 @@
 from flask import jsonify, make_response
 from repository.book_repository import BookRepository
 from db.connect import Database
+from util.custom_response import custom_response
+from util.decorator.service_receiver import ServiceReceiver
 from repository.user_repository import UserRepository
 from util.http_status import get_http_status
 from util.exception import CustomException
 
-def response(func):
-    def wrapper(*args, **kwargs):
-        db = Database()
-        db.connect()
-        
-        data = func(db = db, *args, **kwargs)
-        
-        db.disconnect()
-        
-        return make_response({
-            "status": get_http_status(data['code']),
-            "comment": data['comment'],
-            "data": data['data']
-        }, data['code'])
-        
-    return wrapper
-    
-
-def custom_response(comment=None, data=None, code=200):
-    return {
-        "code": code,
-        "comment": comment,
-        "data": data
-    }
-
 
 class BookService:
     @staticmethod
-    @response
+    @ServiceReceiver.database
     def get_books_all(db):
         books = BookRepository(db).find_all()
         
         return { "code" : 200, "data" : books }
     
     @staticmethod
-    @response
+    @ServiceReceiver.database
     def get_books_by_user_id(auth, db: Database):
         try:
             books = BookRepository(db).find_all_by_user_id(user_id = auth['id'])
-            return custom_response("데이터 조회 성공", data=books)
+            return custom_response("데이터 조회 성공", data=books,)
         except:
             return custom_response("단어장 목록 조회 실패", code=400)
     
     @staticmethod
-    @response
+    @ServiceReceiver.database
     def get_book_by_id(auth, id, db: Database):
         try:
             book = BookRepository(db).find_one_by_id(id)
@@ -67,7 +44,7 @@ class BookService:
             return custom_response("단어장 조회 실패", code=400)
     
     @staticmethod
-    @response
+    @ServiceReceiver.database
     def add_book(auth, data, db: Database):
         try:
             if data["name"] is None:
@@ -90,7 +67,7 @@ class BookService:
             return custom_response("단어장 추가 실패", code=500)
         
     @staticmethod
-    @response
+    @ServiceReceiver.database
     def update_book(auth, id, data, db: Database):
         try:
             if data["name"] is None:
@@ -126,7 +103,7 @@ class BookService:
             
         
     @staticmethod
-    @response
+    @ServiceReceiver.database
     def delete_book(auth, id, db: Database):
         try:
             book_repo = BookRepository(db)

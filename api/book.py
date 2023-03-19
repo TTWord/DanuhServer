@@ -1,16 +1,16 @@
 from service.book_service import BookService
-from flask_restx import Namespace, Resource
+from flask_restx import Namespace, Resource, fields
 from util.decorator.authorization import Authorization
 from flask import request
 
 api = Namespace('book', description='단어장 API')
 
-# getBookParser = api.parser()
-# getBookParser.add_argument('name', type=str, help='단어장 이름', location='args')
+addBookModel = api.model('책이름', {
+    'name': fields.String(required=True, description='책이름', example='책')
+})
     
 @api.route("")
 class Book(Resource):
-    # @api.expect(getBookParser)
     @Authorization.check_authorization
     def get(self, auth):
         """
@@ -19,6 +19,7 @@ class Book(Resource):
         """
         return BookService.get_books_by_user_id(auth)
     
+    @api.expect(addBookModel)
     @Authorization.check_authorization
     def post(self, auth):
         data = request.get_json()
