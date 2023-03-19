@@ -36,7 +36,7 @@ class EmailSender:
                 server.login(smtp_username, smtp_password)
                 server.sendmail(smtp_username, to_email, msg.as_string())
         except smtplib.SMTPAuthenticationError:
-            return {'message': "Could not authenticate with the SMTP server."}, 401 
+            return {'message': "Could not authenticate with the SMTP server."}, 502  
         except smtplib.SMTPConnectError:
             return {'message': "Could not connect to the SMTP server."}, 503
         except smtplib.SMTPDataError:

@@ -30,7 +30,6 @@ class BookRepository(Connect):
         sql = f'SELECT * FROM book WHERE id = {id}'
         self.cursor.execute(sql)
         result = self.cursor.fetchone()
-        
         if result is not None:
             book = BookModel(id=result['id'], name=result['name'], user_id=result['user_id'], created_at=result['created_at'], updated_at=result['updated_at'])
             return book.__dict__

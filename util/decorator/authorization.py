@@ -1,10 +1,13 @@
 from flask import make_response, request
 import jwt
 from config import config
+from functools import wraps
+
 
 class Authorization:
     @staticmethod
     def check_authorization(func):
+        @wraps(func)
         def wrapper(*args, **kwargs):
             try:
                 access_token = request.headers['Authorization']
@@ -25,6 +28,7 @@ class Authorization:
             
     @staticmethod
     def get_authorization(func):
+        @wraps(func)
         def wrapper(*args, **kwargs):
             try:
                 access_token = request.headers['Authorization']
@@ -39,6 +43,7 @@ class Authorization:
     
     @staticmethod
     def reject_authorization(func):
+        @wraps(func)
         def wrapper(*args, **kwargs):
             try:
                 access_token = request.headers['Authorization']
