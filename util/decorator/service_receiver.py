@@ -1,5 +1,6 @@
 from db.connect import Database
 
+
 class ServiceReceiver:
     @staticmethod
     def database(func):

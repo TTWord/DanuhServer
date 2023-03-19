@@ -1,16 +1,12 @@
-from flask import make_response
 from repository.book_repository import BookRepository
 from repository.word_repository import WordRepository
 from db.connect import Database
 from util.custom_response import custom_response
 from util.decorator.service_receiver import ServiceReceiver
-from repository.user_repository import UserRepository
-from util.http_status import get_http_status
 from util.exception import CustomException
 from config import config
 import requests
 import json
-
 
 
 class BookService:
