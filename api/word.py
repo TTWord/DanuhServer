@@ -22,26 +22,28 @@ auth_header.add_argument('Authorization', type=str, location='headers', required
 
 @api.route('')
 class WordByBook(Resource):
-    @api.expect(auth_header)
     @api.response(200, 'Success')
-    @Authorization.reject_authorization
-    def get(self):
+    @api.response(400, 'Fail')
+    @api.expect(auth_header)
+    @Authorization.check_authorization
+    def get(self, auth):
         """
         모든 단어 조회
         """
 
         data = request.args
-        return WordService.get_words_by_book_id(data)
+        return WordService.get_words_by_book_id(data, auth)
     
     @api.response(200, 'Success')
+    @api.response(400, 'Fail')
     @api.expect(word_info, auth_header)
-    @Authorization.reject_authorization
-    def post(self):
+    @Authorization.check_authorization
+    def post(self, auth):
         """
         단어 추가
         """
         data = request.get_json()
-        return WordService.add(data)
+        return WordService.add(data, auth)
     
 
 @api.route('/<int:id>')
@@ -58,7 +60,6 @@ class WordById(Resource):
     @api.response(200, 'Success')
     @api.expect(word_info, auth_header)
     @Authorization.check_authorization
-    @api.expect(word_info)
     def put(self, id, auth):
         """
         단어 ID로 단어 수정
