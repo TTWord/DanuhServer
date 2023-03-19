@@ -4,6 +4,7 @@ from repository.word_repository import WordRepository
 from repository.book_repository import BookRepository
 
 
+# TODO 글자수 제한 추가(원문 15자, 번역 15자)
 class WordService:
     @staticmethod
     def get_words_by_book_id(data):

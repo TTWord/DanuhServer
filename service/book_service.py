@@ -71,7 +71,7 @@ class BookService:
         except:
             return custom_response("단어장 추가 실패", code=500)
     @staticmethod
-    @response
+    @ServiceReceiver.database
     def generate_book(auth, data, db: Database):
         try:
             url = f"{config['AI_IP']}"
