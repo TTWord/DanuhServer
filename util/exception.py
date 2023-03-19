@@ -1,10 +1,17 @@
+from flask import make_response
+from util.http_status import get_http_status
+
 class CustomException(Exception):
-    def __init__(self, comment, code=400, data=None):
-        super(CustomException, self).__init__(comment)
-        self.comment = comment
+    def __init__(self, message, code=400, data=None):
+        super(CustomException, self).__init__(message)
+        self.message = message
         self.code = code
         self.data = data
 
 
     def get_response(self):
-        return {'code': int(self.code), 'comment': str(self.comment), 'data': self.data}
+        return make_response({
+            "code": get_http_status(self.code),
+            "message": self.message,
+            "data": self.data
+        })
