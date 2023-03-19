@@ -1,4 +1,5 @@
 from db.connect import Connect
+from model.user_model import UserModel
 
 
 class UserRepository(Connect): 
@@ -15,26 +16,39 @@ class UserRepository(Connect):
         """
         self.cursor.execute(sql)
         self.connect.commit()
+        user = UserModel(id=self.cursor.lastrowid, username=user_info['username'], 
+                         nickname=user_info['nickname'])
+        
+        return user.__dict__
 
-    def delete(self, user_id: str) -> dict:
-        sql = f"DELETE FROM user WHERE username = '{user_id}'"
+    def delete(self, user_name: str) -> dict:
+        sql = f"DELETE FROM user WHERE username = '{user_name}'"
         self.cursor.execute(sql)
         self.connect.commit()
-        return {'id': id}
+
+        return {'username': user_name}
     
-    def find_one_by_username(self, user_id: str) -> dict:
-        sql = f'SELECT * FROM user where username = "{user_id}"'
+    def find_one_by_username(self, user_name: str) -> dict:
+        sql = f'SELECT * FROM user where username = "{user_name}"'
         self.cursor.execute(sql)
-        user = self.cursor.fetchone()
-        
-        return user
+        result = self.cursor.fetchone()
+        if result is not None:
+            user = UserModel(id=result['id'], username=result['username'], 
+                nickname=result['nickname'])
+            return user.__dict__
+        else:
+            return None
     
     def find_one_by_user_id(self, id: int) -> dict:
         sql = f'SELECT * FROM user where id = "{id}"'
         self.cursor.execute(sql)
-        user = self.cursor.fetchone()
-        
-        return user
+        result = self.cursor.fetchone()
+        if result is not None:
+            user = UserModel(id=result['id'], username=result['username'], 
+                nickname=result['nickname'])
+            return user.__dict__
+        else:
+            return None
     
     # TODO: Auth 관련(refectoring 필요)
     #     : Certification 테이블에 저장된 id를 이용해 인증 메일을 확인.

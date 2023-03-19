@@ -7,4 +7,4 @@ class UserModel:
         self.updated_at = None
 
     def __repr__(self):
-        return f"User({self.id}, {self.name}, {self.nickname})"
+        return f"User({self.id}, {self.username}, {self.nickname})"
