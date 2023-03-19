@@ -6,4 +6,4 @@ def custom_response(message=None, data=None, code=200):
         "status": get_http_status(code),
         "message": message,
         "data": data
-    })
+    }, code)
