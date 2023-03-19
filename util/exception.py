@@ -11,7 +11,7 @@ class CustomException(Exception):
 
     def get_response(self):
         return make_response({
-            "code": get_http_status(self.code),
+            "status": get_http_status(self.code),
             "message": self.message,
             "data": self.data
         })
