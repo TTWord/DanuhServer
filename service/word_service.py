@@ -4,9 +4,9 @@ from util.exception import CustomException
 from db.connect import Database
 from repository.word_repository import WordRepository
 from repository.book_repository import BookRepository
+from util.validation import validate_word
 
 
-# TODO 글자수 제한 추가(원문 15자, 번역 15자)
 class WordService:
     @staticmethod
     @ServiceReceiver.database
@@ -37,12 +37,13 @@ class WordService:
         except Exception as e:
             return custom_response("FAIL", code=400)
     
-
-    # TODO: 단어(원문, 의미가 겹칠 경우에 대해서만 중복 검사)
     @staticmethod
     @ServiceReceiver.database
     def add(data, auth, db: Database):
         try:
+            if not validate_word(data['word'], data['mean']):
+                raise CustomException("단어나 의미가 15자를 초과합니다.", code=400)
+            
             word_repo = WordRepository(db)
             book_repo = BookRepository(db)
 
@@ -70,6 +71,9 @@ class WordService:
     @ServiceReceiver.database
     def update(id, data, auth, db: Database):
         try:
+            if not validate_word(data['word'], data['mean']):
+                raise CustomException("단어나 의미가 15자를 초과합니다.", code=400)
+            
             word_repo = WordRepository(db)
             # 데이터 중복 검사
             word = word_repo.find_one_by_id(id=id)

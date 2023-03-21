@@ -13,3 +13,8 @@ def validate_password(password):
     if password_validation.match(password):
         return True
     return False
+
+def validate_word(word, mean):
+    if len(word) <= 15 and len(mean) <= 15:
+        return word.strip(), mean.strip()
+    return False
