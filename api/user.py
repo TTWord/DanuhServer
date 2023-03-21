@@ -37,4 +37,28 @@ class UserSignUp(Resource):
         회원 탈퇴
         """
         input_data = request.get_json()
-        return UserService.delete_service(input_data)
+        return UserService.delete_user_by_username(input_data)
+    
+
+@api.route('/<int:id>')
+class UserById(Resource):
+    def get(self, id):
+        """
+        유저 ID로 유저 조회
+        """
+        return UserService.get_user_by_id(id)
+    
+    @api.expect(user_sign_up)
+    def put(self, id):
+        """
+        유저 ID로 유저 수정
+        """
+        data = request.get_json()
+        
+        return UserService.update_user(id=id, data=data)
+    
+    def delete(self, id):
+        """
+        유저 ID로 유저 삭제
+        """
+        return UserService.delete_user_by_id(id=id)

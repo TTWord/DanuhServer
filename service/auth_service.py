@@ -1,4 +1,5 @@
 from repository.user_repository import UserRepository
+from repository.certification_repository import CertificationRepository
 from util.decorator.service_receiver import ServiceReceiver
 from util.custom_response import custom_response
 from util.exception import CustomException
@@ -37,7 +38,6 @@ class AuthService:
             print("e2 : ", e)
             return custom_response("FAIL", code=400)
 
-    # TODO : 추후 refectoring 필요(struecture 변경)
     @staticmethod
     @ServiceReceiver.database
     def send_mail(input_data, db: Database):
@@ -64,10 +64,11 @@ class AuthService:
                 'expired_time': expiration_date_str
             }
             if response[1] == 200:
-                if user_repo.auth_find_one_by_cert_key(verification_info['cert_key']):
-                    verification_id = user_repo.auth_update(verification_info['cert_key'], verification_info['cert_code'])
+                cert_repo = CertificationRepository(db)
+                if cert_repo.find_one_by_cert_key(verification_info['cert_key']):
+                    verification_id = cert_repo.update(verification_info['cert_key'], verification_info['cert_code'])
                 else:
-                    verification_id = user_repo.auth_add(verification_info)
+                    verification_id = cert_repo.add(verification_info)
                 return custom_response("SUCCESS", data=verification_info)
         except CustomException as e:
             return e.get_response()

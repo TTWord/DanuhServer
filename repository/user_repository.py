@@ -21,12 +21,12 @@ class UserRepository(Connect):
         
         return user.__dict__
 
-    def delete(self, user_name: str) -> dict:
-        sql = f"DELETE FROM user WHERE username = '{user_name}'"
+    def delete(self, id: str) -> dict:
+        sql = f"DELETE FROM user WHERE id = '{id}'"
         self.cursor.execute(sql)
         self.connect.commit()
 
-        return {'username': user_name}
+        return {'id': id}
     
     def find_one_by_username(self, user_name: str) -> dict:
         sql = f'SELECT * FROM user where username = "{user_name}"'
@@ -42,39 +42,11 @@ class UserRepository(Connect):
         
         return result
     
-    # TODO: Auth 관련(refectoring 필요)
-    #     : Certification 테이블에 저장된 id를 이용해 인증 메일을 확인.
-    #     : 추후 확장성 고려하여 Phone, Email, Kakao, Naver 등등 인증 추가
-    #     : service/mail_service, repository/mail_repository or
-    #     : service/certification_service, repository/certification_repository
-    #     : 클래스 생성해서 인증 메일을 보내는 것으로 생각됨.
-    def auth_add(self, verification_info: dict) -> dict:
-        sql = f"""
-            INSERT INTO certification (
-                cert_type, cert_key, cert_code, expired_time
-            )
-            VALUES(
-                '{verification_info['cert_type']}',
-                '{verification_info['cert_key']}',
-                '{verification_info['cert_code']}',
-                '{verification_info['expired_time']}'
-            );
-        """
+    def update(self, id: int, username: str, password: str, nickname: str) -> dict:
+        sql = f"UPDATE user SET password={password}, nickname='{nickname}' WHERE id = {id}"
         self.cursor.execute(sql)
         self.connect.commit()
-
-        return {'verification_id': verification_info["cert_code"]}
-    
-    def auth_find_one_by_cert_key(self, cert_key: str) -> dict:
-        sql = f'SELECT * FROM certification WHERE cert_key = "{cert_key}";'
-        self.cursor.execute(sql)
-        certification = self.cursor.fetchone()
         
-        return certification
-    
-    def auth_update(self, cert_key: str, cert_code: str) -> dict:
-        sql = f"UPDATE certification SET cert_code = '{cert_code}' WHERE cert_key = '{cert_key}'"
-        self.cursor.execute(sql)
-        self.connect.commit()
-
-        return {'verification_id': cert_code}
+        user = UserModel(id=id, username=username, nickname=nickname)
+        
+        return user.__dict__
