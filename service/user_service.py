@@ -9,6 +9,7 @@ from db.connect import Database
 from config import config
 import datetime
 import random
+from util.validation import validate_email, validate_password
 
 
 class UserService:
@@ -74,6 +75,8 @@ class UserService:
             is_user = user_repo.find_one_by_username(input_data['to_email'])
             if is_user:
                 raise CustomException("이미 존재하는 유저입니다.", code=409)
+            elif not validate_email(input_data['to_email']):
+                raise CustomException("이메일 형식이 올바르지 않습니다.", code=400)
             to_email = input_data['to_email']
             subject = config['STML_SUBJECT']
             body = config['STML_BODY']
