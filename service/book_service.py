@@ -7,6 +7,7 @@ from util.exception import CustomException
 from config import config
 import requests
 import json
+from collections import defaultdict 
 
 
 class BookService:
@@ -66,6 +67,7 @@ class BookService:
             return e.get_response()
         except:
             return custom_response("단어장 추가 실패", code=500)
+        
     @staticmethod
     @ServiceReceiver.database
     def generate_book(auth, data, db: Database):
@@ -84,18 +86,28 @@ class BookService:
             if book is not None:
                 raise CustomException("단어장 이름이 중복입니다.", code=409)
             
-            book = book_repo.add(user_id = auth['id'], name = data["name"])
+            book_info = book_repo.add(user_id = auth['id'], name = data["name"])
 
-            book_id = book["id"]
+            book_id = book_info["id"]
             word_repo = WordRepository(db)
+            books = book_repo.find_all_by_user_id(auth['id'])
 
+            dict_check = defaultdict(str)
+            for book in books:
+                words = word_repo.find_all_by_book_id(book_id=book['id'])
+                for word in words:
+                    dict_check[word['word']] = word['mean']
+ 
             for word, mean in result['words'].items():
-                word_repo.add(book_id, word, mean)
+                if word in dict_check.keys() and mean in dict_check.values():
+                    continue
+                else:
+                    word_repo.add(book_id, word, mean)
 
-            return custom_response("데이터 추가 성공", data=book)
+            return custom_response("데이터 추가 성공", data=book_info)
         except CustomException as e:
             return e.get_response()
-        except:
+        except Exception as e:
             return custom_response("단어장 추가 실패", code=500)
         
     @staticmethod
