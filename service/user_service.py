@@ -45,8 +45,10 @@ class UserService:
                 else:
                     raise CustomException("유효하지 않은 비밀 번호입니다.", code=403)
         except CustomException as e:
+            print("e : ", e)
             return e.get_response()
         except Exception as e:
+            print("e2 : ", e)
             return custom_response("FAIL", code=400)
         
     @staticmethod

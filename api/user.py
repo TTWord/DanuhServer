@@ -17,7 +17,7 @@ user_sign_in = api.model('회원 로그인', {
 user_sign_up = api.model('회원 가입', {
     **user_sign_in,
     'nickname': fields.String(required=True, description='닉네임', example='김흐긴'),
-    'certification_id': fields.String(required=True, description='인증ID', example='077 255')
+    'certification_id': fields.String(required=True, description='인증ID', example='474825')
 })
 
 email_content = api.model('이메일 인증', {

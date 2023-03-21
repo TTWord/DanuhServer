@@ -32,23 +32,15 @@ class UserRepository(Connect):
         sql = f'SELECT * FROM user where username = "{user_name}"'
         self.cursor.execute(sql)
         result = self.cursor.fetchone()
-        if result is not None:
-            user = UserModel(id=result['id'], username=result['username'], 
-                nickname=result['nickname'])
-            return user.__dict__
-        else:
-            return None
+        
+        return result
     
     def find_one_by_user_id(self, id: int) -> dict:
         sql = f'SELECT * FROM user where id = "{id}"'
         self.cursor.execute(sql)
         result = self.cursor.fetchone()
-        if result is not None:
-            user = UserModel(id=result['id'], username=result['username'], 
-                nickname=result['nickname'])
-            return user.__dict__
-        else:
-            return None
+        
+        return result
     
     # TODO: Auth 관련(refectoring 필요)
     #     : Certification 테이블에 저장된 id를 이용해 인증 메일을 확인.
