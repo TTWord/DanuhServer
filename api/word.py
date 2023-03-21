@@ -16,15 +16,12 @@ word_info = api.model('추가 정보', {
     'mean': fields.String(required=True, description='의미', example='영원한 회귀'),
 })
 
-auth_header = api.parser()
-auth_header.add_argument('Authorization', type=str, location='headers', required=True, help='Bearer Access Token')
-
 
 @api.route('')
+@api.doc(security='Bearer Auth')
 class WordByBook(Resource):
     @api.response(200, 'Success')
     @api.response(400, 'Fail')
-    @api.expect(auth_header)
     @Authorization.check_authorization
     def get(self, auth):
         """
@@ -36,7 +33,7 @@ class WordByBook(Resource):
     
     @api.response(200, 'Success')
     @api.response(400, 'Fail')
-    @api.expect(word_info, auth_header)
+    @api.expect(word_info)
     @Authorization.check_authorization
     def post(self, auth):
         """
@@ -47,9 +44,11 @@ class WordByBook(Resource):
     
 
 @api.route('/<int:id>')
+@api.doc(security='Bearer Auth')
 class WordById(Resource):
     @api.response(200, 'Success')
-    @api.expect(word_info, auth_header)
+    @api.response(400, 'Fail')
+    @api.expect(word_info)
     @Authorization.reject_authorization
     def get(self, id):
         """
@@ -58,7 +57,8 @@ class WordById(Resource):
         return WordService.get_word_by_id(id)
 
     @api.response(200, 'Success')
-    @api.expect(word_info, auth_header)
+    @api.response(400, 'Fail')
+    @api.expect(word_info)
     @Authorization.check_authorization
     def put(self, id, auth):
         """
@@ -68,7 +68,7 @@ class WordById(Resource):
         return WordService.update(id, data, auth)
     
     @api.response(200, 'Success')
-    @api.expect(auth_header)
+    @api.response(400, 'Fail')
     @Authorization.check_authorization
     def delete(self, id, auth):
         """
