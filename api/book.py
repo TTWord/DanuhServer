@@ -10,19 +10,15 @@ book_name = api.model('책 이름', {
     'name': fields.String(required=True, description='단어장 이름', example='단어장 이름')
 })
 
-generate_book = api.model('단어장 생성', {
+book_info = api.model('단어장 생성', {
     **book_name,
     'text': fields.String(required=True, description='예측 값 입력', example='You can tell a stranger that this is shiitake mushrooms.')
 })
 
-auth_header = api.parser()
-auth_header.add_argument('Authorization', type=str, location='headers', required=True, help='Bearer Access Token')
-
 
 @api.route("")
+@api.doc(security='Bearer Auth')
 class Book(Resource):
-    # @api.expect(getBookParser)
-    @api.expect(auth_header)
     @Authorization.check_authorization
     def get(self, auth):
         """
@@ -30,7 +26,7 @@ class Book(Resource):
         """
         return BookService.get_books_by_user_id(auth)
     
-    @api.expect(auth_header, book_name)
+    @api.expect(book_name)
     @Authorization.check_authorization
     def post(self, auth):
         """
@@ -42,9 +38,9 @@ class Book(Resource):
     
 
 @api.route('/<int:id>')
+@api.doc(security='Bearer Auth')
 class BookById(Resource):
     @Authorization.check_authorization
-    @api.expect(auth_header)
     def get(self, id, auth):
         """
         단어장 ID로 단어장 조회
@@ -52,7 +48,7 @@ class BookById(Resource):
         return BookService.get_book_by_id(auth, id)
     
     @Authorization.check_authorization
-    @api.expect(auth_header, book_name)
+    @api.expect(book_name)
     def put(self, id, auth):
         """
         단어장 ID로 단어장 수정
@@ -62,7 +58,6 @@ class BookById(Resource):
         return BookService.update_book(auth=auth, id=id, data=data)
     
     @Authorization.check_authorization
-    @api.expect(auth_header)
     def delete(self, id, auth):
         """
         단어장 ID로 단어장 삭제
@@ -71,8 +66,9 @@ class BookById(Resource):
 
 
 @api.route('/generate')
+@api.doc(security='Bearer Auth')
 class BookMaker(Resource):
-    @api.expect(auth_header, generate_book)
+    @api.expect(book_info)
     @Authorization.check_authorization
     def post(self, auth):
         """

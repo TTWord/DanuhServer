@@ -5,6 +5,13 @@ from api.word import api as word_ns
 from api.user import api as user_ns
 
 
+authorizations = {
+    'Bearer Auth': {
+        'type': 'apiKey',
+        'in': 'header',
+        'name': 'Authorization'
+    }
+}
 
 main_route = Blueprint('main', __name__, url_prefix="/api")
 
@@ -15,6 +22,7 @@ api = Api(
     contact='KimJungHyun',
     contact_email='kimjunghyun696@gmail.com',
     description="This is TTWord API Documentation.",
+    authorizations=authorizations
 )
 
 api.add_namespace(book_ns)
