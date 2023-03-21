@@ -43,12 +43,15 @@ class AuthService:
     def send_mail(input_data, db: Database):
         try:
             user_repo = UserRepository(db)
-            is_user = user_repo.find_one_by_username(input_data['to_email'])
+            is_user = user_repo.find_one_by_username(input_data['username'])
+            # vaildation
             if is_user:
                 raise CustomException("이미 존재하는 유저입니다.", code=409)
-            elif not validate_email(input_data['to_email']):
+            elif not validate_email(input_data['username']):
                 raise CustomException("이메일 형식이 올바르지 않습니다.", code=400)
-            to_email = input_data['to_email']
+            elif not validate_password(input_data['password']):
+                raise CustomException("8자 이상의 하나 이상의 숫자, 문자, 특수문자를 입력해주세요.", code=400)
+            to_email = input_data['username']
             subject = config['STML_SUBJECT']
             body = config['STML_BODY']
             verification_id = str(random.randint(0, 999)).zfill(3) + str(random.randint(0, 999)).zfill(3)
@@ -59,7 +62,7 @@ class AuthService:
             expiration_date_str = expiration_date.strftime('%Y-%m-%d %H:%M:%S')
             verification_info = {
                 'cert_type': 'email',
-                'cert_key': input_data['to_email'],
+                'cert_key': input_data['username'],
                 'cert_code': verification_id,
                 'expired_time': expiration_date_str
             }
@@ -73,4 +76,5 @@ class AuthService:
         except CustomException as e:
             return e.get_response()
         except Exception as e:
+            print(e)
             return custom_response("FAIL", code=400)

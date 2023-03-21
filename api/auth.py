@@ -10,8 +10,9 @@ user_sign_in = api.model('회원 로그인', {
     'password': fields.String(required=True, description='비밀번호', example='13131313'),
 })
 
-email_content = api.model('이메일 인증', {
-    'to_email': fields.String(required=True, description='수신자 이메일 주소', example= 'djsk721@naver.com')
+email_content = api.model('메일 인증', {
+    **user_sign_in,
+    'nickname': fields.String(required=True, description='닉네임', example='김흐긴'),
 })
 
 
