@@ -2,7 +2,6 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from config import config
-import random
 
 
 #   TODO: Authorization을 추가적으로 구현할 듯 ex) 핸드폰인증, Kakaotalk 인증 등등
