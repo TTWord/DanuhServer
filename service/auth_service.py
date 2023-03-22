@@ -23,11 +23,14 @@ class AuthService:
             if not user:
                 raise CustomException("유저가 존재하지 않습니다.", code=404)
             else:
-                payload = {"id": user["id"], "username": user['username'],
+                payload_access = {"id": user["id"], "username": user['username'],
+                           'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=30)}
+                payload_reflash = {"id": user["id"], "username": user['username'],
                            'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=6)}
                 secret = config["SECRET_KEY"]
                 if compare_passwords(user_credentials['password'], user['password']):
-                    token = {"access_token": generate_token(payload, secret)}
+                    token = {"access_token": generate_token(payload_access, secret),
+                             "reflash_token": generate_token(payload_reflash, secret)}
                     return custom_response("SUCCESS", data=token)
                 else:
                     raise CustomException("유효하지 않은 비밀 번호입니다.", code=403)
@@ -75,3 +78,11 @@ class AuthService:
             return e.get_response()
         except Exception as e:
             return custom_response("FAIL", code=400)
+        
+    @staticmethod
+    def get_new_access_token(auth):
+        payload_access = {"id": auth["id"], "username": auth['username'],
+                    'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=30)}
+        secret = config["SECRET_KEY"]
+        token = {"access_token": generate_token(payload_access, secret)}
+        return custom_response("SUCCESS", data=token)
