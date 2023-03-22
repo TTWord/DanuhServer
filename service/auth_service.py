@@ -44,9 +44,12 @@ class AuthService:
     def send_mail(input_data, db: Database):
         try:
             user_repo = UserRepository(db)
-            is_user = user_repo.find_one_by_username(input_data['username'])
-            # vaildation
-            if is_user:
+            is_username = user_repo.find_one_by_username(input_data['username'])
+            is_nickname =user_repo.find_one_by_nickname(input_data['nickname'])
+            if is_nickname:
+                raise CustomException("이미 존재하는 닉네임입니다.", code=409)
+            
+            if is_username:
                 raise CustomException("이미 존재하는 유저입니다.", code=409)
             elif not validate_email(input_data['username']):
                 raise CustomException("이메일 형식이 올바르지 않습니다.", code=400)
@@ -56,7 +59,7 @@ class AuthService:
             subject = config['STML_SUBJECT']
             body = config['STML_BODY']
             verification_id = str(random.randint(0, 999)).zfill(3) + str(random.randint(0, 999)).zfill(3)
-            response = EmailSender.send_email(to_email, subject, body, verification_id)
+            # response = EmailSender.send_email(to_email, subject, body, verification_id)
 
             now = datetime.datetime.now()
             expiration_date = now + datetime.timedelta(days=1)
@@ -67,13 +70,13 @@ class AuthService:
                 'cert_code': verification_id,
                 'expired_time': expiration_date_str
             }
-            if response[1] == 200:
-                cert_repo = CertificationRepository(db)
-                if cert_repo.find_one_by_cert_key(verification_info['cert_key']):
-                    verification_id = cert_repo.update(verification_info['cert_key'], verification_info['cert_code'])
-                else:
-                    verification_id = cert_repo.add(verification_info)
-                return custom_response("SUCCESS", data=verification_info)
+            # if response[1] == 200:
+            #     cert_repo = CertificationRepository(db)
+            #     if cert_repo.find_one_by_cert_key(verification_info['cert_key']):
+            #         verification_id = cert_repo.update(verification_info['cert_key'], verification_info['cert_code'])
+            #     else:
+            #         verification_id = cert_repo.add(verification_info)
+            #     return custom_response("SUCCESS", data=verification_info)
         except CustomException as e:
             return e.get_response()
         except Exception as e:

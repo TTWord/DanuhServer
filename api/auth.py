@@ -8,7 +8,7 @@ api = Namespace('auth', description='관리 API')
 
 user_sign_in = api.model('회원 로그인', {
     'username': fields.String(required=True, description='아이디', example='kimjunghyun696@google.com'),
-    'password': fields.String(required=True, description='비밀번호', example='13131313'),
+    'password': fields.String(required=True, description='비밀번호', example='a123456!'),
 })
 
 email_content = api.model('메일 인증', {
