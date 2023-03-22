@@ -3,14 +3,14 @@ from repository.certification_repository import CertificationRepository
 from util.decorator.service_receiver import ServiceReceiver
 from util.custom_response import custom_response
 from util.exception import CustomException
-from util.jwt_token import generate_token
+from util.jwt_token import generate_token, decode_token
 from util.password_encryption import compare_passwords, encrypt_password
 from util.certification import EmailSender
+from util.validation import validate_email, validate_password
 from db.connect import Database
 from config import config
 import datetime
 import random
-from util.validation import validate_email, validate_password
 
 
 class AuthService:
@@ -24,7 +24,7 @@ class AuthService:
                 raise CustomException("유저가 존재하지 않습니다.", code=404)
             else:
                 payload = {"id": user["id"], "username": user['username'],
-                           'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=60)}
+                           'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=6)}
                 secret = config["SECRET_KEY"]
                 if compare_passwords(user_credentials['password'], user['password']):
                     token = {"access_token": generate_token(payload, secret)}
@@ -32,10 +32,8 @@ class AuthService:
                 else:
                     raise CustomException("유효하지 않은 비밀 번호입니다.", code=403)
         except CustomException as e:
-            print("e : ", e)
             return e.get_response()
         except Exception as e:
-            print("e2 : ", e)
             return custom_response("FAIL", code=400)
 
     @staticmethod
@@ -50,7 +48,7 @@ class AuthService:
             elif not validate_email(input_data['username']):
                 raise CustomException("이메일 형식이 올바르지 않습니다.", code=400)
             elif not validate_password(input_data['password']):
-                raise CustomException("8자 이상의 하나 이상의 숫자, 문자, 특수문자를 입력해주세요.", code=400)
+                raise CustomException("암호는 8자 이상의 하나 이상의 숫자, 문자, 특수문자이어야 합니다.", code=400)
             to_email = input_data['username']
             subject = config['STML_SUBJECT']
             body = config['STML_BODY']
@@ -76,5 +74,4 @@ class AuthService:
         except CustomException as e:
             return e.get_response()
         except Exception as e:
-            print(e)
             return custom_response("FAIL", code=400)
