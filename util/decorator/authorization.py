@@ -20,6 +20,8 @@ class Authorization:
                 try:
                     payload = jwt.decode(access_token, config["SECRET_KEY"], "HS256")
                     return func(auth = payload, *args, **kwargs)
+                except jwt.ExpiredSignatureError:
+                    return make_response({"message": "Token expired"}, 401)
                 except jwt.InvalidTokenError:
                     return make_response({"message": "Invalid token provided"}, 401)
             else:
