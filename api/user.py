@@ -11,7 +11,7 @@ user_name = api.model('유저이름', {
 
 user_sign_up = api.model('회원 가입', {
     **user_name,
-    'password': fields.String(required=True, description='비밀번호', example='13131313'),
+    'password': fields.String(required=True, description='비밀번호', example='a123456!'),
     'nickname': fields.String(required=True, description='닉네임', example='김흐긴'),
     'certification_id': fields.String(required=True, description='인증ID', example='474825')
 })
