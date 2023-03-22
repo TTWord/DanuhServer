@@ -45,12 +45,7 @@ class UserRepository(Connect):
         self.cursor.execute(sql)
         result = self.cursor.fetchone()
 
-        if result:
-            user = UserModel(id=result['id'], username=result['username'], 
-                             nickname=result['nickname'])
-            return user.__dict__
-        else:
-            return None
+        return result
     
     def find_one_by_user_id(self, id: int) -> dict:
         sql = f'SELECT * FROM user where id = "{id}"'

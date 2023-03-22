@@ -59,7 +59,7 @@ class AuthService:
             subject = config['STML_SUBJECT']
             body = config['STML_BODY']
             verification_id = str(random.randint(0, 999)).zfill(3) + str(random.randint(0, 999)).zfill(3)
-            # response = EmailSender.send_email(to_email, subject, body, verification_id)
+            response = EmailSender.send_email(to_email, subject, body, verification_id)
 
             now = datetime.datetime.now()
             expiration_date = now + datetime.timedelta(days=1)
@@ -70,13 +70,13 @@ class AuthService:
                 'cert_code': verification_id,
                 'expired_time': expiration_date_str
             }
-            # if response[1] == 200:
-            #     cert_repo = CertificationRepository(db)
-            #     if cert_repo.find_one_by_cert_key(verification_info['cert_key']):
-            #         verification_id = cert_repo.update(verification_info['cert_key'], verification_info['cert_code'])
-            #     else:
-            #         verification_id = cert_repo.add(verification_info)
-            #     return custom_response("SUCCESS", data=verification_info)
+            if response[1] == 200:
+                cert_repo = CertificationRepository(db)
+                if cert_repo.find_one_by_cert_key(verification_info['cert_key']):
+                    verification_id = cert_repo.update(verification_info['cert_key'], verification_info['cert_code'])
+                else:
+                    verification_id = cert_repo.add(verification_info)
+                return custom_response("SUCCESS", data=verification_info)
         except CustomException as e:
             return e.get_response()
         except Exception as e:
