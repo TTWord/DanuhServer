@@ -30,7 +30,7 @@ class AuthService:
                 secret = config["SECRET_KEY"]
                 if compare_passwords(user_credentials['password'], user['password']):
                     token = {"access_token": generate_token(payload_access, secret),
-                             "reflash_token": generate_token(payload_reflash, secret)}
+                             "refresh_token": generate_token(payload_reflash, secret)}
                     return custom_response("SUCCESS", data=token)
                 else:
                     raise CustomException("유효하지 않은 비밀 번호입니다.", code=403)
