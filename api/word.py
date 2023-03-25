@@ -6,14 +6,14 @@ from flask import request
 
 api = Namespace('word', description='단어 API')
 
-book_id = api.model('id', {
-    'book_id': fields.Integer(required=True, description='단어장 ID', example=1)
-})
-
 word_info = api.model('추가 정보', {
-    **book_id,
     'word': fields.String(required=True, description='단어', example='Eternal Return'),
     'mean': fields.String(required=True, description='의미', example='영원한 회귀'),
+})
+
+book_id = api.model('id', {
+    'book_id': fields.Integer(required=True, description='단어장 ID', example=1),
+    **word_info
 })
 
 
@@ -48,7 +48,6 @@ class WordByBook(Resource):
 class WordById(Resource):
     @api.response(200, 'Success')
     @api.response(400, 'Fail')
-    @api.expect(word_info)
     @Authorization.reject_authorization
     def get(self, id):
         """
