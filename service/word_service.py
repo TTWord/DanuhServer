@@ -34,6 +34,8 @@ class WordService:
             if word is None:
                 raise CustomException("단어장이 존재하지 않습니다.", code=404)
             return custom_response("SUCCESS", data=word)
+        except CustomException as e:
+            return e.get_response()
         except Exception as e:
             return custom_response("FAIL", code=400)
     

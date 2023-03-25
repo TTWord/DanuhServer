@@ -20,12 +20,13 @@ class WordRepository(Connect):
         sql = f'SELECT * FROM word WHERE id = {id}'
         self.cursor.execute(sql)
         result = self.cursor.fetchone()
-            
-        word = WordModel(id=result['id'], book_id=result['book_id'], word=result['word']
+        if result is not None:
+            word = WordModel(id=result['id'], book_id=result['book_id'], word=result['word']
                          , mean=result['mean'], created_at=result['created_at'], updated_at=result['updated_at'])
-            
-        return word.__dict__
-    
+            return word.__dict__
+        else:
+            return None
+        
     def find_one_by_word_and_book_id(self, word: str, book_id: int) -> dict:
         word = None
         
