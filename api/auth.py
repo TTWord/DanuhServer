@@ -54,3 +54,26 @@ class RefreshToken(Resource):
         액세스 토큰 재발급
         """
         return AuthService.get_new_access_token(auth)
+    
+
+@api.route('/kakaosignin')
+class KakaoLogin(Resource):
+    @api.response(200, 'Success')
+    @api.response(400, 'Bad request')
+    def post(self):
+        """
+        카카오 로그인
+        """
+        return AuthService.signin_with_kakao_service()
+    
+
+@api.route("/oauth")
+class Kakaoauth(Resource):
+    @api.response(200, 'Success')
+    @api.response(400, 'Bad request')
+    def get(self):
+        """
+        카카오 로그인 정보 전달
+        """
+        code = request.args.get('code')
+        return AuthService.oauth_api(code)
