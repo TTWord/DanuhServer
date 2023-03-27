@@ -2,9 +2,9 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from config import config
+import requests
 
 
-#   TODO: Authorization을 추가적으로 구현할 듯 ex) 핸드폰인증, Kakaotalk 인증 등등
 class EmailSender:
     @staticmethod
     def send_email(to_email, subject, body, verification_id):
@@ -46,3 +46,37 @@ class EmailSender:
             return {'message': f"An exception occurred: {e}"}, 404
         else:
             return {"message": "Email sent successfully."}, 200
+        
+
+class KakaoAuth:
+    def __init__(self):
+        self.auth_server = "https://kauth.kakao.com%s"
+        self.api_server = "https://kapi.kakao.com%s"
+        self.default_header = {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "Cache-Control": "no-cache",
+        }
+
+    def auth(self, code):
+        return requests.post(
+            url=self.auth_server % "/oauth/token",
+            headers=self.default_header,
+            data={
+                "grant_type": "authorization_code",
+                "client_id": config['CLIENT_ID'],
+                "client_secret": config['CLIENT_SECRET'],
+                "redirect_uri": config['REDIRECT_URI'],
+                "code": code,
+            },
+        ).json()
+    
+    def userinfo(self, bearer_token):
+        return requests.post(
+            url=self.api_server % "/v2/user/me",
+            headers={
+                **self.default_header,
+                **{"Authorization": bearer_token}
+            },
+            # "property_keys":'["kakao_account.profile_image_url"]'
+            data={}
+        ).json()
