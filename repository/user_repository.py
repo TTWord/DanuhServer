@@ -27,19 +27,7 @@ class UserRepository(Connect):
         self.connect.commit()
 
         return {'id': id}
-    
-    def find_one_by_nickname(self, nickname: str) -> dict:
-        sql = f'SELECT * FROM user where nickname = "{nickname}"'
-        self.cursor.execute(sql)
-        result = self.cursor.fetchone()
 
-        if result:
-            user = UserModel(id=result['id'], username=result['username'], 
-                             nickname=result['nickname'])
-            return user.__dict__
-        else:
-            return None
-    
     def find_one_by_username(self, user_name: str) -> dict:
         sql = f'SELECT * FROM user where username = "{user_name}"'
         self.cursor.execute(sql)
@@ -67,3 +55,17 @@ class UserRepository(Connect):
         user = UserModel(id=id, username=username, nickname=nickname)
         
         return user.__dict__
+    
+    def update_nickname(self, id: int, nickname: str) -> dict:
+        sql = f"UPDATE user SET nickname='{nickname}' WHERE id = {id}"
+        self.cursor.execute(sql)
+        self.connect.commit()
+        
+        return {'nickname': nickname}
+    
+    def update_file_id(self, id: int, file_id: str) -> dict:
+        sql = f"UPDATE user SET file_id='{file_id}' WHERE id = {id}"
+        self.cursor.execute(sql)
+        self.connect.commit()
+        
+        return {'file_id': file_id}

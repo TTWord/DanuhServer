@@ -2,6 +2,7 @@ drop table user;
 drop table book;
 drop table word;
 drop table certification;
+drop table file;
 
 create table user(
     id INT PRIMARY KEY auto_increment,
@@ -9,7 +10,8 @@ create table user(
     password VARCHAR(100),
     nickname VARCHAR(100),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    file_id INT,
 )
 
 create table book(
@@ -37,4 +39,9 @@ create table certification(
     expired_time TIMESTAMP,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+)
+
+create table file(
+    id INT PRIMARY KEY auto_increment,
+    file_path VARCHAR(100)
 )

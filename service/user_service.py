@@ -1,10 +1,13 @@
 from repository.user_repository import UserRepository
+from repository.file_repository import FileRepository
 from repository.certification_repository import CertificationRepository
 from util.decorator.service_receiver import ServiceReceiver
 from util.custom_response import custom_response
 from util.exception import CustomException
 from util.password_encryption import compare_passwords, encrypt_password
+from config import config
 from db.connect import Database
+from werkzeug.utils import secure_filename
 
 
 class UserService:
@@ -64,6 +67,37 @@ class UserService:
                 raise CustomException("유저가 존재하지 않습니다.", code=404)
             user = UserRepository(db).delete(user['id'])
             return custom_response("SUCCESS", data=user)
+        except CustomException as e:
+            return e.get_response()
+        except Exception as e:
+            return custom_response("FAIL", code=400)
+        
+    @staticmethod
+    @ServiceReceiver.database
+    def update_user_by_nickname(auth, data, db: Database):
+        try:
+            user_info = UserRepository(db)
+            user = user_info.find_one_by_user_id(auth['id'])
+            if user['nickname'] == data['to_nickname']:
+                raise CustomException("닉네임이 중복입니다.", code=409)
+            user = UserRepository(db).update_nickname(user['id'], data['to_nickname'])
+            return custom_response("SUCCESS", data=user)
+        except CustomException as e:
+            return e.get_response()
+        except Exception as e:
+            return custom_response("FAIL", code=400)
+        
+    @staticmethod
+    @ServiceReceiver.database
+    def update_user_profile(auth, data, db: Database):
+        try:
+            user_info = UserRepository(db)
+            file_info = FileRepository(db)
+            file_path = config['PROFILE_IMAGE']+ secure_filename(data.filename)
+            data.save(file_path)
+            user_info.update_file_id(auth['id'], file_path)
+            add_file = file_info.add(file_path)
+            return custom_response("SUCCESS", data=add_file)
         except CustomException as e:
             return e.get_response()
         except Exception as e:
