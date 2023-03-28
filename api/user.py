@@ -25,7 +25,16 @@ user_sign_up = api.model('회원 가입', {
 
 @api.route('/userservice')
 @api.doc(security='Bearer Auth')
-class User(Resource):
+class User(Resource):    
+    @api.response(200, 'Success')
+    @api.response(400, 'Bad request') 
+    @Authorization.check_authorization
+    def get(self, auth):
+        """
+        유저 프로필 가져오기
+        """
+        return UserService.get_user_profile(auth)
+    
     @api.response(200, 'Success')
     @api.response(400, 'Bad request') 
     @Authorization.check_authorization

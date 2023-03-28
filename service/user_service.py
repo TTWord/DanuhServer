@@ -95,9 +95,28 @@ class UserService:
             file_info = FileRepository(db)
             file_path = config['PROFILE_IMAGE']+ secure_filename(data.filename)
             data.save(file_path)
-            user_info.update_file_id(auth['id'], file_path)
             add_file = file_info.add(file_path)
-            return custom_response("SUCCESS", data=add_file)
+            user_info.update_file_id(auth['id'], add_file)
+            return custom_response("SUCCESS", data=file_path)
+        except CustomException as e:
+            return e.get_response()
+        except Exception as e:
+            return custom_response("FAIL", code=400)
+        
+    @staticmethod
+    @ServiceReceiver.database
+    def get_user_profile(auth, db: Database):
+        try:
+            user_info = UserRepository(db)
+            file_info = FileRepository(db)
+
+            user = user_info.find_one_by_user_id(auth['id'])
+
+            if not user['file_id']:
+                raise CustomException("프로필 이미지가 존재하지 않습니다.", code=404)
+
+            file = file_info.find_one_by_id(user['file_id'])
+            return custom_response("SUCCESS", data=file)
         except CustomException as e:
             return e.get_response()
         except Exception as e:
