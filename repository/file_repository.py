@@ -3,19 +3,20 @@ from model.user_model import UserModel
 
 
 class FileRepository(Connect):
-    def add(self, fild_info: dict) -> dict:
+    def add(self, file_path: str) -> dict:
         sql = f"""
             INSERT INTO file (
                 file_path
             )
             VALUES(
-                '{fild_info['file_path']}'
+                '{file_path}'
             );
         """
         self.cursor.execute(sql)
         self.connect.commit()
+
         
-        return fild_info
+        return self.cursor.lastrowid
                 
     def find_one_by_id(self, id: int) -> dict:
         sql = f'SELECT * FROM file WHERE id = {id}'
