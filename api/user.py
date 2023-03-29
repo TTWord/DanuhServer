@@ -31,7 +31,7 @@ class User(Resource):
     @Authorization.check_authorization
     def get(self, auth):
         """
-        유저 프로필 가져오기
+        유저 프로필 사진 가져오기
         """
         return UserService.get_user_profile(auth)
     

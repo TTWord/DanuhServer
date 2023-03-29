@@ -8,6 +8,7 @@ from util.password_encryption import compare_passwords, encrypt_password
 from config import config
 from db.connect import Database
 from werkzeug.utils import secure_filename
+from flask import send_file
 
 
 class UserService:
@@ -102,21 +103,21 @@ class UserService:
             return e.get_response()
         except Exception as e:
             return custom_response("FAIL", code=400)
-        
+
     @staticmethod
     @ServiceReceiver.database
     def get_user_profile(auth, db: Database):
         try:
             user_info = UserRepository(db)
             file_info = FileRepository(db)
-
+            
             user = user_info.find_one_by_user_id(auth['id'])
 
             if not user['file_id']:
                 raise CustomException("프로필 이미지가 존재하지 않습니다.", code=404)
 
             file = file_info.find_one_by_id(user['file_id'])
-            return custom_response("SUCCESS", data=file)
+            return send_file(file['file_path'], mimetype='image/png')
         except CustomException as e:
             return e.get_response()
         except Exception as e:
