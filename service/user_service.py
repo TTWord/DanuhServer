@@ -108,14 +108,23 @@ class UserService:
         try:
             user_info = UserRepository(db)
             file_info = FileRepository(db)
-            file_path = config['PROFILE_IMAGE'] + "/" + secure_filename(data.filename)
+
+            file_name = str(auth['id']) + "_profile.jpg"
+            file_path = config['PROFILE_IMAGE'] + "/" + secure_filename(file_name)
             data.save(file_path)
-            add_file = file_info.add(secure_filename(data.filename))
-            user_info.update_file_id(auth['id'], add_file)
-            return custom_response("SUCCESS", data=file_path)
+
+            user = user_info.find_one_by_user_id(auth['id'])
+            if user['file_id']:
+                file_id = file_info.update(user['file_id'], secure_filename(file_name))
+            else:
+                file_id = file_info.add(secure_filename(file_name))
+            user_info.update_file_id(auth['id'], file_id)
+            url = {'url': config['DOMAIN'] + "/" +file_path}
+            return custom_response("SUCCESS", data=url)
         except CustomException as e:
             return e.get_response()
         except Exception as e:
+            print(e)
             return custom_response("FAIL", code=400)
 
     @staticmethod

@@ -29,7 +29,7 @@ class FileRepository(Connect):
         self.cursor.execute(sql)
         self.connect.commit()
         
-        return file_path
+        return id
         
     def delete(self, id: int):
         sql = f"DELETE FROM file WHERE id={id}"
