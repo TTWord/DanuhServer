@@ -8,7 +8,7 @@ from util.password_encryption import compare_passwords, encrypt_password
 from config import config
 from db.connect import Database
 from werkzeug.utils import secure_filename
-from flask import send_file
+from flask import url_for
 
 
 class UserService:
@@ -108,9 +108,9 @@ class UserService:
         try:
             user_info = UserRepository(db)
             file_info = FileRepository(db)
-            file_path = config['PROFILE_IMAGE']+ secure_filename(data.filename)
+            file_path = config['PROFILE_IMAGE'] + secure_filename(data.filename)
             data.save(file_path)
-            add_file = file_info.add(file_path)
+            add_file = file_info.add(secure_filename(data.filename))
             user_info.update_file_id(auth['id'], add_file)
             return custom_response("SUCCESS", data=file_path)
         except CustomException as e:
@@ -131,7 +131,9 @@ class UserService:
                 raise CustomException("프로필 이미지가 존재하지 않습니다.", code=404)
 
             file = file_info.find_one_by_id(user['file_id'])
-            return send_file(file['file_path'], mimetype='image/png')
+            url = {'url': "api.tt-word.kr" + url_for('static', filename=file['file_path'])}
+
+            return custom_response("SUCCESS", data=url)
         except CustomException as e:
             return e.get_response()
         except Exception as e:
