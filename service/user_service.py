@@ -132,7 +132,7 @@ class UserService:
 
             file = file_info.find_one_by_id(user['file_id'])
             url = {'url': config['DOMAIN'] + url_for('static', filename=file['file_path'])}
-
+            url.update({"username": user['username'], "nickname": user['nickname']})
             return custom_response("SUCCESS", data=url)
         except CustomException as e:
             return e.get_response()
