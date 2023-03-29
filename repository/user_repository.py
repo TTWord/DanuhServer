@@ -35,6 +35,13 @@ class UserRepository(Connect):
 
         return result
     
+    def find_one_by_nickname(self, nickname: str) -> dict:
+        sql = f'SELECT * FROM user where nickname = "{nickname}"'
+        self.cursor.execute(sql)
+        result = self.cursor.fetchone()
+
+        return result
+    
     def find_one_by_user_id(self, id: int) -> dict:
         sql = f'SELECT * FROM user where id = "{id}"'
         self.cursor.execute(sql)

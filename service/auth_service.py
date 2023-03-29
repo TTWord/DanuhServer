@@ -86,11 +86,11 @@ class AuthService:
 
     @staticmethod
     @ServiceReceiver.database
-    def send_mail(input_data, db: Database):
+    def send_mail(input_data, db: Database):        
         try:
             user_repo = UserRepository(db)
             is_username = user_repo.find_one_by_username(input_data['username'])
-            is_nickname =user_repo.find_one_by_nickname(input_data['nickname'])
+            is_nickname = user_repo.find_one_by_nickname(input_data['nickname'])
             if is_nickname:
                 raise CustomException("이미 존재하는 닉네임입니다.", code=409)
             
