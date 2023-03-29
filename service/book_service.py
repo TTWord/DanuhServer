@@ -90,19 +90,14 @@ class BookService:
 
             book_id = book_info["id"]
             word_repo = WordRepository(db)
-            books = book_repo.find_all_by_user_id(auth['id'])
 
             dict_check = defaultdict(str)
-            for book in books:
-                words = word_repo.find_all_by_book_id(book_id=book['id'])
-                for word in words:
-                    dict_check[word['word']] = word['mean']
+            for word, mean in result['words'].items():
+                if word not in dict_check.keys() and mean != dict_check[word]:
+                    dict_check[word] = mean
  
             for word, mean in result['words'].items():
-                if word in dict_check.keys() and mean in dict_check.values():
-                    continue
-                else:
-                    word_repo.add(book_id, word, mean)
+                word_repo.add(book_id, word, mean)
 
             return custom_response("데이터 추가 성공", data=book_info)
         except CustomException as e:

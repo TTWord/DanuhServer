@@ -55,12 +55,10 @@ class WordService:
             elif book["user_id"] != auth["id"]:
                 raise CustomException("단어장 조회 권한이 없습니다.", code=403)
             
-            books = book_repo.find_all_by_user_id(auth['id'])
-            for book in books:
-                words = word_repo.find_all_by_book_id(book_id=book['id'])
-                for word in words:
-                    if word['word'] == data['word'] and word['mean'] == data['mean']:
-                        raise CustomException("이미 존재하는 단어입니다.", code=409)
+            words = word_repo.find_all_by_book_id(book_id=book['id'])
+            for word in words:
+                if word['word'] == data['word'] and word['mean'] == data['mean']:
+                    raise CustomException("이미 존재하는 단어입니다.", code=409)
             
             word = word_repo.add(book_id= data['book_id'], word=data["word"], mean=data["mean"])
             return custom_response("SUCCESS", data=word)
