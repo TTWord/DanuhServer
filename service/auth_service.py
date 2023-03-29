@@ -11,6 +11,7 @@ from db.connect import Database
 from config import config
 import datetime
 import random
+from flask import redirect
 
 
 class AuthService:
@@ -78,7 +79,9 @@ class AuthService:
             secret = config["SECRET_KEY"]
             token = {"access_token": generate_token(payload_access, secret),
                         "refresh_token": generate_token(payload_reflash, secret)}
-            return custom_response("SUCCESS", data=token)
+            REDIRECT_URI_SOCIAL = config['REDIRECT_URI_SOCIAL']
+            return redirect(REDIRECT_URI_SOCIAL + "?accesstoken=" + token['access_token']+"&refreshtoken="
+                            +token['refresh_token'])
         except CustomException as e:
             return e.get_response()
         except Exception as e:
