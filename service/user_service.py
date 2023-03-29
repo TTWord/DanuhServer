@@ -108,7 +108,7 @@ class UserService:
         try:
             user_info = UserRepository(db)
             file_info = FileRepository(db)
-            file_path = config['PROFILE_IMAGE'] + secure_filename(data.filename)
+            file_path = config['PROFILE_IMAGE'] + "/" + secure_filename(data.filename)
             data.save(file_path)
             add_file = file_info.add(secure_filename(data.filename))
             user_info.update_file_id(auth['id'], add_file)
@@ -131,7 +131,7 @@ class UserService:
                 raise CustomException("프로필 이미지가 존재하지 않습니다.", code=404)
 
             file = file_info.find_one_by_id(user['file_id'])
-            url = {'url': "api.tt-word.kr" + url_for('static', filename=file['file_path'])}
+            url = {'url': config['DOMAIN'] + url_for('static', filename=file['file_path'])}
 
             return custom_response("SUCCESS", data=url)
         except CustomException as e:

@@ -1,5 +1,6 @@
 from flask import request
 from flask_restx import Namespace, Resource, Api, reqparse, fields
+from werkzeug.datastructures import FileStorage
 from service.user_service import UserService
 from util.decorator.authorization import Authorization
 
@@ -22,6 +23,9 @@ user_sign_up = api.model('회원 가입', {
     'certification_id': fields.String(required=True, description='인증ID', example='474825')
 })
 
+post_parser = api.parser()
+post_parser.add_argument('file', type=FileStorage, location='files')
+
 
 @api.route('/userservice')
 @api.doc(security='Bearer Auth')
@@ -37,10 +41,11 @@ class User(Resource):
     
     @api.response(200, 'Success')
     @api.response(400, 'Bad request') 
+    @api.expect(post_parser)
     @Authorization.check_authorization
     def post(self, auth):
         """
-        유저 프로필 사진 추가
+        유저 프로필 사진 수정
         """
         file = request.files['file']
         return UserService.update_user_profile(auth, file)
