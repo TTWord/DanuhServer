@@ -14,6 +14,20 @@ from flask import send_file
 class UserService:
     @staticmethod
     @ServiceReceiver.database
+    def get_user_by_id(id, db: Database):
+        try:
+            user_repo = UserRepository(db)
+            user = user_repo.find_one_by_user_id(id)
+            if not user:
+                raise CustomException("유저가 존재하지 않습니다.", code=404)
+            return custom_response("SUCCESS", data=user)
+        except CustomException as e:
+            return e.get_response()
+        except Exception as e:
+            return custom_response("FAIL", code=400)
+        
+    @staticmethod
+    @ServiceReceiver.database
     def signup_service(user_data, db: Database):
         try:
             cert_info = CertificationRepository(db).find_one_by_cert_key(user_data['username'])
