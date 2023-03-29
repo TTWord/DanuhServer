@@ -33,7 +33,7 @@ class WordByBook(Resource):
     
     @api.response(200, 'Success')
     @api.response(400, 'Fail')
-    @api.expect(word_info)
+    @api.expect(book_id)
     @Authorization.check_authorization
     def post(self, auth):
         """
