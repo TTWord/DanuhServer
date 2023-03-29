@@ -24,8 +24,8 @@ class EmailSender:
             msg.attach(MIMEText(body, 'plain'))
 
             html = open(stml_html, encoding='utf-8').read()
-            html = html.replace("<span>input1</span>", f"<span>{verification_code_1}</span>")
-            html = html.replace("<span>input2</span>", f"<span>{verification_code_2}</span>")
+            html = html.replace("input1", f"{verification_code_1}")
+            html = html.replace("input2", f"{verification_code_2}")
             msg.attach(MIMEText(html, 'html'))
 
             with smtplib.SMTP(smtp_server, smtp_port) as server:
