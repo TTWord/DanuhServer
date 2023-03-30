@@ -63,8 +63,8 @@ class KakaoAuth:
             headers=self.default_header,
             data={
                 "grant_type": "authorization_code",
-                "client_id": config['CLIENT_ID'],
-                "client_secret": config['CLIENT_SECRET'],
+                "client_id": config['KAKAO_CLIENT_ID'],
+                "client_secret": config['KAKAO_CLIENT_SECRET'],
                 "redirect_uri": config['REDIRECT_URI'],
                 "code": code,
             },
