@@ -63,9 +63,41 @@ class KakaoAuth:
             headers=self.default_header,
             data={
                 "grant_type": "authorization_code",
-                "client_id": config['CLIENT_ID'],
-                "client_secret": config['CLIENT_SECRET'],
-                "redirect_uri": config['REDIRECT_URI'],
+                "client_id": config['KAKAO_CLIENT_ID'],
+                "client_secret": config['KAKAO_CLIENT_SECRET'],
+                "redirect_uri": config['REDIRECT_URI'] + "/kakao",
+                "code": code,
+            },
+        ).json()
+    
+    def userinfo(self, bearer_token):
+        return requests.post(
+            url=self.api_server % "/v2/user/me",
+            headers={
+                **self.default_header,
+                **{"Authorization": bearer_token}
+            },
+            # "property_keys":'["kakao_account.profile_image_url"]'
+            data={}
+        ).json()
+    
+class GoogleAuth:
+    def __init__(self):
+        self.auth_server = "https://oauth2.googleapis.com/%s"
+        self.api_server = "https://oauth2.googleapis.com/%s"
+        self.default_header = {
+            "Content-Type": "application/x-www-form-urlencoded",
+        }
+
+    def auth(self, code):
+        return requests.post(
+            url=self.auth_server % "/token",
+            headers=self.default_header,
+            data={
+                "grant_type": "authorization_code",
+                "client_id": config['GOOGLE_CLIENT_ID'],
+                "client_secret": config['GOOGLE_CLIENT_SECRET'],
+                "redirect_uri": config['REDIRECT_URI'] + "/google",
                 "code": code,
             },
         ).json()
