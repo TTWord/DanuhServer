@@ -11,7 +11,7 @@ from db.connect import Database
 from config import config
 import datetime
 import random
-from flask import redirect
+from flask import redirect, url_for
 
 
 class AuthService:
@@ -42,10 +42,10 @@ class AuthService:
         
     @staticmethod
     def signin_with_kakao_service():
-        CLIENT_ID = config['CLIENT_ID']
-        REDIRECT_URI = config['REDIRECT_URI']
+        KAKAO_CLIENT_ID = config['KAKAO_CLIENT_ID']
+        REDIRECT_URI = config['REDIRECT_URI'] + "/kakao"
         url = {'url': "https://kauth.kakao.com/oauth/authorize?client_id=%s&redirect_uri=%s&response_type=code" \
-                                % (CLIENT_ID, REDIRECT_URI)}
+                                % (KAKAO_CLIENT_ID, REDIRECT_URI)}
         return custom_response("SUCCESS", data=url)
     
     @staticmethod
@@ -77,11 +77,46 @@ class AuthService:
             payload_reflash = {"id": user["id"], "username": user['username'],
                                 'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=6)}
             secret = config["SECRET_KEY"]
-            token = {"access_token": generate_token(payload_access, secret),
-                        "refresh_token": generate_token(payload_reflash, secret)}
+            import jwt
+            token = {"access_token": jwt.encode(payload_access, secret, algorithm="HS256"),
+                        "refresh_token": jwt.encode(payload_reflash, secret, algorithm="HS256")
+}
+            # token = {"access_token": generate_token(payload_access, secret),
+            #             "refresh_token": generate_token(payload_reflash, secret)}
             REDIRECT_URI_SOCIAL = config['REDIRECT_URI_SOCIAL']
             return redirect(REDIRECT_URI_SOCIAL + "?accesstoken=" + token['access_token']+"&refreshtoken="
                             +token['refresh_token'])
+        except CustomException as e:
+            return e.get_response()
+        except Exception as e:
+            print(e)
+            return custom_response("FAIL", code=400)
+        
+    @staticmethod
+    def signin_with_google_service(oauth):
+        CONF_URL = 'https://accounts.google.com/.well-known/openid-configuration'
+        oauth.register(
+            name='google',
+            client_id=config['GOOGLE_CLIENT_ID'],
+            client_secret=config['GOOGLE_CLIENT_SECRET'],
+            server_metadata_url=CONF_URL,
+            client_kwargs={
+                'scope': 'openid email profile'
+            }
+        )
+        # Redirect to google_auth function
+        redirect_uri = url_for('google', _external=True)
+        print("redirect_uri : ", test)
+        return oauth.google.authorize_redirect(redirect_uri)
+    
+    @staticmethod
+    @ServiceReceiver.database
+    def google_auth_api(oauth, db: Database):
+        try:
+            token = oauth.google.authorize_access_token()
+            user = oauth.google.parse_id_token(token)
+            print(" Google User ", user)
+            return redirect('/')
         except CustomException as e:
             return e.get_response()
         except Exception as e:

@@ -65,7 +65,7 @@ class KakaoAuth:
                 "grant_type": "authorization_code",
                 "client_id": config['KAKAO_CLIENT_ID'],
                 "client_secret": config['KAKAO_CLIENT_SECRET'],
-                "redirect_uri": config['REDIRECT_URI'],
+                "redirect_uri": config['REDIRECT_URI'] + "/kakao",
                 "code": code,
             },
         ).json()
