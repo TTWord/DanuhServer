@@ -5,13 +5,13 @@ from util.custom_response import custom_response
 from util.exception import CustomException
 from util.jwt_token import generate_token, decode_token
 from util.password_encryption import compare_passwords, encrypt_password
-from util.certification import EmailSender, KakaoAuth
+from util.certification import EmailSender, KakaoAuth, GoogleAuth
 from util.validation import validate_email, validate_password
 from db.connect import Database
 from config import config
 import datetime
 import random
-from flask import redirect, url_for
+from flask import redirect
 
 
 class AuthService:
@@ -77,12 +77,57 @@ class AuthService:
             payload_reflash = {"id": user["id"], "username": user['username'],
                                 'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=6)}
             secret = config["SECRET_KEY"]
-            import jwt
-            token = {"access_token": jwt.encode(payload_access, secret, algorithm="HS256"),
-                        "refresh_token": jwt.encode(payload_reflash, secret, algorithm="HS256")
-}
-            # token = {"access_token": generate_token(payload_access, secret),
-            #             "refresh_token": generate_token(payload_reflash, secret)}
+            token = {"access_token": generate_token(payload_access, secret),
+                        "refresh_token": generate_token(payload_reflash, secret)}
+            REDIRECT_URI_SOCIAL = config['REDIRECT_URI_SOCIAL']
+            return redirect(REDIRECT_URI_SOCIAL + "?accesstoken=" + token['access_token']+"&refreshtoken="
+                            +token['refresh_token'])
+        except CustomException as e:
+            return e.get_response()
+        except Exception as e:
+            return custom_response("FAIL", code=400)
+        
+    @staticmethod
+    def signin_with_google_service():
+        GOOGLE_CLIENT_ID = config['GOOGLE_CLIENT_ID']
+        REDIRECT_URI = config['REDIRECT_URI'] + "/google"
+        print("REDIRECT_URI : ", REDIRECT_URI)
+        scope = "https://www.googleapis.com/auth/userinfo.email " + \
+                "https://www.googleapis.com/auth/userinfo.profile"
+        url = {'url': "https://accounts.google.com/o/oauth2/v2/auth?scope=%s&response_type=code&client_id=%s&redirect_uri=%s" \
+               % (scope, GOOGLE_CLIENT_ID, REDIRECT_URI)}
+        return custom_response("SUCCESS", data=url)
+    
+    @staticmethod
+    @ServiceReceiver.database
+    def google_auth_api(code, db: Database):
+        try:
+            # 전달받은 authorization code를 통해서 access_token을 발급
+            oauth = GoogleAuth()
+            auth_info = oauth.auth(code)\
+            
+            # error 발생 시 로그인 페이지로 redirect
+            if "error" in auth_info:
+                raise CustomException("인증을 실패하였습니다.", code=404)
+            
+            google_info = oauth.userinfo("Bearer " + auth_info['access_token'])
+            print("google_info : ", google_info)
+            user_refo = UserRepository(db)
+            user = user_refo.find_one_by_username(google_info['sub'])
+            if not user:
+                data = {
+                    'username': str(google_info['sub']),
+                    'password': encrypt_password(str(google_info['sub'])).decode('utf-8'),
+                    'nickname': google_info['email'],
+                }
+                user = user_refo.add(data)
+            payload_access = {"id": user["id"], "username": user['username'],
+                                'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=30)}
+            payload_reflash = {"id": user["id"], "username": user['username'],
+                                'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=6)}
+            secret = config["SECRET_KEY"]
+            token = {"access_token": generate_token(payload_access, secret),
+                        "refresh_token": generate_token(payload_reflash, secret)}
             REDIRECT_URI_SOCIAL = config['REDIRECT_URI_SOCIAL']
             return redirect(REDIRECT_URI_SOCIAL + "?accesstoken=" + token['access_token']+"&refreshtoken="
                             +token['refresh_token'])
@@ -90,36 +135,6 @@ class AuthService:
             return e.get_response()
         except Exception as e:
             print(e)
-            return custom_response("FAIL", code=400)
-        
-    @staticmethod
-    def signin_with_google_service(oauth):
-        CONF_URL = 'https://accounts.google.com/.well-known/openid-configuration'
-        oauth.register(
-            name='google',
-            client_id=config['GOOGLE_CLIENT_ID'],
-            client_secret=config['GOOGLE_CLIENT_SECRET'],
-            server_metadata_url=CONF_URL,
-            client_kwargs={
-                'scope': 'openid email profile'
-            }
-        )
-        # Redirect to google_auth function
-        redirect_uri = url_for('google', _external=True)
-        print("redirect_uri : ", test)
-        return oauth.google.authorize_redirect(redirect_uri)
-    
-    @staticmethod
-    @ServiceReceiver.database
-    def google_auth_api(oauth, db: Database):
-        try:
-            token = oauth.google.authorize_access_token()
-            user = oauth.google.parse_id_token(token)
-            print(" Google User ", user)
-            return redirect('/')
-        except CustomException as e:
-            return e.get_response()
-        except Exception as e:
             return custom_response("FAIL", code=400)
 
     @staticmethod
@@ -172,5 +187,4 @@ class AuthService:
         secret = config["SECRET_KEY"]
         token = {"access_token": generate_token(payload_access, secret)}
         return custom_response("SUCCESS", data=token)
-    
 
