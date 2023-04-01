@@ -57,7 +57,7 @@ class RefreshToken(Resource):
     
 
 @api.route('/kakao')
-class Kakaoauth(Resource):
+class KakaoAuth(Resource):
     @api.response(200, 'Success')
     @api.response(400, 'Bad request')
     def get(self):
@@ -76,7 +76,7 @@ class Kakaoauth(Resource):
         return AuthService.signin_with_kakao_service()
     
 @api.route('/google')
-class Kakaoauth(Resource):
+class GoogleAuth(Resource):
     @api.response(200, 'Success')
     @api.response(400, 'Bad request')
     def get(self):
