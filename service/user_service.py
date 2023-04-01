@@ -136,13 +136,13 @@ class UserService:
             
             user = user_info.find_one_by_user_id(auth['id'])
 
+            info = {'username': user['username'], 'nickname': user['nickname']}
             if not user['file_id']:
-                raise CustomException("프로필 이미지가 존재하지 않습니다.", code=404)
+                return custom_response("SUCCESS", data=info)
 
             file = file_info.find_one_by_id(user['file_id'])
-            url = {'url': config['DOMAIN'] + url_for('static', filename=file['file_path'])}
-            url.update({"username": user['username'], "nickname": user['nickname']})
-            return custom_response("SUCCESS", data=url)
+            info.update({'url': config['DOMAIN'] + url_for('static', filename=file['file_path'])})
+            return custom_response("SUCCESS", data=info)
         except CustomException as e:
             return e.get_response()
         except Exception as e:
