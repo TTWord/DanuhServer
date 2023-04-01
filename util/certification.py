@@ -46,66 +46,49 @@ class EmailSender:
             return {'message': f"An exception occurred: {e}"}, 404
         else:
             return {"message": "Email sent successfully."}, 200
-        
 
-class KakaoAuth:
-    def __init__(self):
-        self.auth_server = "https://kauth.kakao.com%s"
-        self.api_server = "https://kapi.kakao.com%s"
+
+class OAuth:
+    def __init__(self, service):
+        self.service = service
+        if self.service == "kakao":
+            self.auth_server = "https://kauth.kakao.com%s"
+            self.api_server = "https://kapi.kakao.com%s"
+            self.auth_url = self.auth_server % "/oauth/token"
+            self.user_url = self.api_server % "/v2/user/me"
+        elif self.service == "google":
+            self.auth_server = "https://oauth2.googleapis.com/%s"
+            self.api_server = "https://oauth2.googleapis.com/%s"
+            self.auth_url= self.auth_server % "/token"
+            self.user_url = self.auth_server % "/tokeninfo"
+        elif self.service == "apple":
+            self.auth_server = "https://appleid.apple.com/%s"
+            self.api_server = "https://appleid.apple.com/%s"
+            self.auth_url= self.auth_server % "/auth/token"
+            self.user_url = self.auth_server % "/auth/authorize"
+
         self.default_header = {
             "Content-Type": "application/x-www-form-urlencoded",
             "Cache-Control": "no-cache",
         }
 
     def auth(self, code):
+        service = self.service.upper()
         return requests.post(
-            url=self.auth_server % "/oauth/token",
+            url=self.auth_url,
             headers=self.default_header,
             data={
                 "grant_type": "authorization_code",
-                "client_id": config['KAKAO_CLIENT_ID'],
-                "client_secret": config['KAKAO_CLIENT_SECRET'],
-                "redirect_uri": config['REDIRECT_URI'] + "/kakao",
+                "client_id": config[f'{service}_CLIENT_ID'],
+                "client_secret": config[f'{service}_CLIENT_SECRET'],
+                "redirect_uri": config['REDIRECT_URI'] + "/" + self.service,
                 "code": code,
             },
         ).json()
     
     def userinfo(self, bearer_token):
         return requests.post(
-            url=self.api_server % "/v2/user/me",
-            headers={
-                **self.default_header,
-                **{"Authorization": bearer_token}
-            },
-            # "property_keys":'["kakao_account.profile_image_url"]'
-            data={}
-        ).json()
-    
-class GoogleAuth:
-    def __init__(self):
-        self.auth_server = "https://oauth2.googleapis.com/%s"
-        self.api_server = "https://oauth2.googleapis.com/%s"
-        self.default_header = {
-            "Content-Type": "application/x-www-form-urlencoded",
-            "Cache-Control": "no-cache",
-        }
-
-    def auth(self, code):
-        return requests.post(
-            url=self.auth_server % "/token",
-            headers=self.default_header,
-            data={
-                "grant_type": "authorization_code",
-                "client_id": config['GOOGLE_CLIENT_ID'],
-                "client_secret": config['GOOGLE_CLIENT_SECRET'],
-                "redirect_uri": config['REDIRECT_URI'] + "/google",
-                "code": code,
-            },
-        ).json()
-    
-    def userinfo(self, bearer_token):
-        return requests.post(
-            url=self.auth_server % "/tokeninfo",
+            url=self.user_url,
             headers={
                 **self.default_header,
                 **{"Authorization": bearer_token}
