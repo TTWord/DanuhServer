@@ -87,6 +87,7 @@ class GoogleAuth:
         self.api_server = "https://oauth2.googleapis.com/%s"
         self.default_header = {
             "Content-Type": "application/x-www-form-urlencoded",
+            "Cache-Control": "no-cache",
         }
 
     def auth(self, code):
@@ -104,11 +105,10 @@ class GoogleAuth:
     
     def userinfo(self, bearer_token):
         return requests.post(
-            url=self.api_server % "/v2/user/me",
+            url=self.auth_server % "/tokeninfo",
             headers={
                 **self.default_header,
                 **{"Authorization": bearer_token}
             },
-            # "property_keys":'["kakao_account.profile_image_url"]'
             data={}
         ).json()

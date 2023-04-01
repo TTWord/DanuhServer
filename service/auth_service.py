@@ -92,10 +92,9 @@ class AuthService:
         GOOGLE_CLIENT_ID = config['GOOGLE_CLIENT_ID']
         REDIRECT_URI = config['REDIRECT_URI'] + "/google"
         print("REDIRECT_URI : ", REDIRECT_URI)
-        scope = "https://www.googleapis.com/auth/userinfo.email " + \
-                "https://www.googleapis.com/auth/userinfo.profile"
-        url = {'url': "https://accounts.google.com/o/oauth2/v2/auth?scope=%s&response_type=code&client_id=%s&redirect_uri=%s" \
-               % (scope, GOOGLE_CLIENT_ID, REDIRECT_URI)}
+        scope = "https://www.googleapis.com/auth/userinfo.email"
+        url = {'url': "https://accounts.google.com/o/oauth2/v2/auth?client_id=%s&redirect_uri=%s&response_type=code&scope=%s" \
+               % (GOOGLE_CLIENT_ID, REDIRECT_URI, scope)}        
         return custom_response("SUCCESS", data=url)
     
     @staticmethod
@@ -104,14 +103,14 @@ class AuthService:
         try:
             # 전달받은 authorization code를 통해서 access_token을 발급
             oauth = GoogleAuth()
-            auth_info = oauth.auth(code)\
-            
+            auth_info = oauth.auth(code)
+
             # error 발생 시 로그인 페이지로 redirect
             if "error" in auth_info:
                 raise CustomException("인증을 실패하였습니다.", code=404)
-            
+        
             google_info = oauth.userinfo("Bearer " + auth_info['access_token'])
-            print("google_info : ", google_info)
+
             user_refo = UserRepository(db)
             user = user_refo.find_one_by_username(google_info['sub'])
             if not user:
@@ -134,7 +133,6 @@ class AuthService:
         except CustomException as e:
             return e.get_response()
         except Exception as e:
-            print(e)
             return custom_response("FAIL", code=400)
 
     @staticmethod
