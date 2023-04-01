@@ -71,11 +71,17 @@ class AuthService:
             info = oauth.userinfo("Bearer " + auth_info['access_token'])
 
             user_refo = UserRepository(db)
+
             if service == "kakao":
                 username = str(info['id'])
                 password = encrypt_password(str(info['id'])).decode('utf-8')
                 nickname = info['properties']['nickname']
             elif service == "google":
+                username = str(info['sub'])
+                password = encrypt_password(str(info['sub'])).decode('utf-8')
+                nickname = info['email']
+            # TODO: APPLE 로그인 추가
+            elif service == "apple":
                 username = str(info['sub'])
                 password = encrypt_password(str(info['sub'])).decode('utf-8')
                 nickname = info['email']

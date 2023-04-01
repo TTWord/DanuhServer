@@ -61,6 +61,11 @@ class OAuth:
             self.api_server = "https://oauth2.googleapis.com/%s"
             self.auth_url= self.auth_server % "/token"
             self.user_url = self.auth_server % "/tokeninfo"
+        elif self.service == "apple":
+            self.auth_server = "https://appleid.apple.com/%s"
+            self.api_server = "https://appleid.apple.com/%s"
+            self.auth_url= self.auth_server % "/auth/token"
+            self.user_url = self.auth_server % "/auth/authorize"
 
         self.default_header = {
             "Content-Type": "application/x-www-form-urlencoded",
