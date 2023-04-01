@@ -55,42 +55,23 @@ class RefreshToken(Resource):
         """
         return AuthService.get_new_access_token(auth)
     
-
-@api.route('/kakao')
-class KakaoAuth(Resource):
+    
+@api.route('/<service>')
+class OAuth(Resource):
     @api.response(200, 'Success')
     @api.response(400, 'Bad request')
-    def get(self):
+    def get(self, service):
         """
-        카카오 로그인 정보 전달
+        소셜 로그인 정보 전달
         """
         code = request.args.get('code')
-        return AuthService.kakao_auth_api(code)
+        return AuthService.social_auth_api(service, code)
     
     @api.response(200, 'Success')
     @api.response(400, 'Bad request')
-    def post(self):
+    def post(self, service):
         """
-        카카오 로그인
+        소셜 로그인
         """
-        return AuthService.signin_with_kakao_service()
-    
-@api.route('/google')
-class GoogleAuth(Resource):
-    @api.response(200, 'Success')
-    @api.response(400, 'Bad request')
-    def get(self):
-        """
-        구글 로그인 정보 전달
-        """
-        code = request.args.get('code')
-        return AuthService.google_auth_api(code)
-    
-    @api.response(200, 'Success')
-    @api.response(400, 'Bad request')
-    def post(self):
-        """
-        구글 로그인
-        """
-        return AuthService.signin_with_google_service()
+        return AuthService.signin_with_social_service(service)
     

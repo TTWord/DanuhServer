@@ -5,7 +5,7 @@ from util.custom_response import custom_response
 from util.exception import CustomException
 from util.jwt_token import generate_token, decode_token
 from util.password_encryption import compare_passwords, encrypt_password
-from util.certification import EmailSender, KakaoAuth, GoogleAuth
+from util.certification import EmailSender, OAuth
 from util.validation import validate_email, validate_password
 from db.connect import Database
 from config import config
@@ -41,83 +41,51 @@ class AuthService:
             return custom_response("FAIL", code=400)
         
     @staticmethod
-    def signin_with_kakao_service():
-        KAKAO_CLIENT_ID = config['KAKAO_CLIENT_ID']
-        REDIRECT_URI = config['REDIRECT_URI'] + "/kakao"
-        url = {'url': "https://kauth.kakao.com/oauth/authorize?client_id=%s&redirect_uri=%s&response_type=code" \
-                                % (KAKAO_CLIENT_ID, REDIRECT_URI)}
+    def signin_with_social_service(service):
+        CLIENT_ID = config[f'{service.upper()}_CLIENT_ID']
+        REDIRECT_URI = config['REDIRECT_URI'] + "/" + service.lower()
+        if service == "kakao":
+            url = {'url': "https://kauth.kakao.com/oauth/authorize?client_id=%s&redirect_uri=%s&response_type=code" \
+                        % (CLIENT_ID, REDIRECT_URI)}
+        elif service == "google":
+            scope = "https://www.googleapis.com/auth/userinfo.email"
+            url = {'url': "https://accounts.google.com/o/oauth2/v2/auth?client_id=%s&redirect_uri=%s&response_type=code&scope=%s" \
+                % (CLIENT_ID, REDIRECT_URI, scope)}    
+
         return custom_response("SUCCESS", data=url)
     
     @staticmethod
     @ServiceReceiver.database
-    def kakao_auth_api(code, db: Database):
+    def social_auth_api(service, code, db: Database):
         try:
             # 전달받은 authorization code를 통해서 access_token을 발급
-            oauth = KakaoAuth()
-            auth_info = oauth.auth(code)
+            service = service.lower()
 
-            # error 발생 시 로그인 페이지로 redirect
-            if "error" in auth_info:
-                raise CustomException("인증을 실패하였습니다.", code=404)
-            
-            # id = 카카오 아이디, nickname = 카카오 닉네임
-            kakao_info = oauth.userinfo("Bearer " + auth_info['access_token'])
-
-            user_refo = UserRepository(db)
-            user = user_refo.find_one_by_username(kakao_info['id'])
-            if not user:
-                data = {
-                    'username': str(kakao_info['id']),
-                    'password': encrypt_password(str(kakao_info['id'])).decode('utf-8'),
-                    'nickname': kakao_info['properties']['nickname'],
-                }
-                user = user_refo.add(data)
-            payload_access = {"id": user["id"], "username": user['username'],
-                                'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=30)}
-            payload_reflash = {"id": user["id"], "username": user['username'],
-                                'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=6)}
-            secret = config["SECRET_KEY"]
-            token = {"access_token": generate_token(payload_access, secret),
-                        "refresh_token": generate_token(payload_reflash, secret)}
-            REDIRECT_URI_SOCIAL = config['REDIRECT_URI_SOCIAL']
-            return redirect(REDIRECT_URI_SOCIAL + "?accesstoken=" + token['access_token']+"&refreshtoken="
-                            +token['refresh_token'])
-        except CustomException as e:
-            return e.get_response()
-        except Exception as e:
-            return custom_response("FAIL", code=400)
-        
-    @staticmethod
-    def signin_with_google_service():
-        GOOGLE_CLIENT_ID = config['GOOGLE_CLIENT_ID']
-        REDIRECT_URI = config['REDIRECT_URI'] + "/google"
-        print("REDIRECT_URI : ", REDIRECT_URI)
-        scope = "https://www.googleapis.com/auth/userinfo.email"
-        url = {'url': "https://accounts.google.com/o/oauth2/v2/auth?client_id=%s&redirect_uri=%s&response_type=code&scope=%s" \
-               % (GOOGLE_CLIENT_ID, REDIRECT_URI, scope)}        
-        return custom_response("SUCCESS", data=url)
-    
-    @staticmethod
-    @ServiceReceiver.database
-    def google_auth_api(code, db: Database):
-        try:
-            # 전달받은 authorization code를 통해서 access_token을 발급
-            oauth = GoogleAuth()
+            oauth = OAuth(service)
             auth_info = oauth.auth(code)
 
             # error 발생 시 로그인 페이지로 redirect
             if "error" in auth_info:
                 raise CustomException("인증을 실패하였습니다.", code=404)
         
-            google_info = oauth.userinfo("Bearer " + auth_info['access_token'])
+            info = oauth.userinfo("Bearer " + auth_info['access_token'])
 
             user_refo = UserRepository(db)
-            user = user_refo.find_one_by_username(google_info['sub'])
+            if service == "kakao":
+                username = str(info['id'])
+                password = encrypt_password(str(info['id'])).decode('utf-8')
+                nickname = info['properties']['nickname']
+            elif service == "google":
+                username = str(info['sub'])
+                password = encrypt_password(str(info['sub'])).decode('utf-8')
+                nickname = info['email']
+            user = user_refo.find_one_by_username(username)
+
             if not user:
                 data = {
-                    'username': str(google_info['sub']),
-                    'password': encrypt_password(str(google_info['sub'])).decode('utf-8'),
-                    'nickname': google_info['email'],
+                    'username': username,
+                    'password': password,
+                    'nickname': nickname,
                 }
                 user = user_refo.add(data)
             payload_access = {"id": user["id"], "username": user['username'],
