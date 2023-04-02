@@ -62,7 +62,7 @@ class OAuth(Resource):
     @api.response(400, 'Bad request')
     def get(self, service):
         """
-        소셜 로그인 정보 전달
+        소셜 로그인 정보 전달(백엔드 정보 전달용)
         """
         code = request.args.get('code')
         return AuthService.social_auth_api(service, code)
