@@ -41,9 +41,9 @@ class EmailSender:
         except smtplib.SMTPDataError:
             return {'message': "An error occurred while sending the email data."}, 503
         except smtplib.SMTPException:
-            return {'message': "An SMTP exception occurred."}, 404
+            return {'message': "An SMTP exception occurred."}, 409
         except Exception as e:
-            return {'message': f"An exception occurred: {e}"}, 404
+            return {'message': f"An exception occurred: {e}"}, 409
         else:
             return {"message": "Email sent successfully."}, 200
 

@@ -22,7 +22,7 @@ class AuthService:
             user = UserRepository(db).find_one_by_username(user_credentials['username'])
 
             if not user:
-                raise CustomException("유저가 존재하지 않습니다.", code=404)
+                raise CustomException("아이디나 비밀번호가 일치하지 않습니다.", code=409)
             else:
                 payload_access = {"id": user["id"], "username": user['username'],
                            'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=30)}
@@ -34,11 +34,11 @@ class AuthService:
                              "refresh_token": generate_token(payload_reflash, secret)}
                     return custom_response("SUCCESS", data=token)
                 else:
-                    raise CustomException("유효하지 않은 비밀 번호입니다.", code=403)
+                    raise CustomException("아이디나 비밀번호가 일치하지 않습니다.", code=409)
         except CustomException as e:
             return e.get_response()
         except Exception as e:
-            return custom_response("FAIL", code=400)
+            return custom_response("FAIL", code=500)
         
     @staticmethod
     def signin_with_social_service(service):
@@ -66,7 +66,7 @@ class AuthService:
 
             # error 발생 시 로그인 페이지로 redirect
             if "error" in auth_info:
-                raise CustomException("인증을 실패하였습니다.", code=404)
+                raise CustomException("인증을 실패하였습니다.", code=409)
         
             info = oauth.userinfo("Bearer " + auth_info['access_token'])
 
@@ -107,7 +107,7 @@ class AuthService:
         except CustomException as e:
             return e.get_response()
         except Exception as e:
-            return custom_response("FAIL", code=400)
+            return custom_response("FAIL", code=500)
 
     @staticmethod
     @ServiceReceiver.database
@@ -122,9 +122,9 @@ class AuthService:
             if is_username:
                 raise CustomException("이미 존재하는 유저입니다.", code=409)
             elif not validate_email(input_data['username']):
-                raise CustomException("이메일 형식이 올바르지 않습니다.", code=400)
+                raise CustomException("이메일 형식이 올바르지 않습니다.", code=409)
             elif not validate_password(input_data['password']):
-                raise CustomException("암호는 8자 이상의 하나 이상의 숫자, 문자, 특수문자이어야 합니다.", code=400)
+                raise CustomException("암호는 8자 이상의 하나 이상의 숫자, 문자, 특수문자이어야 합니다.", code=409)
             to_email = input_data['username']
             subject = config['STML_SUBJECT']
             body = config['STML_BODY']
@@ -150,7 +150,7 @@ class AuthService:
         except CustomException as e:
             return e.get_response()
         except Exception as e:
-            return custom_response("FAIL", code=400)
+            return custom_response("FAIL", code=500)
         
     @staticmethod
     def get_new_access_token(auth):

@@ -19,12 +19,12 @@ class UserService:
             user_repo = UserRepository(db)
             user = user_repo.find_one_by_user_id(id)
             if not user:
-                raise CustomException("유저가 존재하지 않습니다.", code=404)
+                raise CustomException("유저가 존재하지 않습니다.", code=409)
             return custom_response("SUCCESS", data=user)
         except CustomException as e:
             return e.get_response()
         except Exception as e:
-            return custom_response("FAIL", code=400)
+            return custom_response("FAIL", code=500)
         
     @staticmethod
     @ServiceReceiver.database
@@ -39,7 +39,7 @@ class UserService:
         except CustomException as e:
             return e.get_response()
         except Exception as e:
-            return custom_response("FAIL", code=400)
+            return custom_response("FAIL", code=500)
     
     @staticmethod
     @ServiceReceiver.database
@@ -48,14 +48,14 @@ class UserService:
             user_repo = UserRepository(db)
             user = user_repo.find_one_by_user_id(id)
             if not user:
-                raise CustomException("유저가 존재하지 않습니다.", code=404)
+                raise CustomException("유저가 존재하지 않습니다.", code=409)
             user_data['password'] = encrypt_password(user_data['password']).decode('utf-8')
             user = user_repo.update(id, user_data['username'], user_data['password'], user_data['nickname'])
             return custom_response("SUCCESS", data=user)
         except CustomException as e:
             return e.get_response()
         except Exception as e:
-            return custom_response("FAIL", code=400)
+            return custom_response("FAIL", code=500)
         
     @staticmethod
     @ServiceReceiver.database
@@ -64,13 +64,13 @@ class UserService:
             user_repo = UserRepository(db)
             user = user_repo.find_one_by_username(user_data['username'])
             if not user:
-                raise CustomException("유저가 존재하지 않습니다.", code=404)
+                raise CustomException("유저가 존재하지 않습니다.", code=409)
             user = user_repo.delete(user['id'])
             return custom_response("SUCCESS", data=user)
         except CustomException as e:
             return e.get_response()
         except Exception as e:
-            return custom_response("FAIL", code=400)
+            return custom_response("FAIL", code=500)
         
     @staticmethod
     @ServiceReceiver.database
@@ -79,13 +79,13 @@ class UserService:
             user_info = UserRepository(db)
             user = user_info.find_one_by_user_id(id)
             if not user:
-                raise CustomException("유저가 존재하지 않습니다.", code=404)
+                raise CustomException("유저가 존재하지 않습니다.", code=409)
             user = UserRepository(db).delete(user['id'])
             return custom_response("SUCCESS", data=user)
         except CustomException as e:
             return e.get_response()
         except Exception as e:
-            return custom_response("FAIL", code=400)
+            return custom_response("FAIL", code=500)
         
     @staticmethod
     @ServiceReceiver.database
@@ -100,7 +100,7 @@ class UserService:
         except CustomException as e:
             return e.get_response()
         except Exception as e:
-            return custom_response("FAIL", code=400)
+            return custom_response("FAIL", code=500)
         
     @staticmethod
     @ServiceReceiver.database
@@ -124,8 +124,7 @@ class UserService:
         except CustomException as e:
             return e.get_response()
         except Exception as e:
-            print(e)
-            return custom_response("FAIL", code=400)
+            return custom_response("FAIL", code=500)
 
     @staticmethod
     @ServiceReceiver.database
@@ -146,4 +145,4 @@ class UserService:
         except CustomException as e:
             return e.get_response()
         except Exception as e:
-            return custom_response("FAIL", code=400)
+            return custom_response("FAIL", code=500)

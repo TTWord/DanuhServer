@@ -15,7 +15,7 @@ class WordService:
             book_repo = BookRepository(db)
             book = book_repo.find_one_by_id(data["book_id"])
             if not book:
-                raise CustomException("단어장이 존재하지 않습니다.", code=404)
+                raise CustomException("단어장이 존재하지 않습니다.", code=409)
             elif book["user_id"] != auth["id"]:
                 raise CustomException("단어장 조회 권한이 없습니다.", code=403)
             
@@ -24,7 +24,7 @@ class WordService:
         except CustomException as e:
             return e.get_response()
         except Exception as e:
-            return custom_response("FAIL", code=400)
+            return custom_response("FAIL", code=500)
     
     @staticmethod
     @ServiceReceiver.database
@@ -32,12 +32,12 @@ class WordService:
         try:
             word = WordRepository(db).find_one_by_id(id)
             if word is None:
-                raise CustomException("단어장이 존재하지 않습니다.", code=404)
+                raise CustomException("단어장이 존재하지 않습니다.", code=409)
             return custom_response("SUCCESS", data=word)
         except CustomException as e:
             return e.get_response()
         except Exception as e:
-            return custom_response("FAIL", code=400)
+            return custom_response("FAIL", code=500)
     
     @staticmethod
     @ServiceReceiver.database
@@ -51,9 +51,9 @@ class WordService:
 
             book = book_repo.find_one_by_id(data["book_id"])
             if not book:
-                raise CustomException("단어장이 존재하지 않습니다.", code=404)
+                raise CustomException("단어장이 존재하지 않습니다.", code=409)
             elif book["user_id"] != auth["id"]:
-                raise CustomException("단어장 조회 권한이 없습니다.", code=403)
+                raise CustomException("단어장 조회 권한이 없습니다.", code=409)
             
             words = word_repo.find_all_by_book_id(book_id=book['id'])
             for word in words:
@@ -65,7 +65,7 @@ class WordService:
         except CustomException as e:
             return e.get_response()
         except Exception as e:
-            return custom_response("FAIL", code=400)
+            return custom_response("FAIL", code=500)
         
     @staticmethod
     @ServiceReceiver.database
@@ -78,7 +78,7 @@ class WordService:
             # 데이터 중복 검사
             word = word_repo.find_one_by_id(id=id)
             if not word:
-                raise CustomException("존재하지 않는 단어입니다.", code=404)
+                raise CustomException("존재하지 않는 단어입니다.", code=409)
             
             # user_id와 검사
             user_info = BookRepository(db).find_one_by_id(word['book_id'])
@@ -90,7 +90,7 @@ class WordService:
         except CustomException as e:
             return e.get_response()
         except Exception as e:
-            return custom_response("FAIL", code=400)
+            return custom_response("FAIL", code=500)
     
     @staticmethod
     @ServiceReceiver.database
@@ -113,4 +113,4 @@ class WordService:
         except CustomException as e:
             return e.get_response()
         except Exception as e:
-            return custom_response("FAIL", code=400)
+            return custom_response("FAIL", code=500)
