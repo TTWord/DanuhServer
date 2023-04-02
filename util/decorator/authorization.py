@@ -23,7 +23,7 @@ class Authorization:
                 payload = decode_token(access_token, config["SECRET_KEY"])
                 return func(auth = payload, *args, **kwargs)
             except jwt.ExpiredSignatureError:
-                return custom_response("만료된 토큰입니다.", 401)
+                return custom_response("만료된 토큰입니다.", code=401)
             except jwt.InvalidTokenError:
                 return custom_response("유효하지 않은 토큰입니다.", code=401)
             except CustomException as e:
@@ -45,7 +45,7 @@ class Authorization:
                 payload = decode_token(access_token, config["SECRET_KEY"])
                 return func(auth = payload, *args, **kwargs)
             except jwt.ExpiredSignatureError:
-                return custom_response("만료된 토큰입니다.", 401)
+                return custom_response("만료된 토큰입니다.", code=401)
             except Exception as e:
                 return func(auth = None, *args, **kwargs)
         return wrapper
@@ -65,7 +65,7 @@ class Authorization:
                 decode_token(access_token, config["SECRET_KEY"])
                 return func(*args, **kwargs)
             except jwt.ExpiredSignatureError:
-                return custom_response("만료된 토큰입니다.", 401)
+                return custom_response("만료된 토큰입니다.", code=401)
             except jwt.InvalidTokenError:
                 return custom_response("유효하지 않은 토큰입니다.", code=401)
             except CustomException as e:
