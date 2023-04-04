@@ -1,7 +1,7 @@
 from flask import request
 from flask_restx import Namespace, Resource, Api, reqparse, fields
 from service.auth_service import AuthService
-from util.decorator.authorization import Authorization
+from util.decorator.authorization import Authorization, RefreshToken
 
 
 api = Namespace('auth', description='관리 API')
@@ -48,7 +48,7 @@ class SendMail(Resource):
 class RefreshToken(Resource):
     @api.response(200, 'Success')
     @api.response(400, 'Bad request')
-    @Authorization.check_authorization
+    @RefreshToken.check_authorization
     def post(self, auth):
         """
         액세스 토큰 재발급
