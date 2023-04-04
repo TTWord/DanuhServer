@@ -4,11 +4,11 @@ from flask import request
 from service.quiz_service import QuizService
 
 
-api = Namespace('memo', description='단어장 API')
+api = Namespace('quiz', description='단어장 API')
 
 @api.route("")
 @api.doc(security='Bearer Auth')
-class Memo(Resource):
+class Quiz(Resource):
     @Authorization.check_authorization
     def get(self, auth):
         """
