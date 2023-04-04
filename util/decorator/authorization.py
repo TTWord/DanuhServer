@@ -15,7 +15,7 @@ class Authorization:
             try:
                 access_token = request.headers.get('Authorization')
                 if not access_token:
-                    raise CustomException("액세스 토큰이 제공되지 않았습니다.", 401)
+                    raise CustomException("ACCESS_TOKEN_NOT_PROVIDED", 401)
             
                 token_info = access_token.split(" ")
                 access_token = token_info[1]
@@ -23,9 +23,9 @@ class Authorization:
                 payload = decode_token(access_token, config["SECRET_KEY"])
                 return func(auth = payload, *args, **kwargs)
             except jwt.ExpiredSignatureError:
-                return custom_response("만료된 액세스 토큰입니다.", code=401)
+                return custom_response("EXPIRED_ACCESS_TOKEN", code=401)
             except jwt.InvalidTokenError:
-                return custom_response("유효하지 않은 액세스 토큰입니다.", code=401)
+                return custom_response("INVALID_ACCESS_TOKEN", code=401)
             except CustomException as e:
                 return e.get_response()
             except Exception as e:
@@ -45,7 +45,7 @@ class Authorization:
                 payload = decode_token(access_token, config["SECRET_KEY"])
                 return func(auth = payload, *args, **kwargs)
             except jwt.ExpiredSignatureError:
-                return custom_response("만료된 액세스 토큰입니다.", code=401)
+                return custom_response("EXPIRED_ACCESS_TOKEN", code=401)
             except Exception as e:
                 return func(auth = None, *args, **kwargs)
         return wrapper
@@ -57,7 +57,7 @@ class Authorization:
             try:
                 access_token = request.headers.get('Authorization')
                 if not access_token:
-                    raise CustomException("액세스 토큰이 제공되지 않았습니다.", 401)
+                    raise CustomException("ACCESS_TOKEN_NOT_PROVIDED", 401)
             
                 token_info = access_token.split(" ")
                 access_token = token_info[1]
@@ -65,9 +65,9 @@ class Authorization:
                 decode_token(access_token, config["SECRET_KEY"])
                 return func(*args, **kwargs)
             except jwt.ExpiredSignatureError:
-                return custom_response("만료된 액세스 토큰입니다.", code=401)
+                return custom_response("EXPIRED_ACCESS_TOKEN", code=401)
             except jwt.InvalidTokenError:
-                return custom_response("유효하지 않은 액세스 토큰입니다.", code=401)
+                return custom_response("INVALID_ACCESS_TOKEN", code=401)
             except CustomException as e:
                 return e.get_response()
             except Exception as e:
@@ -83,7 +83,7 @@ class RefreshToken:
             try:
                 access_token = request.headers.get('Authorization')
                 if not access_token:
-                    raise CustomException("리프래쉬 토큰이 제공되지 않았습니다.", 401)
+                    raise CustomException("REFRESH_TOKEN_NOT_PROVIDED", 401)
             
                 token_info = access_token.split(" ")
                 access_token = token_info[1]
@@ -91,9 +91,9 @@ class RefreshToken:
                 payload = decode_token(access_token, config["SECRET_KEY"])
                 return func(auth = payload, *args, **kwargs)
             except jwt.ExpiredSignatureError:
-                return custom_response("만료된 리프래쉬 토큰입니다.", code=401)
+                return custom_response("EXPIRED_REFRESH_TOKEN", code=401)
             except jwt.InvalidTokenError:
-                return custom_response("유효하지 않은 리프래쉬 토큰입니다.", code=401)
+                return custom_response("INVALID_REFRESH_TOKEN", code=401)
             except CustomException as e:
                 return e.get_response()
             except Exception as e:
