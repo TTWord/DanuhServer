@@ -5,6 +5,7 @@ from api.word import api as word_ns
 from api.user import api as user_ns
 from api.auth import api as auth_ns
 from api.memo import api as memo_ns
+from api.quiz import api as quiz_ns
 
 
 authorizations = {
@@ -32,3 +33,4 @@ api.add_namespace(word_ns)
 api.add_namespace(user_ns)
 api.add_namespace(auth_ns)
 api.add_namespace(memo_ns)
+api.add_namespace(quiz_ns)
