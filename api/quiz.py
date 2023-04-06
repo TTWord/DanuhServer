@@ -13,7 +13,7 @@ quiz_info = api.model('퀴즈 정보', {
 })
 
 
-@api.route("/multiplequiz")
+@api.route("/multiple")
 @api.doc(security='Bearer Auth')
 class MultipleQuiz(Resource):
     @api.expect(quiz_info)
@@ -26,7 +26,7 @@ class MultipleQuiz(Resource):
         return QuizService.generate_multiple_quiz_service(data)
     
 
-@api.route("/shortfromquiz")
+@api.route("/shortfrom")
 @api.doc(security='Bearer Auth')
 class ShortFormQuiz(Resource):
     @api.expect(quiz_info)
