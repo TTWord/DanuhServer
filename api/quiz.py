@@ -26,7 +26,7 @@ class MultipleQuiz(Resource):
         return QuizService.generate_multiple_quiz_service(data)
     
 
-@api.route("/shortfrom")
+@api.route("/shortform")
 @api.doc(security='Bearer Auth')
 class ShortFormQuiz(Resource):
     @api.expect(quiz_info)
