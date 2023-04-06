@@ -10,16 +10,16 @@ from util.validation import validate_word
 class WordService:
     @staticmethod
     @ServiceReceiver.database
-    def get_words_by_book_id(data, auth, db: Database):
+    def get_words_by_book_id(book_id, auth, db: Database):
         try:
             book_repo = BookRepository(db)
-            book = book_repo.find_one_by_id(data["book_id"])
+            book = book_repo.find_one_by_id(book_id)
             if not book:
                 raise CustomException("단어장이 존재하지 않습니다.", code=409)
             elif book["user_id"] != auth["id"]:
                 raise CustomException("단어장 조회 권한이 없습니다.", code=403)
             
-            words = WordRepository(db).find_all_by_book_id(data['book_id'])
+            words = WordRepository(db).find_all_by_book_id(book_id)
             return custom_response("SUCCESS", data=words)
         except CustomException as e:
             return e.get_response()
@@ -41,15 +41,15 @@ class WordService:
     
     @staticmethod
     @ServiceReceiver.database
-    def add(data, auth, db: Database):
+    def add(book_id, data, auth, db: Database):
         try:
             if not validate_word(data['word'], data['mean']):
                 raise CustomException("단어나 의미가 15자를 초과합니다.", code=400)
             
             word_repo = WordRepository(db)
             book_repo = BookRepository(db)
-
-            book = book_repo.find_one_by_id(data["book_id"])
+            print(book_id)
+            book = book_repo.find_one_by_id(book_id)
             if not book:
                 raise CustomException("단어장이 존재하지 않습니다.", code=409)
             elif book["user_id"] != auth["id"]:
@@ -60,7 +60,7 @@ class WordService:
                 if word['word'] == data['word'] and word['mean'] == data['mean']:
                     raise CustomException("이미 존재하는 단어입니다.", code=409)
             
-            word = word_repo.add(book_id= data['book_id'], word=data["word"], mean=data["mean"])
+            word = word_repo.add(book_id= book_id, word=data["word"], mean=data["mean"])
             return custom_response("SUCCESS", data=word)
         except CustomException as e:
             return e.get_response()

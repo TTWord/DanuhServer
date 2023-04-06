@@ -11,36 +11,30 @@ word_info = api.model('추가 정보', {
     'mean': fields.String(required=True, description='의미', example='영원한 회귀'),
 })
 
-book_id = api.model('id', {
-    'book_id': fields.Integer(required=True, description='단어장 ID', example=1),
-    **word_info
-})
 
-
-@api.route('')
+@api.route('/<int:book_id>')
 @api.doc(security='Bearer Auth')
 class WordByBook(Resource):
     @api.response(200, 'Success')
     @api.response(400, 'Fail')
     @Authorization.check_authorization
-    def get(self, auth):
+    def get(self, book_id, auth):
         """
         모든 단어 조회
         """
 
-        data = request.args
-        return WordService.get_words_by_book_id(data, auth)
+        return WordService.get_words_by_book_id(book_id, auth)
     
     @api.response(200, 'Success')
     @api.response(400, 'Fail')
-    @api.expect(book_id)
+    @api.expect(word_info)
     @Authorization.check_authorization
-    def post(self, auth):
+    def post(self, book_id, auth):
         """
         단어 추가
         """
         data = request.get_json()
-        return WordService.add(data, auth)
+        return WordService.add(book_id, data, auth)
     
 
 @api.route('/<int:id>')
