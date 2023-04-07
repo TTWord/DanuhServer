@@ -69,7 +69,7 @@ class QuizService:
 
             problem = []
             for dict in random_word:
-                problem.append([dict['word'], dict['mean']])
+                problem.append({"answer": [dict['word'], dict['mean']]})
 
             return custom_response("데이터 조회 성공", code=200, data={"problem": problem})
         except Exception as e:
