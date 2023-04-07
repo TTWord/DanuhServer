@@ -19,26 +19,38 @@ class QuizService:
             if len(words) < 4:
                 raise CustomException("단어가 4개 미만입니다.", code=400)
             
+            if data['number'] > len(words):
+                number = len(words)
+            else:
+                number = data['number']
+
+            word_book = []
+            for word in words:
+                word_book.append([word['word'], word['mean']])
+                
+            random_words = random.sample(word_book, number)
+
             problem = []
-            for _ in range(0, data['number']):
-                random_word = random.sample(words, 4)
 
-                resultList = []
-                for dict in random_word:
-                    resultList.append([dict['word'], dict['mean']])
+            for _, random_word in enumerate(random_words):
+                answer_options = [random_word]
+                word_book_copy = [word for word in word_book if word != random_word]
+                
+                while len(answer_options) < 4:
+                    random_meaning = random.choice(word_book_copy)
+                    if random_meaning not in answer_options:
+                        answer_options.append(random_meaning)
 
-                answer_index = random.randint(0, 3)
-                # print(f"{random_word[answer_index]['word']}의 뜻은 무엇인가요?")
-                # for i in range(4):
-                #     print(f"{i+1}. {resultList[i][1]}")
-                # print(f"정답 : {answer_index +1}.{random_word[answer_index]['mean']}")
-                data = {"answer_index": answer_index, "answers": resultList}
-                problem.append(data)
+                random.shuffle(answer_options)
+                answer_index = answer_options.index(random_word)
+                problem.append({"answer_index": answer_index, "answers": answer_options})
+
             return custom_response("퀴즈 생성 성공", code=200, data={"problem": problem})
         except CustomException as e:
             return e.get_response()
         except Exception as e:
             return custom_response("FAIL", code=500)
+
 
     @staticmethod
     @ServiceReceiver.database
@@ -47,13 +59,18 @@ class QuizService:
             word_repo = WordRepository(db)
 
             words = word_repo.find_all_by_book_id(book_id = data['book_id'])
+            
+            if data['number'] > len(words):
+                number = len(words)
+            else:
+                number = data['number']
 
-            random_word = random.sample(words, data['number'])
+            random_word = random.sample(words, number)
 
             problem = []
             for dict in random_word:
                 problem.append([dict['word'], dict['mean']])
-            print(problem)
+
             return custom_response("데이터 조회 성공", code=200, data={"problem": problem})
         except Exception as e:
             return custom_response("FAIL", code=500)
