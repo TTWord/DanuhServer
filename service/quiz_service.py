@@ -27,7 +27,7 @@ class QuizService:
             word_book = []
             for word in words:
                 word_book.append([word['word'], word['mean']])
-                
+                 
             random_words = random.sample(word_book, number)
 
             problem = []

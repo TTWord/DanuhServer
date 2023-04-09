@@ -25,7 +25,7 @@ class BookService:
             books = BookRepository(db).find_all_by_user_id(user_id = auth['id'])
             return custom_response("데이터 조회 성공", data=books,)
         except:
-            return custom_response("단어장 목록 조회 실패", code=400)
+            return custom_response("단어장 목록 조회 실패", code=500)
     
     @staticmethod
     @ServiceReceiver.database
@@ -43,7 +43,7 @@ class BookService:
         except CustomException as e:
             return e.get_response()
         except Exception as e:
-            return custom_response("단어장 조회 실패", code=400)
+            return custom_response("단어장 조회 실패", code=500)
     
     @staticmethod
     @ServiceReceiver.database
