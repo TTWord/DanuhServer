@@ -17,7 +17,7 @@ class QuizService:
             words = word_repo.find_all_by_book_id(book_id = data['book_id'])
 
             if len(words) < 4:
-                raise CustomException("단어가 4개 미만입니다.", code=400)
+                raise CustomException("WORD_LESS_THAN_COUNT", code=400) # 단어가 4개 미만인 경우
             
             if data['number'] > len(words):
                 number = len(words)
@@ -45,7 +45,7 @@ class QuizService:
                 answer_index = answer_options.index(random_word)
                 problem.append({"answer_index": answer_index, "answers": answer_options})
 
-            return custom_response("퀴즈 생성 성공", code=200, data={"problem": problem})
+            return custom_response("SUCCESS", code=200, data={"problem": problem})
         except CustomException as e:
             return e.get_response()
         except Exception as e:
@@ -71,6 +71,6 @@ class QuizService:
             for dict in random_word:
                 problem.append({"answer": [dict['word'], dict['mean']]})
 
-            return custom_response("데이터 조회 성공", code=200, data={"problem": problem})
+            return custom_response("SUCCESS", code=200, data={"problem": problem})
         except Exception as e:
             return custom_response("FAIL", code=500)
