@@ -1,5 +1,5 @@
-
 from db.connect import Connect
+from datetime import datetime
 
 
 class CertificationRepository(Connect):
@@ -27,8 +27,9 @@ class CertificationRepository(Connect):
         
         return certification
     
-    def update(self, cert_key: str, cert_code: str) -> dict:
-        sql = f"UPDATE certification SET cert_code = '{cert_code}' WHERE cert_key = '{cert_key}'"
+    def update(self, cert_key: str, cert_code: str, expired_time: str) -> dict:
+        sql = f"UPDATE certification SET cert_code = '{cert_code}', expired_time = '{expired_time}' WHERE cert_key = '{cert_key}'"
+
         self.cursor.execute(sql)
         self.connect.commit()
 

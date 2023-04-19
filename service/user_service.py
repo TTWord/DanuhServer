@@ -9,6 +9,7 @@ from config import config
 from db.connect import Database
 from werkzeug.utils import secure_filename
 from flask import url_for
+from datetime import datetime
 
 
 class UserService:
@@ -31,8 +32,12 @@ class UserService:
     def signup_service(user_data, db: Database):
         try:
             cert_info = CertificationRepository(db).find_one_by_cert_key(user_data['username'])
-            if not cert_info['cert_code'] == user_data['certification_id']:
+
+            if cert_info['expired_time'] < datetime.now():
+                raise CustomException("인증 코드가 만료되었습니다.", code=403)
+            elif not cert_info['cert_code'] == user_data['certification_id']:
                 raise CustomException("인증 코드가 동일하지 않습니다.", code=403)
+            
             user_data['password'] = encrypt_password(user_data['password']).decode('utf-8')
             UserRepository(db).add(user_data)
             return custom_response("SUCCESS")

@@ -132,7 +132,7 @@ class AuthService:
             response = EmailSender.send_email(to_email, subject, body, verification_id)
 
             now = datetime.datetime.now()
-            expiration_date = now + datetime.timedelta(days=1)
+            expiration_date = now + datetime.timedelta(minutes=3)
             expiration_date_str = expiration_date.strftime('%Y-%m-%d %H:%M:%S')
             verification_info = {
                 'cert_type': 'email',
@@ -143,7 +143,7 @@ class AuthService:
             if response[1] == 200:
                 cert_repo = CertificationRepository(db)
                 if cert_repo.find_one_by_cert_key(verification_info['cert_key']):
-                    verification_id = cert_repo.update(verification_info['cert_key'], verification_info['cert_code'])
+                    verification_id = cert_repo.update(verification_info['cert_key'], verification_info['cert_code'], verification_info['expired_time'])
                 else:
                     verification_id = cert_repo.add(verification_info)
                 return custom_response("SUCCESS", data=verification_info)
