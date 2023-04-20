@@ -4,74 +4,131 @@ from service.auth_service import AuthService
 from util.decorator.authorization import Authorization, RefreshToken
 
 
-api = Namespace('auth', description='관리 API')
+api = Namespace("auth", description="관리 API")
 
-user_sign_in = api.model('회원 로그인', {
-    'username': fields.String(required=True, description='아이디', example='kimjunghyun696@google.com'),
-    'password': fields.String(required=True, description='비밀번호', example='a123456!'),
-})
+user_name = api.model(
+    "유저이름",
+    {
+        "username": fields.String(
+            required=True, description="아이디", example="kimjunghyun696@google.com"
+        )
+    },
+)
 
-email_content = api.model('메일 인증', {
-    **user_sign_in,
-    'nickname': fields.String(required=True, description='닉네임', example='김흐긴'),
-})
+user_sign_in = api.model(
+    "회원 로그인",
+    {
+        "username": fields.String(
+            required=True, description="아이디", example="kimjunghyun696@google.com"
+        ),
+        "password": fields.String(
+            required=True, description="비밀번호", example="a123456!"
+        ),
+    },
+)
+
+email_content = api.model(
+    "메일 인증",
+    {
+        **user_sign_in,
+        "nickname": fields.String(required=True, description="닉네임", example="김흐긴"),
+    },
+)
 
 
-@api.route('/signin')
+user_sign_up = api.model(
+    "회원 가입",
+    {
+        **user_name,
+        "password": fields.String(
+            required=True, description="비밀번호", example="a123456!"
+        ),
+        "nickname": fields.String(required=True, description="닉네임", example="김흐긴"),
+        "certification_id": fields.String(
+            required=True, description="인증ID", example="474825"
+        ),
+    },
+)
+
+
+@api.route("/signin")
 class UserSignIn(Resource):
     @api.expect(user_sign_in, validate=True)
-    @api.response(200, 'Success')
-    @api.response(400, 'Bad request')
+    @api.response(200, "Success")
+    @api.response(400, "Bad request")
     def post(self):
         """
         로그인
         """
         input_data = request.get_json()
         return AuthService.signin_service(input_data)
-        
 
-@api.route('/sendmail')
+
+@api.route("/check/nickname")
+class CheckNickname(Resource):
+    def post(self):
+        """
+        닉네임 중복 확인
+        """
+        data = request.get_json()
+
+        return AuthService.check_nickname(data)
+
+
+@api.route("/sendmail")
 class SendMail(Resource):
     @api.expect(email_content, validate=True)
-    @api.response(200, 'Success')
-    @api.response(400, 'Bad request')
+    @api.response(200, "Success")
+    @api.response(400, "Bad request")
     def post(self):
         """
         인증 메일 전송
         """
         input_data = request.get_json()
         return AuthService.send_mail(input_data)
-    
 
-@api.route('/refreshtoken')
-@api.doc(security='Bearer Auth')
+
+@api.route("/signup")
+class UserSignUp(Resource):
+    @api.response(200, "Success")
+    @api.response(400, "Bad request")
+    @api.expect(user_sign_up, validate=True)
+    def post(self):
+        """
+        회원 가입
+        """
+        input_data = request.get_json()
+        return AuthService.signup_service(input_data)
+
+
+@api.route("/refreshtoken")
+@api.doc(security="Bearer Auth")
 class RefreshToken(Resource):
-    @api.response(200, 'Success')
-    @api.response(400, 'Bad request')
+    @api.response(200, "Success")
+    @api.response(400, "Bad request")
     @RefreshToken.check_authorization
     def post(self, auth):
         """
         액세스 토큰 재발급
         """
         return AuthService.get_new_access_token(auth)
-    
-    
-@api.route('/<service>')
+
+
+@api.route("/<service>")
 class OAuth(Resource):
-    @api.response(200, 'Success')
-    @api.response(400, 'Bad request')
+    @api.response(200, "Success")
+    @api.response(400, "Bad request")
     def get(self, service):
         """
         소셜 로그인 정보 전달(백엔드 정보 전달용)
         """
-        code = request.args.get('code')
+        code = request.args.get("code")
         return AuthService.social_auth_api(service, code)
-    
-    @api.response(200, 'Success')
-    @api.response(400, 'Bad request')
+
+    @api.response(200, "Success")
+    @api.response(400, "Bad request")
     def post(self, service):
         """
         소셜 로그인
         """
         return AuthService.signin_with_social_service(service)
-    
