@@ -15,8 +15,6 @@ class EmailSender:
             smtp_password = config['SMTP_PASSWORD']
             stml_html = config['STML_HTML']
 
-            verification_code_1, verification_code_2 = verification_id[0:3], verification_id[3:]
-
             msg = MIMEMultipart()
             msg['from'] = smtp_username
             msg['To'] = to_email
@@ -24,8 +22,7 @@ class EmailSender:
             msg.attach(MIMEText(body, 'plain'))
 
             html = open(stml_html, encoding='utf-8').read()
-            html = html.replace("input1", f"{verification_code_1}")
-            html = html.replace("input2", f"{verification_code_2}")
+            html = html.replace("verification", f"{verification_id}")
             msg.attach(MIMEText(html, 'html'))
 
             with smtplib.SMTP(smtp_server, smtp_port) as server:
