@@ -9,22 +9,16 @@ api = Namespace("auth", description="관리 API")
 user_name = api.model(
     "유저이름",
     {
-        "username": fields.String(
-            required=True, description="아이디", example="kimjunghyun696@google.com"
-        )
-    },
+        "username": fields.String(required=True, description="아이디", example="kimjunghyun696@google.com")
+    }
 )
 
 user_sign_in = api.model(
     "회원 로그인",
     {
-        "username": fields.String(
-            required=True, description="아이디", example="kimjunghyun696@google.com"
-        ),
-        "password": fields.String(
-            required=True, description="비밀번호", example="a123456!"
-        ),
-    },
+        "username": fields.String(required=True, description="아이디", example="kimjunghyun696@google.com"),
+        "password": fields.String(required=True, description="비밀번호", example="a123456!"),
+    }
 )
 
 email_content = api.model(
