@@ -9,7 +9,7 @@ from util.certification import EmailSender, OAuth
 from util.validation import validate_email, validate_password
 from db.connect import Database
 from config import config
-import datetime
+from datetime import datetime, timedelta
 import random
 from flask import redirect
 
@@ -109,12 +109,12 @@ class AuthService:
             payload_access = {
                 "id": user["id"],
                 "username": user["username"],
-                "exp": datetime.datetime.utcnow() + datetime.timedelta(minutes=30),
+                "exp": datetime.utcnow() + timedelta(minutes=30),
             }
             payload_reflash = {
                 "id": user["id"],
                 "username": user["username"],
-                "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=6),
+                "exp": datetime.utcnow() + timedelta(hours=6),
             }
             secret = config["SECRET_KEY"]
             token = {
@@ -170,8 +170,8 @@ class AuthService:
             ).zfill(3)
             response = EmailSender.send_email(to_email, subject, body, verification_id)
 
-            now = datetime.datetime.now()
-            expiration_date = now + datetime.timedelta(minutes=3)
+            now = datetime.now()
+            expiration_date = now + timedelta(minutes=3)
             expiration_date_str = expiration_date.strftime("%Y-%m-%d %H:%M:%S")
             verification_info = {
                 "cert_type": "email",
@@ -193,15 +193,14 @@ class AuthService:
         except CustomException as e:
             return e.get_response()
         except Exception as e:
+            print(e)
             return custom_response("FAIL", code=500)
 
     @staticmethod
     @ServiceReceiver.database
     def signup_service(user_data, db: Database):
         try:
-            cert_info = CertificationRepository(db).find_one_by_cert_key(
-                user_data["username"]
-            )
+            cert_info = CertificationRepository(db).find_one_by_cert_key(user_data["username"])
 
             if cert_info["expired_time"] < datetime.now():
                 # 인증코드 만료
@@ -210,21 +209,23 @@ class AuthService:
                 # 인증코드 불일치
                 raise CustomException("INCORRECT_AUTH_CODE", code=403)
 
-            user_data["password"] = encrypt_password(user_data["password"]).decode(
-                "utf-8"
-            )
-            UserRepository(db).add(user_data)
-            user = UserRepository(db).find_one_by_username(user_data["username"])
+            print("test1")
+            user_data["password"] = encrypt_password(user_data["password"]).decode("utf-8")
+            print("test2")
+            
+            
+            user = UserRepository(db).add(user_data)
+            
             
             payload_access = {
                     "id": user["id"],
                     "username": user["username"],
-                    "exp": datetime.datetime.utcnow() + datetime.timedelta(minutes=30),
+                    "exp": datetime.utcnow() + timedelta(minutes=30),
                 }
             payload_refresh = {
                 "id": user["id"],
                 "username": user["username"],
-                "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=6),
+                "exp": datetime.utcnow() + timedelta(hours=6),
             }
             secret = config["SECRET_KEY"]
             token = {

@@ -8,7 +8,7 @@ class ServiceReceiver:
             db = Database()
             db.connect()
             
-            data = func(db = db, *args, **kwargs)
+            data = func(*args, **kwargs, db = db)
             
             db.disconnect()
             
