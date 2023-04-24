@@ -10,8 +10,18 @@ import random
 class QuizService:
     @staticmethod
     @ServiceReceiver.database
-    def generate_multiple_quiz_service(data, db: Database):
+    def generate_multiple_quiz_service(data, auth, db: Database):
         try:
+            book_repo = BookRepository(db)
+            
+            book = book_repo.find_one_by_id(id = data['book_id'])
+            
+            if book is None:
+                raise CustomException("BOOK_NOT_FOUND", code=409)
+            
+            if book['user_id'] != auth['id']:
+                raise CustomException("BOOK_ACCESS_DENIED", code=403)
+            
             word_repo = WordRepository(db)
 
             words = word_repo.find_all_by_book_id(book_id = data['book_id'])
@@ -54,8 +64,18 @@ class QuizService:
 
     @staticmethod
     @ServiceReceiver.database
-    def generate_shortform_quiz_service(data, db: Database):
+    def generate_shortform_quiz_service(data, auth, db: Database):
         try:
+            book_repo = BookRepository(db)
+            
+            book = book_repo.find_one_by_id(id = data['book_id'])
+            
+            if book is None:
+                raise CustomException("BOOK_NOT_FOUND", code=409)
+            
+            if book['user_id'] != auth['id']:
+                raise CustomException("BOOK_ACCESS_DENIED", code=403)
+            
             word_repo = WordRepository(db)
 
             words = word_repo.find_all_by_book_id(book_id = data['book_id'])

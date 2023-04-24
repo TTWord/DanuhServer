@@ -17,23 +17,23 @@ quiz_info = api.model('퀴즈 정보', {
 @api.doc(security='Bearer Auth')
 class MultipleQuiz(Resource):
     @api.expect(quiz_info)
-    @Authorization.reject_authorization
-    def post(self):
+    @Authorization.check_authorization
+    def post(self, auth):
         """
         객관식 문제 생성
         """
         data = request.get_json()
-        return QuizService.generate_multiple_quiz_service(data)
+        return QuizService.generate_multiple_quiz_service(data = data, auth = auth)
     
 
 @api.route("/shortform")
 @api.doc(security='Bearer Auth')
 class ShortFormQuiz(Resource):
     @api.expect(quiz_info)
-    @Authorization.reject_authorization
-    def post(self):
+    @Authorization.check_authorization
+    def post(self, auth):
         """
         주관식 문제 생성
         """
         data = request.get_json()
-        return QuizService.generate_shortform_quiz_service(data)
+        return QuizService.generate_shortform_quiz_service(data, auth = auth)
