@@ -27,12 +27,12 @@ class AuthService:
                 payload_access = {
                     "id": user["id"],
                     "username": user["username"],
-                    "exp": datetime.datetime.utcnow() + datetime.timedelta(minutes=30),
+                    "exp": datetime.utcnow() + timedelta(minutes=30),
                 }
                 payload_refresh = {
                     "id": user["id"],
                     "username": user["username"],
-                    "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=6),
+                    "exp": datetime.utcnow() + timedelta(hours=6),
                 }
                 secret = config["SECRET_KEY"]
                 if compare_passwords(user_credentials["password"], user["password"]):
@@ -46,6 +46,7 @@ class AuthService:
         except CustomException as e:
             return e.get_response()
         except Exception as e:
+            print(e)
             return custom_response("FAIL", code=500)
 
     @staticmethod
@@ -209,13 +210,9 @@ class AuthService:
                 # 인증코드 불일치
                 raise CustomException("INCORRECT_AUTH_CODE", code=403)
 
-            print("test1")
             user_data["password"] = encrypt_password(user_data["password"]).decode("utf-8")
-            print("test2")
-            
-            
+        
             user = UserRepository(db).add(user_data)
-            
             
             payload_access = {
                     "id": user["id"],
@@ -237,6 +234,7 @@ class AuthService:
         except CustomException as e:
             return e.get_response()
         except Exception as e:
+            
             return custom_response("FAIL", code=500)
 
     @staticmethod
@@ -244,7 +242,7 @@ class AuthService:
         payload_access = {
             "id": auth["id"],
             "username": auth["username"],
-            "exp": datetime.datetime.utcnow() + datetime.timedelta(minutes=30),
+            "exp": datetime.utcnow() + timedelta(minutes=30),
         }
         secret = config["SECRET_KEY"]
         token = {"access_token": generate_token(payload_access, secret)}
