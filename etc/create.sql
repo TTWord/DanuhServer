@@ -27,6 +27,7 @@ create table word(
     book_id INT,
     word VARCHAR(100),
     mean VARCHAR(100),
+    is_memorized BOOLEAN not null default 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 )
