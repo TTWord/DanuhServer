@@ -10,7 +10,7 @@ class WordRepository(Connect):
         result = self.cursor.fetchall()
         for row in result:
             words.append(WordModel(id=row['id'], book_id=row['book_id'], word=row['word']
-                         , mean=row['mean'], created_at=row['created_at'], updated_at=row['updated_at']))
+                         , mean=row['mean'], created_at=row['created_at'], updated_at=row['updated_at'], is_memorized=row['is_memorized']))
         
         return [word.__dict__ for word in words]
                 
@@ -22,7 +22,7 @@ class WordRepository(Connect):
         result = self.cursor.fetchone()
         if result is not None:
             word = WordModel(id=result['id'], book_id=result['book_id'], word=result['word']
-                         , mean=result['mean'], created_at=result['created_at'], updated_at=result['updated_at'])
+                         , mean=result['mean'], created_at=result['created_at'], updated_at=result['updated_at'], is_memorized=result['is_memorized'])
             return word.__dict__
         else:
             return None
@@ -36,8 +36,8 @@ class WordRepository(Connect):
         
         if result is not None:
             word = WordModel(id=result['id'], book_id=result['book_id'], word=result['word']
-                         , mean=result['mean'], created_at=result['created_at'], updated_at=result['updated_at'])
-        
+                         , mean=result['mean'], created_at=result['created_at'], updated_at=result['updated_at'], is_memorized=result['is_memorized'])
+            
         return word.__dict__
     
     def add(self, book_id: int, word: str, mean: str) -> dict:
@@ -57,7 +57,14 @@ class WordRepository(Connect):
         word = WordModel(id=id, book_id=book_id, word=word, mean=mean)
         
         return word.__dict__
-        
+
+    def update_memorized(self, id: int, is_memorized: bool) -> dict:
+        sql = f"UPDATE word SET is_memorized={is_memorized} WHERE id = {id}"
+        self.cursor.execute(sql)
+        self.connect.commit()
+
+        return {'word_id': id}
+    
     def delete(self, id: int):
         sql = f"DELETE FROM word WHERE id={id}"
         self.cursor.execute(sql)
