@@ -13,26 +13,33 @@ class QuizService:
     def generate_multiple_quiz_service(data, auth, db: Database):
         try:
             book_repo = BookRepository(db)
-            
-            book = book_repo.find_one_by_id(id = data['book_id'])
-            
-            if book is None:
-                raise CustomException("BOOK_NOT_FOUND", code=409)
-            
-            if book['user_id'] != auth['id']:
-                raise CustomException("BOOK_ACCESS_DENIED", code=403)
-            
             word_repo = WordRepository(db)
+            words = []
+            book_ids = [int(book_id) for book_id in data['book_ids'].split("&")]
 
-            words = word_repo.find_all_by_book_id(book_id = data['book_id'])
+            for book_id in book_ids:
+                book = book_repo.find_one_by_id(id = book_id)
+                
+                if book is None:
+                    raise CustomException("BOOK_NOT_FOUND", code=409)
+                
+                if book['user_id'] != auth['id']:
+                    raise CustomException("BOOK_ACCESS_DENIED", code=403)
+                all_words = word_repo.find_all_by_book_id(book_id = book_id)
+
+                if data['memorized_filter'] == True:
+                    extend_words = [word for word in all_words if word['is_memorized'] == False]
+                else:
+                    extend_words = all_words
+                words.extend(extend_words)
 
             if len(words) < 4:
                 raise CustomException("WORD_LESS_THAN_COUNT", code=400) # 단어가 4개 미만인 경우
             
-            if data['number'] > len(words):
+            if data['count'] > len(words):
                 number = len(words)
             else:
-                number = data['number']
+                number = data['count']
                  
             random_words = random.sample(words, number)
 
@@ -51,7 +58,7 @@ class QuizService:
 
                 random.shuffle(answer_options)
                 answer_index = answer_options.index([random_word['word'], random_word['mean']])
-                problem.append({"answer_index": answer_index, "answers": answer_options, "word_id": random_word['id']})
+                problem.append({"answer_index": answer_index, "answers": answer_options, "word_id": random_word['id'], "is_memorized": random_word['is_memorized']})
 
             return custom_response("SUCCESS", code=200, data={"problem": problem})
         except CustomException as e:
@@ -65,29 +72,37 @@ class QuizService:
     def generate_shortform_quiz_service(data, auth, db: Database):
         try:
             book_repo = BookRepository(db)
-            
-            book = book_repo.find_one_by_id(id = data['book_id'])
-            
-            if book is None:
-                raise CustomException("BOOK_NOT_FOUND", code=409)
-            
-            if book['user_id'] != auth['id']:
-                raise CustomException("BOOK_ACCESS_DENIED", code=403)
-            
             word_repo = WordRepository(db)
+            words = []
+            book_ids = [int(book_id) for book_id in data['book_ids'].split("&")]
 
-            words = word_repo.find_all_by_book_id(book_id = data['book_id'])
+            for book_id in book_ids:
+                book = book_repo.find_one_by_id(id = book_id)
+                
+                if book is None:
+                    raise CustomException("BOOK_NOT_FOUND", code=409)
+                
+                if book['user_id'] != auth['id']:
+                    raise CustomException("BOOK_ACCESS_DENIED", code=403)
+                all_words = word_repo.find_all_by_book_id(book_id = book_id)
+
+                if data['memorized_filter'] == True:
+                    extend_words = [word for word in all_words if word['is_memorized'] == False]
+                else:
+                    extend_words = all_words
+
+                words.extend(extend_words)
             
-            if data['number'] > len(words):
+            if data['count'] > len(words):
                 number = len(words)
             else:
-                number = data['number']
+                number = data['count']
 
             random_word = random.sample(words, number)
 
             problem = []
             for dict in random_word:
-                problem.append({"answer": [dict['word'], dict['mean']], "word_id": dict['id']})
+                problem.append({"answer": [dict['word'], dict['mean']], "word_id": dict['id'], "is_memorized": dict['is_memorized']})
 
             return custom_response("SUCCESS", code=200, data={"problem": problem})
         except Exception as e:
