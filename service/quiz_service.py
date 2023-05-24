@@ -33,27 +33,25 @@ class QuizService:
                 number = len(words)
             else:
                 number = data['number']
-
-            word_book = []
-            for word in words:
-                word_book.append([word['word'], word['mean']])
                  
-            random_words = random.sample(word_book, number)
+            random_words = random.sample(words, number)
 
             problem = []
 
             for _, random_word in enumerate(random_words):
-                answer_options = [random_word]
-                word_book_copy = [word for word in word_book if word != random_word]
-                
+                answer_options = [[random_word['word'], random_word['mean']]]
+                word_book_copy = [word for word in words if word != random_word]
+
                 while len(answer_options) < 4:
                     random_meaning = random.choice(word_book_copy)
+                    random_meaning = [random_meaning['word'], random_meaning['mean']]
+
                     if random_meaning not in answer_options:
                         answer_options.append(random_meaning)
 
                 random.shuffle(answer_options)
-                answer_index = answer_options.index(random_word)
-                problem.append({"answer_index": answer_index, "answers": answer_options})
+                answer_index = answer_options.index([random_word['word'], random_word['mean']])
+                problem.append({"answer_index": answer_index, "answers": answer_options, "word_id": random_word['id']})
 
             return custom_response("SUCCESS", code=200, data={"problem": problem})
         except CustomException as e:
@@ -89,7 +87,7 @@ class QuizService:
 
             problem = []
             for dict in random_word:
-                problem.append({"answer": [dict['word'], dict['mean']]})
+                problem.append({"answer": [dict['word'], dict['mean']], "word_id": dict['id']})
 
             return custom_response("SUCCESS", code=200, data={"problem": problem})
         except Exception as e:
