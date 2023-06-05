@@ -4,7 +4,13 @@ from flask import request
 from service.memo_service import MemoService
 
 
-api = Namespace('memo', description='단어장 API')
+api = Namespace('memo', description='메모 API')
+
+memo_info = api.model('메모 정보', {
+    'word_id': fields.Integer(required=True, description='풀이 개수', example=10),
+    'is_memorized': fields.Boolean(required=False, description='암기 여부', example=False)
+})
+
 
 @api.route("")
 @api.doc(security='Bearer Auth')
@@ -21,12 +27,11 @@ class Memo(Resource):
         return MemoService.generate_memo_service(auth=auth, data={ 'book_ids': book_ids, 'count': int(count) })
     
 
-    @api.doc(params={'word_id': '단어 ID', 'is_memorized': '암기 상태'})
+    @api.expect(memo_info)
     @Authorization.reject_authorization
     def patch(self):
         """
         단어 암기 상태 변경(토글 선택 및 해제 시)
         """
-        word_id = request.args.get('word_id')
-        is_memorized = request.args.get('is_memorized')
-        return MemoService.update_memo_service(data={ 'word_id': word_id, 'is_memorized': is_memorized })
+        data = request.get_json()
+        return MemoService.update_memo_service(data=data)
