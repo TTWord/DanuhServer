@@ -57,9 +57,9 @@ class MemoService:
             if not word:
                 raise CustomException("WORD_NOT_FOUND", code=409)
             
-            word_repo.update_memorized(id = data['word_id'], is_memorized = data['is_memorized'])
+            data = word_repo.update_memorized(id = data['word_id'], is_memorized = data['is_memorized'])
 
-            return custom_response("SUCCESS", code=200)
+            return custom_response("SUCCESS", code=200, data=data)
         except CustomException as e:
             return e.get_response()
         except Exception as e:
