@@ -57,7 +57,7 @@ class OAuth:
             self.auth_server = "https://oauth2.googleapis.com/%s"
             self.api_server = "https://oauth2.googleapis.com/%s"
             self.auth_url= self.auth_server % "/token"
-            self.user_url = self.auth_server % "/tokeninfo"
+            self.user_url = " https://www.googleapis.com/oauth2/v2/userinfo"
         elif self.service == "apple":
             self.auth_server = "https://appleid.apple.com/%s"
             self.api_server = "https://appleid.apple.com/%s"
@@ -83,12 +83,10 @@ class OAuth:
             },
         ).json()
     
-    def userinfo(self, bearer_token):
-        return requests.post(
+    def userinfo(self, bearer_token):        
+        return requests.get(
             url=self.user_url,
             headers={
-                **self.default_header,
-                **{"Authorization": bearer_token}
-            },
-            data={}
+                "Authorization": bearer_token
+            }
         ).json()
