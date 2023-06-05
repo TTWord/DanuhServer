@@ -59,10 +59,9 @@ class AuthService:
                 % (CLIENT_ID, REDIRECT_URI)
             }
         elif service == "google":
-            scope = "https://www.googleapis.com/auth/userinfo.email"
             url = {
-                "url": "https://accounts.google.com/o/oauth2/v2/auth?client_id=%s&redirect_uri=%s&response_type=code&scope=%s"
-                % (CLIENT_ID, REDIRECT_URI, scope)
+                "url": "https://accounts.google.com/o/oauth2/v2/auth?client_id=%s&redirect_uri=%s&response_type=code&scope=email profile"
+                % (CLIENT_ID, REDIRECT_URI)
             }
 
         return custom_response("SUCCESS", data=url)
@@ -90,9 +89,9 @@ class AuthService:
                 password = encrypt_password(str(info["id"])).decode("utf-8")
                 nickname = info["properties"]["nickname"]
             elif service == "google":
-                username = str(info["sub"])
-                password = encrypt_password(str(info["sub"])).decode("utf-8")
-                nickname = info["email"]
+                username = str(info["email"])
+                password = encrypt_password(str(info["email"])).decode("utf-8")
+                nickname = info["name"]
             # TODO: APPLE 로그인 추가
             elif service == "apple":
                 username = str(info["sub"])
