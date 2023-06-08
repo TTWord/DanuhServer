@@ -81,11 +81,17 @@ class UserService:
     @ServiceReceiver.database
     def update_user_by_nickname(auth, data, db: Database):
         try:
-            user_info = UserRepository(db)
-            user = user_info.find_one_by_user_id(auth["id"])
+            user_repo = UserRepository(db)
+            user = user_repo.find_one_by_user_id(auth["id"])
+
             if user["nickname"] == data["to_nickname"]:
+                raise CustomException("바꾸려는 닉네임과 동일합니다.", code=409)
+            
+            user = user_repo.find_one_by_nickname(data['to_nickname'])
+
+            if user:
                 raise CustomException("닉네임이 중복입니다.", code=409)
-            user = UserRepository(db).update_nickname(user["id"], data["to_nickname"])
+            user = user_repo.update_nickname(auth["id"], data["to_nickname"])
             return custom_response("SUCCESS", data=user)
         except CustomException as e:
             return e.get_response()
