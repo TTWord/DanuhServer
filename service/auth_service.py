@@ -86,7 +86,7 @@ class AuthService:
             if service == "kakao":
                 username = str(info["kakao_account"]["email"])
                 password = encrypt_password(str(info["id"])).decode("utf-8")
-                nickname = info["properties"]["nickname"] + info["id"][:4]
+                nickname = info["properties"]["nickname"] + str(info["id"])[:4]
             elif service == "google":
                 username = str(info["email"])
                 password = encrypt_password(str(info["email"])).decode("utf-8")
@@ -130,6 +130,7 @@ class AuthService:
         except CustomException as e:
             return e.get_response()
         except Exception as e:
+            print(e)
             return custom_response("FAIL", code=500)
 
     @staticmethod
