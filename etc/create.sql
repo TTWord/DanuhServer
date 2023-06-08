@@ -10,8 +10,7 @@ create table user(
     password VARCHAR(100),
     nickname VARCHAR(100),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    file_id INT unique
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 create table book(
@@ -36,17 +35,19 @@ create table word(
 
 create table certification(
     id INT PRIMARY KEY auto_increment,
+    user_id INT,
     cert_type VARCHAR(100),
     cert_key VARCHAR(100),
     cert_code VARCHAR(100),
     expired_time TIMESTAMP,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY(cert_key) REFERENCES user(username) ON DELETE CASCADE
+    FOREIGN KEY(user_id) REFERENCES user(id) ON DELETE CASCADE
 );
 
 create table file(
     id INT PRIMARY KEY auto_increment,
+    user_id INT,
     file_path VARCHAR(100),
-    FOREIGN KEY(id) REFERENCES user(file_id) ON DELETE CASCADE
+    FOREIGN KEY(user_id) REFERENCES user(id) ON DELETE CASCADE
 );

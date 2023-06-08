@@ -147,52 +147,51 @@ class AuthService:
     @staticmethod
     @ServiceReceiver.database
     def send_mail(input_data, db: Database):
-        # try:
-        user_repo = UserRepository(db)
-        is_username = user_repo.find_one_by_username(input_data["username"])
+        try:
+            user_repo = UserRepository(db)
+            is_username = user_repo.find_one_by_username(input_data["username"])
 
-        if is_username:
-            # 이미 존재하는 유저입니다
-            raise CustomException("DUPLICATE_USERNAME", code=409)
-        elif not validate_email(input_data["username"]):
-            # 유효하지 않은 이메일 형식
-            raise CustomException("INVALID_FORMAT_USERNAME", code=409)
-        elif not validate_password(input_data["password"]):
-            # 유효하지 않은 비밀번호 형식 (암호는 8자 이상의 하나 이상의 숫자, 문자, 특수문자이어야 합니다)
-            raise CustomException("INVALID_FORMAT_PASSWORD", code=409)
-        to_email = input_data["username"]
-        subject = config["STML_SUBJECT"]
-        body = config["STML_BODY"]
-        verification_id = str(random.randint(0, 999)).zfill(3) + str(
-            random.randint(0, 999)
-        ).zfill(3)
-        response = EmailSender.send_email(to_email, subject, body, verification_id)
+            if is_username:
+                # 이미 존재하는 유저입니다
+                raise CustomException("DUPLICATE_USERNAME", code=409)
+            elif not validate_email(input_data["username"]):
+                # 유효하지 않은 이메일 형식
+                raise CustomException("INVALID_FORMAT_USERNAME", code=409)
+            elif not validate_password(input_data["password"]):
+                # 유효하지 않은 비밀번호 형식 (암호는 8자 이상의 하나 이상의 숫자, 문자, 특수문자이어야 합니다)
+                raise CustomException("INVALID_FORMAT_PASSWORD", code=409)
+            to_email = input_data["username"]
+            subject = config["STML_SUBJECT"]
+            body = config["STML_BODY"]
+            verification_id = str(random.randint(0, 999)).zfill(3) + str(
+                random.randint(0, 999)
+            ).zfill(3)
+            response = EmailSender.send_email(to_email, subject, body, verification_id)
 
-        now = datetime.now()
-        expiration_date = now + timedelta(minutes=3)
-        expiration_date_str = expiration_date.strftime("%Y-%m-%d %H:%M:%S")
-        verification_info = {
-            "cert_type": "email",
-            "cert_key": input_data["username"],
-            "cert_code": verification_id,
-            "expired_time": expiration_date_str,
-        }
-        if response[1] == 200:
-            cert_repo = CertificationRepository(db)
-            if cert_repo.find_one_by_cert_key(verification_info["cert_key"]):
-                verification_id = cert_repo.update(
-                    verification_info["cert_key"],
-                    verification_info["cert_code"],
-                    verification_info["expired_time"],
-                )
-            else:
-                verification_id = cert_repo.add(verification_info)
-            return custom_response("SUCCESS", data=verification_info)
-        # except CustomException as e:
-        #     return e.get_response()
-        # except Exception as e:
-        #     print(e)
-        #     return custom_response("FAIL", code=500)
+            now = datetime.now()
+            expiration_date = now + timedelta(minutes=3)
+            expiration_date_str = expiration_date.strftime("%Y-%m-%d %H:%M:%S")
+            verification_info = {
+                "cert_type": "email",
+                "cert_key": input_data["username"],
+                "cert_code": verification_id,
+                "expired_time": expiration_date_str,
+            }
+            if response[1] == 200:
+                cert_repo = CertificationRepository(db)
+                if cert_repo.find_one_by_cert_key(verification_info["cert_key"]):
+                    verification_id = cert_repo.update(
+                        verification_info["cert_key"],
+                        verification_info["cert_code"],
+                        verification_info["expired_time"],
+                    )
+                else:
+                    verification_id = cert_repo.add(verification_info)
+                return custom_response("SUCCESS", data=verification_info)
+        except CustomException as e:
+            return e.get_response()
+        except Exception as e:
+            return custom_response("FAIL", code=500)
 
     @staticmethod
     @ServiceReceiver.database
@@ -232,7 +231,6 @@ class AuthService:
         except CustomException as e:
             return e.get_response()
         except Exception as e:
-            print(e)
             return custom_response("FAIL", code=500)
 
     @staticmethod
