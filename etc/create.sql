@@ -6,21 +6,22 @@ drop table file;
 
 create table user(
     id INT PRIMARY KEY auto_increment,
-    username VARCHAR(100),
+    username VARCHAR(100) unique,
     password VARCHAR(100),
     nickname VARCHAR(100),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    file_id INT,
-)
+    file_id INT unique
+);
 
 create table book(
     id INT PRIMARY KEY auto_increment,
     user_id INT,
     name VARCHAR(100),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-)
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY(user_id) REFERENCES user(id) ON DELETE CASCADE
+);
 
 create table word(
     id INT PRIMARY KEY auto_increment,
@@ -29,8 +30,9 @@ create table word(
     mean VARCHAR(100),
     is_memorized BOOLEAN not null default 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-)
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY(book_id) REFERENCES book(id) ON DELETE CASCADE
+);
 
 create table certification(
     id INT PRIMARY KEY auto_increment,
@@ -39,10 +41,12 @@ create table certification(
     cert_code VARCHAR(100),
     expired_time TIMESTAMP,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-)
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY(cert_key) REFERENCES user(username) ON DELETE CASCADE
+);
 
 create table file(
     id INT PRIMARY KEY auto_increment,
-    file_path VARCHAR(100)
-)
+    file_path VARCHAR(100),
+    FOREIGN KEY(id) REFERENCES user(file_id) ON DELETE CASCADE
+);

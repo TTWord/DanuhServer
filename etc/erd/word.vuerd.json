@@ -3,9 +3,9 @@
     "version": "2.2.11",
     "width": 2000,
     "height": 2000,
-    "scrollTop": -20,
-    "scrollLeft": 0,
-    "zoomLevel": 1,
+    "scrollTop": -174,
+    "scrollLeft": -130,
+    "zoomLevel": 0.9,
     "show": {
       "tableComment": true,
       "columnComment": true,
@@ -73,7 +73,7 @@
             "name": "username",
             "comment": "유저아이디",
             "dataType": "VARCHAR(30)",
-            "default": "",
+            "default": "UNIQUE",
             "option": {
               "autoIncrement": false,
               "primaryKey": false,
@@ -188,7 +188,7 @@
             "name": "file_id",
             "comment": "파일ID",
             "dataType": "INT",
-            "default": "",
+            "default": "UNIQUE",
             "option": {
               "autoIncrement": false,
               "primaryKey": false,
@@ -212,7 +212,7 @@
           "active": false,
           "left": 105.3341,
           "top": 71.3063,
-          "zIndex": 384,
+          "zIndex": 27,
           "widthName": 60,
           "widthComment": 102.140625
         },
@@ -389,7 +389,7 @@
           "active": false,
           "left": 729.3064,
           "top": 56.0271,
-          "zIndex": 382,
+          "zIndex": 5,
           "widthName": 70.986328125,
           "widthComment": 71.5703125
         },
@@ -435,7 +435,7 @@
               "notNull": true
             },
             "ui": {
-              "active": false,
+              "active": true,
               "pk": false,
               "fk": true,
               "pfk": false,
@@ -566,7 +566,7 @@
           "active": false,
           "left": 122.8891,
           "top": 695.0004,
-          "zIndex": 202,
+          "zIndex": 2,
           "widthName": 60,
           "widthComment": 115.140625
         },
@@ -589,7 +589,7 @@
               "notNull": true
             },
             "ui": {
-              "active": false,
+              "active": true,
               "pk": true,
               "fk": false,
               "pfk": false,
@@ -697,7 +697,7 @@
           "active": false,
           "left": 123.3055,
           "top": 431.1112,
-          "zIndex": 345,
+          "zIndex": 3,
           "widthName": 60,
           "widthComment": 84.5703125
         },
@@ -759,7 +759,7 @@
           "active": false,
           "left": 729.9999,
           "top": 317.2781,
-          "zIndex": 380,
+          "zIndex": 4,
           "widthName": 60,
           "widthComment": 60,
           "color": "#00000000"
@@ -778,7 +778,7 @@
           "active": false,
           "left": 1110.0555555555563,
           "top": 54.749999999999915,
-          "zIndex": 3,
+          "zIndex": 1,
           "width": 284,
           "height": 100
         },
