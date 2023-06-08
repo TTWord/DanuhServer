@@ -49,7 +49,7 @@ class UserRepository(Connect):
         
         if result:
             user = UserModel(id=result['id'], username=result['username'], 
-                             nickname=result['nickname'], file_id=result['file_id'])
+                             nickname=result['nickname'])
             return user.__dict__
         else:
             return None

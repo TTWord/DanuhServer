@@ -46,7 +46,6 @@ class AuthService:
         except CustomException as e:
             return e.get_response()
         except Exception as e:
-            print(e)
             return custom_response("FAIL", code=500)
 
     @staticmethod
@@ -85,20 +84,19 @@ class AuthService:
             user_refo = UserRepository(db)
 
             if service == "kakao":
-                username = str(info["id"])
+                username = str(info["kakao_account"]["email"])
                 password = encrypt_password(str(info["id"])).decode("utf-8")
-                nickname = info["properties"]["nickname"]
+                nickname = info["properties"]["nickname"] + info["id"][:4]
             elif service == "google":
                 username = str(info["email"])
                 password = encrypt_password(str(info["email"])).decode("utf-8")
-                nickname = info["name"]
+                nickname = info["name"] +info["id"][:4]
             # TODO: APPLE 로그인 추가
             elif service == "apple":
                 username = str(info["sub"])
                 password = encrypt_password(str(info["sub"])).decode("utf-8")
                 nickname = info["email"]
             user = user_refo.find_one_by_username(username)
-
             if not user:
                 data = {
                     "username": username,
@@ -149,58 +147,59 @@ class AuthService:
     @staticmethod
     @ServiceReceiver.database
     def send_mail(input_data, db: Database):
-        try:
-            user_repo = UserRepository(db)
-            is_username = user_repo.find_one_by_username(input_data["username"])
+        # try:
+        user_repo = UserRepository(db)
+        is_username = user_repo.find_one_by_username(input_data["username"])
 
-            if is_username:
-                # 이미 존재하는 유저입니다
-                raise CustomException("DUPLICATE_USERNAME", code=409)
-            elif not validate_email(input_data["username"]):
-                # 유효하지 않은 이메일 형식
-                raise CustomException("INVALID_FORMAT_USERNAME", code=409)
-            elif not validate_password(input_data["password"]):
-                # 유효하지 않은 비밀번호 형식 (암호는 8자 이상의 하나 이상의 숫자, 문자, 특수문자이어야 합니다)
-                raise CustomException("INVALID_FORMAT_PASSWORD", code=409)
-            to_email = input_data["username"]
-            subject = config["STML_SUBJECT"]
-            body = config["STML_BODY"]
-            verification_id = str(random.randint(0, 999)).zfill(3) + str(
-                random.randint(0, 999)
-            ).zfill(3)
-            response = EmailSender.send_email(to_email, subject, body, verification_id)
+        if is_username:
+            # 이미 존재하는 유저입니다
+            raise CustomException("DUPLICATE_USERNAME", code=409)
+        elif not validate_email(input_data["username"]):
+            # 유효하지 않은 이메일 형식
+            raise CustomException("INVALID_FORMAT_USERNAME", code=409)
+        elif not validate_password(input_data["password"]):
+            # 유효하지 않은 비밀번호 형식 (암호는 8자 이상의 하나 이상의 숫자, 문자, 특수문자이어야 합니다)
+            raise CustomException("INVALID_FORMAT_PASSWORD", code=409)
+        to_email = input_data["username"]
+        subject = config["STML_SUBJECT"]
+        body = config["STML_BODY"]
+        verification_id = str(random.randint(0, 999)).zfill(3) + str(
+            random.randint(0, 999)
+        ).zfill(3)
+        response = EmailSender.send_email(to_email, subject, body, verification_id)
 
-            now = datetime.now()
-            expiration_date = now + timedelta(minutes=3)
-            expiration_date_str = expiration_date.strftime("%Y-%m-%d %H:%M:%S")
-            verification_info = {
-                "cert_type": "email",
-                "cert_key": input_data["username"],
-                "cert_code": verification_id,
-                "expired_time": expiration_date_str,
-            }
-            if response[1] == 200:
-                cert_repo = CertificationRepository(db)
-                if cert_repo.find_one_by_cert_key(verification_info["cert_key"]):
-                    verification_id = cert_repo.update(
-                        verification_info["cert_key"],
-                        verification_info["cert_code"],
-                        verification_info["expired_time"],
-                    )
-                else:
-                    verification_id = cert_repo.add(verification_info)
-                return custom_response("SUCCESS", data=verification_info)
-        except CustomException as e:
-            return e.get_response()
-        except Exception as e:
-            print(e)
-            return custom_response("FAIL", code=500)
+        now = datetime.now()
+        expiration_date = now + timedelta(minutes=3)
+        expiration_date_str = expiration_date.strftime("%Y-%m-%d %H:%M:%S")
+        verification_info = {
+            "cert_type": "email",
+            "cert_key": input_data["username"],
+            "cert_code": verification_id,
+            "expired_time": expiration_date_str,
+        }
+        if response[1] == 200:
+            cert_repo = CertificationRepository(db)
+            if cert_repo.find_one_by_cert_key(verification_info["cert_key"]):
+                verification_id = cert_repo.update(
+                    verification_info["cert_key"],
+                    verification_info["cert_code"],
+                    verification_info["expired_time"],
+                )
+            else:
+                verification_id = cert_repo.add(verification_info)
+            return custom_response("SUCCESS", data=verification_info)
+        # except CustomException as e:
+        #     return e.get_response()
+        # except Exception as e:
+        #     print(e)
+        #     return custom_response("FAIL", code=500)
 
     @staticmethod
     @ServiceReceiver.database
     def signup_service(user_data, db: Database):
         try:
-            cert_info = CertificationRepository(db).find_one_by_cert_key(user_data["username"])
+            cert_repo = CertificationRepository(db)
+            cert_info = cert_repo.find_one_by_cert_key(user_data["username"])
 
             if cert_info["expired_time"] < datetime.now():
                 # 인증코드 만료
@@ -210,9 +209,9 @@ class AuthService:
                 raise CustomException("INCORRECT_AUTH_CODE", code=403)
 
             user_data["password"] = encrypt_password(user_data["password"]).decode("utf-8")
-        
+
             user = UserRepository(db).add(user_data)
-            
+            cert_repo.update_user_id(user["username"], user['id'])
             payload_access = {
                     "id": user["id"],
                     "username": user["username"],
@@ -233,7 +232,7 @@ class AuthService:
         except CustomException as e:
             return e.get_response()
         except Exception as e:
-            
+            print(e)
             return custom_response("FAIL", code=500)
 
     @staticmethod
