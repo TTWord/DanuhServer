@@ -49,7 +49,7 @@ class UserRepository(Connect):
         
         if result:
             user = UserModel(id=result['id'], username=result['username'], 
-                             nickname=result['nickname'], file_id=result['file_id'])
+                             nickname=result['nickname'])
             return user.__dict__
         else:
             return None
@@ -70,8 +70,3 @@ class UserRepository(Connect):
         
         return {'nickname': nickname}
     
-    def update_file_id(self, id: int, file_id: int) -> dict:
-        sql = f"UPDATE user SET file_id={file_id} WHERE id = {id}"
-        self.cursor.execute(sql)
-        self.connect.commit()
-        return {'file_id': file_id}

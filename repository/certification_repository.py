@@ -34,3 +34,11 @@ class CertificationRepository(Connect):
         self.connect.commit()
 
         return {'verification_id': cert_code}
+    
+    def update_user_id(self, cert_key: str, user_id: int) -> dict:
+        sql = f"UPDATE certification SET user_id = {user_id} WHERE cert_key = '{cert_key}'"
+
+        self.cursor.execute(sql)
+        self.connect.commit()
+
+        return {'user_id': user_id}

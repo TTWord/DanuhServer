@@ -3,9 +3,9 @@
     "version": "2.2.11",
     "width": 2000,
     "height": 2000,
-    "scrollTop": -174,
-    "scrollLeft": -130,
-    "zoomLevel": 0.9,
+    "scrollTop": -214,
+    "scrollLeft": -138,
+    "zoomLevel": 0.8,
     "show": {
       "tableComment": true,
       "columnComment": true,
@@ -183,36 +183,13 @@
               "widthDefault": 60
             },
             "id": "6ccd242c-ad5f-47e1-99f0-3af88512195a"
-          },
-          {
-            "name": "file_id",
-            "comment": "파일ID",
-            "dataType": "INT",
-            "default": "UNIQUE",
-            "option": {
-              "autoIncrement": false,
-              "primaryKey": false,
-              "unique": false,
-              "notNull": true
-            },
-            "ui": {
-              "active": false,
-              "pk": false,
-              "fk": true,
-              "pfk": false,
-              "widthName": 60,
-              "widthComment": 60,
-              "widthDataType": 60,
-              "widthDefault": 60
-            },
-            "id": "6f6bce6f-5e6b-43fc-84f1-81e2e69e1b87"
           }
         ],
         "ui": {
           "active": false,
           "left": 105.3341,
           "top": 71.3063,
-          "zIndex": 27,
+          "zIndex": 53,
           "widthName": 60,
           "widthComment": 102.140625
         },
@@ -245,6 +222,29 @@
               "widthDefault": 60
             },
             "id": "d405b34b-f7c1-482b-bfe4-6fe1cbad86d5"
+          },
+          {
+            "name": "user_id",
+            "comment": "유저 식별자",
+            "dataType": "INT",
+            "default": "",
+            "option": {
+              "autoIncrement": false,
+              "primaryKey": false,
+              "unique": false,
+              "notNull": true
+            },
+            "ui": {
+              "active": false,
+              "pk": false,
+              "fk": true,
+              "pfk": false,
+              "widthName": 60,
+              "widthComment": 71.5703125,
+              "widthDataType": 60,
+              "widthDefault": 60
+            },
+            "id": "d7332792-04e3-4b1a-8c30-dc427c48cb94"
           },
           {
             "name": "cert_type",
@@ -387,9 +387,9 @@
         ],
         "ui": {
           "active": false,
-          "left": 729.3064,
-          "top": 56.0271,
-          "zIndex": 5,
+          "left": 730.3064,
+          "top": 66.0271,
+          "zIndex": 33,
           "widthName": 70.986328125,
           "widthComment": 71.5703125
         },
@@ -697,7 +697,7 @@
           "active": false,
           "left": 123.3055,
           "top": 431.1112,
-          "zIndex": 3,
+          "zIndex": 9,
           "widthName": 60,
           "widthComment": 84.5703125
         },
@@ -732,6 +732,29 @@
             "id": "f8e695c8-99d0-4fb1-b5c9-24356cae7dc6"
           },
           {
+            "name": "user_id",
+            "comment": "유저 식별자",
+            "dataType": "INT",
+            "default": "",
+            "option": {
+              "autoIncrement": false,
+              "primaryKey": false,
+              "unique": false,
+              "notNull": true
+            },
+            "ui": {
+              "active": false,
+              "pk": false,
+              "fk": true,
+              "pfk": false,
+              "widthName": 60,
+              "widthComment": 71.5703125,
+              "widthDataType": 60,
+              "widthDefault": 60
+            },
+            "id": "c7f2fd39-ebbc-4ffa-bacf-273770bc544f"
+          },
+          {
             "name": "file_path",
             "comment": "파일 경로",
             "dataType": "VARCHAR(100)",
@@ -759,7 +782,7 @@
           "active": false,
           "left": 729.9999,
           "top": 317.2781,
-          "zIndex": 4,
+          "zIndex": 52,
           "widthName": 60,
           "widthComment": 60,
           "color": "#00000000"
@@ -776,9 +799,9 @@
         "value": "인증용으로 사용하는 별개의 테이블\n\ncert_type: 범주 email/phone\ncert_key: 인증 주체 -> tnqhd1139@naver.com\ncert_code : 인증값 -> 111111",
         "ui": {
           "active": false,
-          "left": 1110.0555555555563,
-          "top": 54.749999999999915,
-          "zIndex": 1,
+          "left": 1123.8055555555563,
+          "top": 67.24999999999991,
+          "zIndex": 54,
           "width": 284,
           "height": 100
         },
@@ -824,7 +847,7 @@
             "bf3bdf5e-af17-4205-beff-4741d0544675"
           ],
           "x": 327.40270351562503,
-          "y": 283.80629999999996,
+          "y": 263.30629999999996,
           "direction": "bottom"
         },
         "end": {
@@ -845,26 +868,52 @@
         "relationshipType": "OneOnly",
         "startRelationshipType": "Dash",
         "start": {
-          "tableId": "e540344d-25a1-44c3-aa0f-26eacd18045e",
-          "columnIds": [
-            "f8e695c8-99d0-4fb1-b5c9-24356cae7dc6"
-          ],
-          "x": 729.9999,
-          "y": 372.2781,
-          "direction": "left"
-        },
-        "end": {
           "tableId": "a861fa85-59fc-480b-a559-86d7d2933d19",
           "columnIds": [
-            "6f6bce6f-5e6b-43fc-84f1-81e2e69e1b87"
+            "bf3bdf5e-af17-4205-beff-4741d0544675"
           ],
           "x": 549.47130703125,
-          "y": 177.5563,
+          "y": 119.3063,
           "direction": "right"
         },
-        "constraintName": "fk_file_to_user",
+        "end": {
+          "tableId": "b3276eba-99b6-40b2-b81d-f96cf8b0cc17",
+          "columnIds": [
+            "d7332792-04e3-4b1a-8c30-dc427c48cb94"
+          ],
+          "x": 730.3064,
+          "y": 182.52710000000002,
+          "direction": "left"
+        },
+        "constraintName": "fk_user_to_certification",
         "visible": true,
-        "id": "29ca6b4b-88e9-4a2a-bc57-09c8e32adbd1"
+        "id": "5218c0fd-146b-4f1f-b7db-0e899267f860"
+      },
+      {
+        "identification": false,
+        "relationshipType": "OneOnly",
+        "startRelationshipType": "Dash",
+        "start": {
+          "tableId": "a861fa85-59fc-480b-a559-86d7d2933d19",
+          "columnIds": [
+            "bf3bdf5e-af17-4205-beff-4741d0544675"
+          ],
+          "x": 549.47130703125,
+          "y": 215.3063,
+          "direction": "right"
+        },
+        "end": {
+          "tableId": "e540344d-25a1-44c3-aa0f-26eacd18045e",
+          "columnIds": [
+            "c7f2fd39-ebbc-4ffa-bacf-273770bc544f"
+          ],
+          "x": 729.9999,
+          "y": 382.5281,
+          "direction": "left"
+        },
+        "constraintName": "fk_user_to_file",
+        "visible": true,
+        "id": "8a726873-ee21-4304-9c01-186bd309a1f5"
       }
     ]
   }

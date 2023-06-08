@@ -46,7 +46,6 @@ class AuthService:
         except CustomException as e:
             return e.get_response()
         except Exception as e:
-            print(e)
             return custom_response("FAIL", code=500)
 
     @staticmethod
@@ -85,20 +84,19 @@ class AuthService:
             user_refo = UserRepository(db)
 
             if service == "kakao":
-                username = str(info["id"])
+                username = str(info["kakao_account"]["email"])
                 password = encrypt_password(str(info["id"])).decode("utf-8")
-                nickname = info["properties"]["nickname"]
+                nickname = info["properties"]["nickname"] + info["id"][:4]
             elif service == "google":
                 username = str(info["email"])
                 password = encrypt_password(str(info["email"])).decode("utf-8")
-                nickname = info["name"]
+                nickname = info["name"] +info["id"][:4]
             # TODO: APPLE 로그인 추가
             elif service == "apple":
                 username = str(info["sub"])
                 password = encrypt_password(str(info["sub"])).decode("utf-8")
                 nickname = info["email"]
             user = user_refo.find_one_by_username(username)
-
             if not user:
                 data = {
                     "username": username,
@@ -193,14 +191,14 @@ class AuthService:
         except CustomException as e:
             return e.get_response()
         except Exception as e:
-            print(e)
             return custom_response("FAIL", code=500)
 
     @staticmethod
     @ServiceReceiver.database
     def signup_service(user_data, db: Database):
         try:
-            cert_info = CertificationRepository(db).find_one_by_cert_key(user_data["username"])
+            cert_repo = CertificationRepository(db)
+            cert_info = cert_repo.find_one_by_cert_key(user_data["username"])
 
             if cert_info["expired_time"] < datetime.now():
                 # 인증코드 만료
@@ -210,9 +208,9 @@ class AuthService:
                 raise CustomException("INCORRECT_AUTH_CODE", code=403)
 
             user_data["password"] = encrypt_password(user_data["password"]).decode("utf-8")
-        
+
             user = UserRepository(db).add(user_data)
-            
+            cert_repo.update_user_id(user["username"], user['id'])
             payload_access = {
                     "id": user["id"],
                     "username": user["username"],
@@ -233,7 +231,6 @@ class AuthService:
         except CustomException as e:
             return e.get_response()
         except Exception as e:
-            
             return custom_response("FAIL", code=500)
 
     @staticmethod
