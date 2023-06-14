@@ -11,6 +11,10 @@ memo_info = api.model('메모 정보', {
     'is_memorized': fields.Boolean(required=False, description='암기 여부', example=False)
 })
 
+memo_info = api.model('메모 정보', {
+    'word_id': fields.Integer(required=True, description='풀이 개수', example=10),
+    'is_memorized': fields.Boolean(required=False, description='암기 여부', example=False)
+})
 
 @api.route("")
 @api.doc(security='Bearer Auth')
@@ -26,7 +30,18 @@ class Memo(Resource):
         book_ids = [int(book_id) for book_id in book_ids.split("&")]
         return MemoService.generate_memo_service(auth=auth, data={ 'book_ids': book_ids, 'count': int(count) })
     
-
+    @api.doc(params={'count': '단어 개수', 'book_ids': '단어장 아이디(&로 구분)'})
+    @api.expect(memo_info)
+    @Authorization.reject_authorization
+    def post(self, auth):
+        """
+        암기 결과 페이지
+        """
+        count = request.args.get('count')
+        book_ids = request.args.get('book_ids')
+        book_ids = [int(book_id) for book_id in book_ids.split("&")]
+        return MemoService.get_result_service(auth=auth, data={ 'book_ids': book_ids, 'count': int(count) })
+    
     @api.expect(memo_info)
     @Authorization.reject_authorization
     def patch(self):

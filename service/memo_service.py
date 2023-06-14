@@ -64,3 +64,21 @@ class MemoService:
             return e.get_response()
         except Exception as e:
             return custom_response("FAIL", code=500)
+        
+    @staticmethod
+    @ServiceReceiver.database
+    def get_result_service(db: Database, data):
+        try:
+            word_repo = WordRepository(db)
+            
+            word = word_repo.find_one_by_id(id = data['word_id'])
+            if not word:
+                raise CustomException("WORD_NOT_FOUND", code=409)
+            
+            data = word_repo.update_memorized(id = data['word_id'], is_memorized = data['is_memorized'])
+
+            return custom_response("SUCCESS", code=200, data=data)
+        except CustomException as e:
+            return e.get_response()
+        except Exception as e:
+            return custom_response("FAIL", code=500)

@@ -48,7 +48,7 @@ class WordService:
             
             word_repo = WordRepository(db)
             book_repo = BookRepository(db)
-            print(book_id)
+
             book = book_repo.find_one_by_id(book_id)
             if not book:
                 raise CustomException("단어장이 존재하지 않습니다.", code=409)
