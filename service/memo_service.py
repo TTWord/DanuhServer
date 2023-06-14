@@ -71,14 +71,14 @@ class MemoService:
         try:
             words = []
             word_repo = WordRepository(db)
-            
+
             for book_id in data['book_ids']:
                 words.extend(word_repo.find_all_by_book_id(book_id))
 
             memorized_word = [i for i in words if i['is_memorized']]
 
             data = {'total_count': len(words), 'memorized_count': len(memorized_word),
-                    'count': data['count'], 'collect_plob': str(int(data['collect']/data['count']*100)) + "%"}
+                    'count': data['count'], 'collect_prob': str(int(data['collect']/data['count']*100)) + "%"}
             return custom_response("SUCCESS", code=200, data=data)
         except CustomException as e:
             return e.get_response()

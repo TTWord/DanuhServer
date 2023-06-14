@@ -12,7 +12,7 @@ memo_info = api.model('메모 정보', {
 })
 
 result_info = api.model('결과 정보', {
-    'collect': fields.Integer(required=True, description='정답 개수')
+    'correct': fields.Integer(required=True, description='정답 개수')
 })
 
 @api.route("")
