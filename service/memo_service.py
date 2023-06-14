@@ -67,16 +67,18 @@ class MemoService:
         
     @staticmethod
     @ServiceReceiver.database
-    def get_result_service(db: Database, data):
+    def get_result_service(db: Database, auth, data):
         try:
+            words = []
             word_repo = WordRepository(db)
             
-            word = word_repo.find_one_by_id(id = data['word_id'])
-            if not word:
-                raise CustomException("WORD_NOT_FOUND", code=409)
-            
-            data = word_repo.update_memorized(id = data['word_id'], is_memorized = data['is_memorized'])
+            for book_id in data['book_ids']:
+                words.extend(word_repo.find_all_by_book_id(book_id))
 
+            memorized_word = [i for i in words if i['is_memorized']]
+
+            data = {'total_count': len(words), 'memorized_count': len(memorized_word),
+                    'count': data['count'], 'collect_plob': str(int(data['collect']/data['count']*100)) + "%"}
             return custom_response("SUCCESS", code=200, data=data)
         except CustomException as e:
             return e.get_response()
