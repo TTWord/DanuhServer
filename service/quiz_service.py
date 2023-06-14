@@ -46,18 +46,17 @@ class QuizService:
             problem = []
 
             for _, random_word in enumerate(random_words):
-                answer_options = [[random_word['word'], random_word['mean']]]
+                answer_options = [{'word': random_word['word'], 'mean':random_word['mean']}]
                 word_book_copy = [word for word in words if word != random_word]
 
                 while len(answer_options) < 4:
                     random_meaning = random.choice(word_book_copy)
-                    random_meaning = [random_meaning['word'], random_meaning['mean']]
+                    random_meaning = {'word': random_meaning['word'], 'mean':random_meaning['mean']}
 
                     if random_meaning not in answer_options:
                         answer_options.append(random_meaning)
-
                 random.shuffle(answer_options)
-                answer_index = answer_options.index([random_word['word'], random_word['mean']])
+                answer_index = answer_options.index({'word':random_word['word'], 'mean': random_word['mean']})
                 problem.append({"answer_index": answer_index, "answers": answer_options, "word_id": random_word['id'], "is_memorized": random_word['is_memorized']})
 
             return custom_response("SUCCESS", code=200, data={"problem": problem})
@@ -102,7 +101,8 @@ class QuizService:
 
             problem = []
             for dict in random_word:
-                problem.append({"answer": [dict['word'], dict['mean']], "word_id": dict['id'], "is_memorized": dict['is_memorized']})
+                problem.append({"answer": {'word': dict['word'], 'mean': dict['mean']}, 
+                                "word_id": dict['id'], "is_memorized": dict['is_memorized']})
 
             return custom_response("SUCCESS", code=200, data={"problem": problem})
         except Exception as e:
