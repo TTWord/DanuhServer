@@ -78,9 +78,10 @@ class MemoService:
             memorized_word = [i for i in words if i['is_memorized']]
 
             data = {'total_count': len(words), 'memorized_count': len(memorized_word),
-                    'count': data['count'], 'collect_prob': str(int(data['collect']/data['count']*100)) + "%"}
+                    'count': data['count'], 'correct_prob': str(int(data['correct']/data['count']*100)) + "%"}
             return custom_response("SUCCESS", code=200, data=data)
         except CustomException as e:
             return e.get_response()
         except Exception as e:
+            print(e)
             return custom_response("FAIL", code=500)
