@@ -12,6 +12,7 @@ quiz_info = api.model('퀴즈 정보', {
     'memorized_filter': fields.Boolean(required=False, description='암기 필터링', example=False)
 })
 
+
 @api.route("/multiple")
 @api.doc(security='Bearer Auth')
 class MultipleQuiz(Resource):
@@ -36,3 +37,16 @@ class ShortFormQuiz(Resource):
         """
         data = request.get_json()
         return QuizService.generate_shortform_quiz_service(auth=auth, data=data)
+    
+
+@api.route("/blind")
+@api.doc(security='Bearer Auth')
+class ShortFormQuiz(Resource):
+    @api.expect(quiz_info)
+    @Authorization.check_authorization
+    def post(self, auth):
+        """
+        블라인드 문제 생성
+        """
+        data = request.get_json()
+        return QuizService.generate_blind_quiz_service(auth=auth, data=data)
