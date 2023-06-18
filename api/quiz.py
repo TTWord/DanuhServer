@@ -41,7 +41,7 @@ class ShortFormQuiz(Resource):
 
 @api.route("/blind")
 @api.doc(security='Bearer Auth')
-class ShortFormQuiz(Resource):
+class BlindFormQuiz(Resource):
     @api.expect(quiz_info)
     @Authorization.check_authorization
     def post(self, auth):
