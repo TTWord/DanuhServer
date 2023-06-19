@@ -71,13 +71,20 @@ class MemoService:
         try:
             words = []
             word_repo = WordRepository(db)
+            book_repo = BookRepository(db)
+
+            books = book_repo.find_all_by_user_id(auth['id'])
+            if len(books) == len(data['book_ids']):
+                books = "전체"
+            else:
+                books = ','.join(str(s) for s in data['book_ids'])
 
             for book_id in data['book_ids']:
                 words.extend(word_repo.find_all_by_book_id(book_id))
 
             memorized_word = [i for i in words if i['is_memorized']]
 
-            data = {'total_count': len(words), 'memorized_count': len(memorized_word),
+            data = {'books': books, 'total_count': len(words), 'memorized_count': len(memorized_word),
                     'count': data['count'], 'correct_prob': str(int(data['correct']/data['count']*100)) + "%"}
             return custom_response("SUCCESS", code=200, data=data)
         except CustomException as e:
