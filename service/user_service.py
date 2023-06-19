@@ -10,6 +10,7 @@ from db.connect import Database
 from werkzeug.utils import secure_filename
 from flask import url_for
 from datetime import datetime
+import os
 
 
 class UserService:
@@ -52,9 +53,15 @@ class UserService:
     def delete_user_by_username(user_data, db: Database):
         try:
             user_repo = UserRepository(db)
+            file_repo = FileRepository(db)
             user = user_repo.find_one_by_username(user_data["username"])
             if not user:
                 raise CustomException("유저가 존재하지 않습니다.", code=409)
+            
+            file = file_repo.find_one_by_user_id(user['id'])
+            if file:
+                os.remove(config["PROFILE_IMAGE"] + "/" + file['file_path'])
+
             user = user_repo.delete(user["id"])
             return custom_response("SUCCESS", data=user)
         except CustomException as e:
@@ -67,9 +74,16 @@ class UserService:
     def delete_user_by_id(id, db: Database):
         try:
             user_repo = UserRepository(db)
+            file_repo = FileRepository(db)
+
             user = user_repo.find_one_by_user_id(id)
             if not user:
                 raise CustomException("유저가 존재하지 않습니다.", code=409)
+            
+            file = file_repo.find_one_by_user_id(user['id'])
+            if file:
+                os.remove(config["PROFILE_IMAGE"] + "/" + file['file_path'])
+
             user = user_repo.delete(user["id"])
             return custom_response("SUCCESS", data=user)
         except CustomException as e:
