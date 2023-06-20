@@ -97,6 +97,7 @@ class AuthService:
                 password = encrypt_password(str(info["sub"])).decode("utf-8")
                 nickname = info["email"]
             user = user_refo.find_one_by_username(username)
+            is_member = "1"
             if not user:
                 data = {
                     "username": username,
@@ -104,6 +105,7 @@ class AuthService:
                     "nickname": nickname,
                 }
                 user = user_refo.add(data)
+                is_member = "0"
             payload_access = {
                 "id": user["id"],
                 "username": user["username"],
@@ -120,17 +122,19 @@ class AuthService:
                 "refresh_token": generate_token(payload_reflash, secret),
             }
             REDIRECT_URI_SOCIAL = config["REDIRECT_URI_SOCIAL"]
+
             return redirect(
                 REDIRECT_URI_SOCIAL
                 + "?accesstoken="
                 + token["access_token"]
                 + "&refreshtoken="
                 + token["refresh_token"]
+                + "&ismember="
+                + is_member
             )
         except CustomException as e:
             return e.get_response()
         except Exception as e:
-            print(e)
             return custom_response("FAIL", code=500)
 
     @staticmethod
