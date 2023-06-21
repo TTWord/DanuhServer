@@ -17,6 +17,8 @@ create table book(
     id INT PRIMARY KEY auto_increment,
     user_id INT,
     name VARCHAR(100),
+    is_shared BOOLEAN not null default 0,
+    is_downloaded BOOLEAN not null default 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY(user_id) REFERENCES user(id) ON DELETE CASCADE

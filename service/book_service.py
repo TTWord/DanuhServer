@@ -163,3 +163,23 @@ class BookService:
             return e.get_response()
         except:
             return custom_response("단어장 삭제 실패", code=500)
+        
+    @staticmethod
+    @ServiceReceiver.database
+    def shared_book(auth, data, db: Database):
+        try:
+            book_repo = BookRepository(db)
+            
+            # 삭제할 데이터가 있는지 조회
+            book = book_repo.find_one_by_id(id = data['id'])
+            
+            if book is None:
+                return custom_response("단어장이 이미 존재하지 않습니다.", code=404)
+            
+            book = book_repo.update_shared(data['id'], data['is_shared'])
+            
+            return custom_response("단어장 수정 성공", data=book)
+        except CustomException as e:
+            return e.get_response()
+        except Exception as e:
+            return custom_response("단어장 수정 실패", code=500)
