@@ -142,6 +142,8 @@ class AuthService:
     def check_nickname(data, db: Database):
         nickname = data["nickname"]
 
+        if not nickname:
+            raise CustomException("INVALID_USERNAME", code=409)
         user = UserRepository(db).find_one_by_nickname(nickname)
 
         if user is not None:
