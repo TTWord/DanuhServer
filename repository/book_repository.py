@@ -12,8 +12,7 @@ class BookRepository(Connect):
         
         for row in result:
             books.append(BookModel(id=row['id'], name=row['name'], user_id=row['user_id'], 
-                                   is_downloaded=row['is_downloaded'], is_shared=row['is_shared'],
-                                   created_at=row['created_at'], updated_at=row['updated_at']))
+                                   shared_id=row['shared_id'], created_at=row['created_at'], updated_at=row['updated_at']))
         
         return [book.__dict__ for book in books]
     
@@ -24,8 +23,7 @@ class BookRepository(Connect):
         
         for row in result:
             books.append(BookModel(id=row['id'], name=row['name'], user_id=row['user_id'], 
-                                   is_downloaded=row['is_downloaded'], is_shared=row['is_shared'],
-                                   created_at=row['created_at'], updated_at=row['updated_at']))
+                                   shared_id=row['shared_id'], created_at=row['created_at'], updated_at=row['updated_at']))
         
         return [book.__dict__ for book in books]
     
@@ -37,8 +35,7 @@ class BookRepository(Connect):
         result = self.cursor.fetchone()
         if result is not None:
             book = BookModel(id=result['id'], name=result['name'], user_id=result['user_id'], 
-                                   is_downloaded=result['is_downloaded'], is_shared=result['is_shared'],
-                                   created_at=result['created_at'], updated_at=result['updated_at'])
+                                   shared_id=result['shared_id'], created_at=result['created_at'], updated_at=result['updated_at'])
             return book.__dict__
         else:
             return None
@@ -52,8 +49,7 @@ class BookRepository(Connect):
         
         if result is not None:
             book = BookModel(id=result['id'], name=result['name'], user_id=result['user_id'], 
-                                   is_downloaded=result['is_downloaded'], is_shared=result['is_shared'],
-                                   created_at=result['created_at'], updated_at=result['updated_at'])
+                                   shared_id=result['shared_id'], created_at=result['created_at'], updated_at=result['updated_at'])
             return book
         else:
             return None
@@ -83,9 +79,9 @@ class BookRepository(Connect):
         
         return {'id': id}
     
-    def update_shared(self, id: int, is_shared: int) -> dict:
-        sql = f"UPDATE book SET is_shared = '{is_shared}' WHERE id = {id}"
+    def update_shared(self, id: int, shared_id: int) -> dict:
+        sql = f"UPDATE book SET shared_id = '{shared_id}' WHERE id = {id}"
         self.cursor.execute(sql)
         self.connect.commit()
 
-        return {'id': id, 'is_shared': is_shared}
+        return {'id': id, 'is_shared': shared_id}

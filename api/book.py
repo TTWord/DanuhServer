@@ -17,7 +17,7 @@ book_info = api.model('단어장 생성', {
 
 book = api.model('책 이름', {
     'id': fields.Integer(required=True, description='단어장 ID', example='1'),
-    'is_shared': fields.Integer(required=True, description='단어장 ID', example='1')
+    'shared_id': fields.Integer(required=True, description='공유 ID', example='1')
 })
 
 
@@ -83,6 +83,7 @@ class BookMaker(Resource):
         return BookService.generate_book(auth, data)
 
 
+# TODO : share api 추가에 따른 엔드포인트 이동 고려
 @api.route('/share')
 @api.doc(security='Bearer Auth')
 class BookShare(Resource):

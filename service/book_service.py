@@ -176,7 +176,7 @@ class BookService:
             if book is None:
                 return custom_response("단어장이 이미 존재하지 않습니다.", code=404)
             
-            book = book_repo.update_shared(data['id'], data['is_shared'])
+            book = book_repo.update_shared(data['id'], data['shared_id'])
             
             return custom_response("단어장 수정 성공", data=book)
         except CustomException as e:
