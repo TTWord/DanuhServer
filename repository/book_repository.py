@@ -1,6 +1,7 @@
 from db.connect import Connect
 from model.book_model import BookModel
 
+
 class BookRepository(Connect):
     def find_all(self) -> list:
         books = []
@@ -10,7 +11,9 @@ class BookRepository(Connect):
         result = self.cursor.fetchall()
         
         for row in result:
-            books.append(BookModel(id=row['id'], name=row['name']))
+            books.append(BookModel(id=row['id'], name=row['name'], user_id=row['user_id'], 
+                                   is_shared=row['is_shared'], is_downloaded=row['is_downloaded'],
+                                   created_at=row['created_at'], updated_at=row['updated_at']))
         
         return [book.__dict__ for book in books]
     
@@ -20,7 +23,9 @@ class BookRepository(Connect):
         result = self.select_all(f'SELECT * FROM book WHERE user_id = {user_id}')
         
         for row in result:
-            books.append(BookModel(id=row['id'], name=row['name'], user_id=row['user_id'], created_at=row['created_at'], updated_at=row['updated_at']))
+            books.append(BookModel(id=row['id'], name=row['name'], user_id=row['user_id'], 
+                                   is_shared=row['is_shared'], is_downloaded=row['is_downloaded'],
+                                   created_at=row['created_at'], updated_at=row['updated_at']))
         
         return [book.__dict__ for book in books]
     
@@ -31,7 +36,9 @@ class BookRepository(Connect):
         self.cursor.execute(sql)
         result = self.cursor.fetchone()
         if result is not None:
-            book = BookModel(id=result['id'], name=result['name'], user_id=result['user_id'], created_at=result['created_at'], updated_at=result['updated_at'])
+            book = BookModel(id=result['id'], name=result['name'], user_id=result['user_id'], 
+                                   is_shared=result['is_shared'], is_downloaded=result['is_downloaded'],
+                                   created_at=result['created_at'], updated_at=result['updated_at'])
             return book.__dict__
         else:
             return None
@@ -44,7 +51,9 @@ class BookRepository(Connect):
         result = self.cursor.fetchone()
         
         if result is not None:
-            book = BookModel(id=result['id'], name=result['name'], user_id=result['user_id'], created_at=result['created_at'], updated_at=result['updated_at'])
+            book = BookModel(id=result['id'], name=result['name'], user_id=result['user_id'], 
+                                   is_shared=result['is_shared'], is_downloaded=result['is_downloaded'],
+                                   created_at=result['created_at'], updated_at=result['updated_at'])
             return book
         else:
             return None
@@ -73,3 +82,17 @@ class BookRepository(Connect):
         self.connect.commit()
         
         return {'id': id}
+    
+    def update_share(self, id: int, is_shared: bool) -> dict:
+        sql = f"UPDATE book SET is_shared = {is_shared} WHERE id = {id}"
+        self.cursor.execute(sql)
+        self.connect.commit()
+
+        return {'id': id, 'is_shared': is_shared}
+    
+    def update_download(self, id: int, is_downloaded: bool) -> dict:
+        sql = f"UPDATE book SET is_downloaded = {is_downloaded} WHERE id = {id}"
+        self.cursor.execute(sql)
+        self.connect.commit()
+
+        return {'id': id, 'is_shared': is_downloaded}

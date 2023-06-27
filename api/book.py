@@ -15,6 +15,11 @@ book_info = api.model('단어장 생성', {
     'text': fields.String(required=True, description='예측 값 입력', example='You can tell a stranger that this is shiitake mushrooms.')
 })
 
+book_share = api.model('공유 정보', {
+    'id': fields.Integer(required=True, description='단어장 ID', example=1),
+    'comment': fields.String(description='공유 단어장 설명')
+})
+
 
 @api.route("")
 @api.doc(security='Bearer Auth')
@@ -76,3 +81,26 @@ class BookMaker(Resource):
         """
         data = request.get_json()
         return BookService.generate_book(auth, data)
+
+
+@api.route('/share')
+@api.doc(security='Bearer Auth')
+class BookShare(Resource):
+    @api.expect(book_share)
+    @Authorization.reject_authorization
+    def post(self):
+        """
+        단어장 공개
+        """
+        data = request.get_json()
+        return BookService.add_share_book(data)
+    
+    @api.expect(book_share)
+    @Authorization.reject_authorization
+    def delete(self):
+        """
+        단어장 비공개
+        """
+        data = request.get_json()
+        return BookService.delete_share_book(data)
+    
