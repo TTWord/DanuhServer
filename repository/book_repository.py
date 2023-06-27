@@ -80,7 +80,7 @@ class BookRepository(Connect):
         return {'id': id}
     
     def update_shared(self, id: int, shared_id: int) -> dict:
-        sql = f"UPDATE book SET shared_id = '{shared_id}' WHERE id = {id}"
+        sql = f"UPDATE book SET shared_id = {shared_id} WHERE id = {id}"
         self.cursor.execute(sql)
         self.connect.commit()
 

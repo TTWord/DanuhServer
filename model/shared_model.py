@@ -1,5 +1,5 @@
 class SharedModel:
-    def __init__(self, id: int, book_id: int, comment: str, checked: int, downloaded: int):
+    def __init__(self, id: int, book_id: int, comment: str, checked: int = 0, downloaded: int = 0):
         self.id = id
         self.book_id = book_id
         self.comment = comment

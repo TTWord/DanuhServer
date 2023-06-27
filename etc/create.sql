@@ -20,8 +20,7 @@ create table book(
     name VARCHAR(100),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY(user_id) REFERENCES user(id) ON DELETE CASCADE,
-    FOREIGN KEY(shared_id) REFERENCES (id)
+    FOREIGN KEY(user_id) REFERENCES user(id) ON DELETE CASCADE
 );
 
 create table shared(
@@ -29,7 +28,7 @@ create table shared(
     book_id INT,
     comment VARCHAR(100),
     checked INT default 0,
-    downloaded INT default 0
+    downloaded INT default 0,
     FOREIGN KEY(book_id) REFERENCES book(id) ON DELETE CASCADE
 );
 

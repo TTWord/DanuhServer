@@ -3,9 +3,9 @@
     "version": "2.2.11",
     "width": 2000,
     "height": 2000,
-    "scrollTop": -272,
-    "scrollLeft": -1,
-    "zoomLevel": 0.8,
+    "scrollTop": -120,
+    "scrollLeft": -91,
+    "zoomLevel": 1,
     "show": {
       "tableComment": true,
       "columnComment": true,
@@ -637,7 +637,7 @@
             "ui": {
               "active": false,
               "pk": false,
-              "fk": true,
+              "fk": false,
               "pfk": false,
               "widthName": 60,
               "widthComment": 71.5703125,
@@ -717,10 +717,10 @@
           }
         ],
         "ui": {
-          "active": true,
+          "active": false,
           "left": 124.1272,
           "top": 474.7262,
-          "zIndex": 246,
+          "zIndex": 7,
           "widthName": 60,
           "widthComment": 84.5703125
         },
@@ -937,7 +937,7 @@
           "active": false,
           "left": 713.9989,
           "top": 490.5239,
-          "zIndex": 240,
+          "zIndex": 6,
           "widthName": 60,
           "widthComment": 71.5703125,
           "color": "#00000000"
@@ -1080,7 +1080,7 @@
             "64fe2a4b-d722-4f60-92ef-c86cc53b6949"
           ],
           "x": 532.83471953125,
-          "y": 522.7262000000001,
+          "y": 570.7262000000001,
           "direction": "right"
         },
         "end": {
@@ -1089,38 +1089,12 @@
             "224358e7-3a4b-422c-ac4f-145197a18a7a"
           ],
           "x": 713.9989,
-          "y": 619.1489,
+          "y": 576.2739,
           "direction": "left"
         },
         "constraintName": "fk_book_to_shared",
         "visible": true,
         "id": "ebf9096f-9977-4712-89f4-b093de91c52c"
-      },
-      {
-        "identification": false,
-        "relationshipType": "OneOnly",
-        "startRelationshipType": "Dash",
-        "start": {
-          "tableId": "233814e5-55af-4cd4-aaa7-cb8b610e926d",
-          "columnIds": [
-            "86a5574f-d61a-411a-839f-a8567828a7c1"
-          ],
-          "x": 713.9989,
-          "y": 533.3989,
-          "direction": "left"
-        },
-        "end": {
-          "tableId": "ca9ba2b0-6d77-4caa-bb9e-ef21b6821cb0",
-          "columnIds": [
-            "088ba84b-de69-421b-b80c-5495a6be3a74"
-          ],
-          "x": 532.83471953125,
-          "y": 618.7262000000001,
-          "direction": "right"
-        },
-        "constraintName": "fk_shared_to_book",
-        "visible": true,
-        "id": "c308c84d-f953-465e-8d53-e0c9cdfddb1e"
       }
     ]
   }
