@@ -46,10 +46,9 @@ class SharedRepository(Connect):
         shared = None
         
         sql = f'SELECT * FROM shared WHERE book_id = "{book_id}"'
-        self.cursor.execute(sql)
+        self.cursor.execute(sql)        
         result = self.cursor.fetchone()
         
-        result = self.cursor.fetchone()
         if result is not None:
             shared = SharedModel(id=result['id'], book_id=result['book_id'],
                                 comment=result['comment'])
@@ -58,7 +57,7 @@ class SharedRepository(Connect):
             return None
         
     def delete(self, id: int) -> dict:
-        sql = f"DELETE FROM book WHERE id = {id}"
+        sql = f"DELETE FROM shared WHERE id = {id}"
         self.cursor.execute(sql)
         self.connect.commit()
         

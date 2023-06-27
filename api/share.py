@@ -8,10 +8,10 @@ api = Namespace('share', description='공유 API')
 
 @api.route("/userservice")
 @api.doc(security="Bearer Auth")
-class Share(Resource):
+class Shared(Resource):
     @api.response(200, "Success")
     @api.response(400, "Bad request")
-    # @Authorization.check_authorization
+    # @Authorization.reject_authorization
     def get(self):
         """
         전체 공유 단어장 가져오기

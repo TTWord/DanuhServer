@@ -83,7 +83,6 @@ class BookMaker(Resource):
         return BookService.generate_book(auth, data)
 
 
-# TODO : share api 추가에 따른 엔드포인트 이동 고려
 @api.route('/share')
 @api.doc(security='Bearer Auth')
 class BookShare(Resource):

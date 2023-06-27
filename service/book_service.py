@@ -177,17 +177,16 @@ class BookService:
             
             if book is None:
                 return custom_response("단어장이 이미 존재하지 않습니다.", code=404)
-            if book['shared_id']:
+            if book['is_shared']:
                 return custom_response("이미 공유 중인 단어장입니다.", code=409)
             
             shared = shared_repo.add(book['id'], data['comment'])
-            book = book_repo.update_shared(data['id'], shared['id'])
+            book_repo.update_shared(data['id'], True)
             
-            return custom_response("단어장 공유 추가 성공", data=book)
+            return custom_response("단어장 공유 추가 성공", data=shared)
         except CustomException as e:
             return e.get_response()
         except Exception as e:
-            print(e)
             return custom_response("단어장 공유 추가 실패", code=500)
         
     @staticmethod
@@ -199,17 +198,15 @@ class BookService:
             
             # 공유할 단어장이 있는지 조회
             book = book_repo.find_one_by_id(id = data['id'])
-            
+    
             if book is None:
                 return custom_response("단어장이 이미 존재하지 않습니다.", code=404)
-            book = book_repo.update_shared(data['id'], None)
-            # shared = shared_repo.find_one_by_book_id(book['id'])
-            # shared = shared_repo.delete(shared['id'])
-            return custom_response("단어장 공유 삭제 성공")
-            
-            # return custom_response("단어장 공유 삭제 성공", data=shared)
+            shared = shared_repo.find_one_by_book_id(book['id'])
+            book = book_repo.update_shared(data['id'], False)
+            shared = shared_repo.delete(shared['id'])
+
+            return custom_response("단어장 공유 삭제 성공", data=book)
         except CustomException as e:
             return e.get_response()
         except Exception as e:
-            print(e)
             return custom_response("단어장 공유 삭제 실패", code=500)

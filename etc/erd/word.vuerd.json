@@ -3,9 +3,9 @@
     "version": "2.2.11",
     "width": 2000,
     "height": 2000,
-    "scrollTop": -120,
-    "scrollLeft": -91,
-    "zoomLevel": 1,
+    "scrollTop": -225,
+    "scrollLeft": -187,
+    "zoomLevel": 0.8,
     "show": {
       "tableComment": true,
       "columnComment": true,
@@ -624,29 +624,6 @@
             "id": "eeca80b7-a548-40fa-8517-a0dbcbb9cb73"
           },
           {
-            "name": "shared_id",
-            "comment": "공유 식벌자",
-            "dataType": "INT",
-            "default": "",
-            "option": {
-              "autoIncrement": false,
-              "primaryKey": false,
-              "unique": false,
-              "notNull": true
-            },
-            "ui": {
-              "active": false,
-              "pk": false,
-              "fk": false,
-              "pfk": false,
-              "widthName": 60,
-              "widthComment": 71.5703125,
-              "widthDataType": 60,
-              "widthDefault": 60
-            },
-            "id": "088ba84b-de69-421b-b80c-5495a6be3a74"
-          },
-          {
             "name": "name",
             "comment": "단어장 이름",
             "dataType": "VARCHAR(100)",
@@ -668,6 +645,52 @@
               "widthDefault": 60
             },
             "id": "11044b8a-5815-4f59-87d5-5f527b5a8f05"
+          },
+          {
+            "name": "is_shared",
+            "comment": "공유 여부",
+            "dataType": "BOOLEAN",
+            "default": "0",
+            "option": {
+              "autoIncrement": false,
+              "primaryKey": false,
+              "unique": false,
+              "notNull": false
+            },
+            "ui": {
+              "active": false,
+              "pk": false,
+              "fk": false,
+              "pfk": false,
+              "widthName": 60,
+              "widthComment": 60,
+              "widthDataType": 61.22998046875,
+              "widthDefault": 60
+            },
+            "id": "a17cfd37-7709-4a1b-9895-c86ec5139f1c"
+          },
+          {
+            "name": "is_downloaded",
+            "comment": "다운로드 여부",
+            "dataType": "BOOLEAN",
+            "default": "0",
+            "option": {
+              "autoIncrement": false,
+              "primaryKey": false,
+              "unique": false,
+              "notNull": false
+            },
+            "ui": {
+              "active": false,
+              "pk": false,
+              "fk": false,
+              "pfk": false,
+              "widthName": 89.2421875,
+              "widthComment": 84.5703125,
+              "widthDataType": 61.22998046875,
+              "widthDefault": 60
+            },
+            "id": "33118d38-e87a-40d4-8964-f90c8166a741"
           },
           {
             "name": "created_at",
@@ -718,9 +741,9 @@
         ],
         "ui": {
           "active": false,
-          "left": 124.1272,
-          "top": 474.7262,
-          "zIndex": 7,
+          "left": 113.1272,
+          "top": 472.7262,
+          "zIndex": 6,
           "widthName": 60,
           "widthComment": 84.5703125
         },
@@ -935,9 +958,9 @@
         ],
         "ui": {
           "active": false,
-          "left": 713.9989,
-          "top": 490.5239,
-          "zIndex": 6,
+          "left": 701.9989,
+          "top": 494.5239,
+          "zIndex": 7,
           "widthName": 60,
           "widthComment": 71.5703125,
           "color": "#00000000"
@@ -975,8 +998,8 @@
           "columnIds": [
             "64fe2a4b-d722-4f60-92ef-c86cc53b6949"
           ],
-          "x": 328.480959765625,
-          "y": 666.7262000000001,
+          "x": 328.179934375,
+          "y": 685.2262000000001,
           "direction": "bottom"
         },
         "end": {
@@ -1010,8 +1033,8 @@
           "columnIds": [
             "eeca80b7-a548-40fa-8517-a0dbcbb9cb73"
           ],
-          "x": 328.480959765625,
-          "y": 474.7262,
+          "x": 328.179934375,
+          "y": 472.7262,
           "direction": "top"
         },
         "constraintName": "fk_user_to_book",
@@ -1079,8 +1102,8 @@
           "columnIds": [
             "64fe2a4b-d722-4f60-92ef-c86cc53b6949"
           ],
-          "x": 532.83471953125,
-          "y": 570.7262000000001,
+          "x": 543.23266875,
+          "y": 578.9762000000001,
           "direction": "right"
         },
         "end": {
@@ -1088,8 +1111,8 @@
           "columnIds": [
             "224358e7-3a4b-422c-ac4f-145197a18a7a"
           ],
-          "x": 713.9989,
-          "y": 576.2739,
+          "x": 701.9989,
+          "y": 580.2739,
           "direction": "left"
         },
         "constraintName": "fk_book_to_shared",
