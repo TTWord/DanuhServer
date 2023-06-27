@@ -85,7 +85,7 @@ class WordService:
             if user_info['user_id'] != auth['id']:
                 raise CustomException("단어장 조회 권한이 없습니다.", code=403)
 
-            word = word_repo.update(id=id, book_id=data["book_id"], word=data["word"], mean=data["mean"])
+            word = word_repo.update(id=id, book_id=word['book_id'], word=data["word"], mean=data["mean"])
             return custom_response("SUCCESS", data=word)
         except CustomException as e:
             return e.get_response()

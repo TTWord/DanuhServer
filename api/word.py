@@ -22,7 +22,6 @@ class WordByBook(Resource):
         """
         모든 단어 조회
         """
-
         return WordService.get_words_by_book_id(book_id, auth)
     
     @api.response(200, 'Success')
@@ -31,13 +30,13 @@ class WordByBook(Resource):
     @Authorization.check_authorization
     def post(self, book_id, auth):
         """
-        단어 추가
+        단어장에 단어 추가
         """
         data = request.get_json()
         return WordService.add(book_id, data, auth)
     
 
-@api.route('/<int:id>')
+@api.route('/id/<int:id>')
 @api.doc(security='Bearer Auth')
 class WordById(Resource):
     @api.response(200, 'Success')
