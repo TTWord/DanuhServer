@@ -1,11 +1,11 @@
 from db.connect import Connect
-from model.shared_model import SharedModel
+from model.share_model import ShareModel
 
 
-class SharedRepository(Connect):
+class ShareRepository(Connect):
     def add(self, book_id: int, comment: str) -> dict:
         sql = f"""
-            INSERT INTO shared (
+            INSERT INTO share (
                 book_id,
                 comment
             )
@@ -17,13 +17,13 @@ class SharedRepository(Connect):
         self.cursor.execute(sql)
         self.connect.commit()
 
-        shared = SharedModel(id=self.cursor.lastrowid, book_id=book_id,
+        shared = ShareModel(id=self.cursor.lastrowid, book_id=book_id,
                             comment=comment)
 
         return shared.__dict__
     
     def find_all(self) -> list:
-        sql = 'SELECT * FROM shared'
+        sql = 'SELECT * FROM share'
         self.cursor.execute(sql)
         result = self.cursor.fetchall()
 
@@ -32,11 +32,11 @@ class SharedRepository(Connect):
     def find_one_by_id(self, id: int) -> dict:
         shared = None
 
-        sql = f'SELECT * FROM shared WHERE id = {id}'
+        sql = f'SELECT * FROM share WHERE id = {id}'
         self.cursor.execute(sql)
         result = self.cursor.fetchone()
         if result is not None:
-            shared = SharedModel(id=result['id'], book_id=result['book_id'],
+            shared = ShareModel(id=result['id'], book_id=result['book_id'],
                                 comment=result['comment'])
             return shared.__dict__
         else:
@@ -45,19 +45,19 @@ class SharedRepository(Connect):
     def find_one_by_book_id(self, book_id: int) -> dict:
         shared = None
         
-        sql = f'SELECT * FROM shared WHERE book_id = "{book_id}"'
+        sql = f'SELECT * FROM share WHERE book_id = "{book_id}"'
         self.cursor.execute(sql)        
         result = self.cursor.fetchone()
         
         if result is not None:
-            shared = SharedModel(id=result['id'], book_id=result['book_id'],
+            shared = ShareModel(id=result['id'], book_id=result['book_id'],
                                 comment=result['comment'])
             return shared.__dict__
         else:
             return None
         
     def delete(self, id: int) -> dict:
-        sql = f"DELETE FROM shared WHERE id = {id}"
+        sql = f"DELETE FROM share WHERE id = {id}"
         self.cursor.execute(sql)
         self.connect.commit()
         

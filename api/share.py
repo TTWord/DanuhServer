@@ -1,4 +1,4 @@
-from service.shared_service import SharedService
+from service.share_service import ShareService
 from flask_restx import Namespace, Resource, Api, reqparse, fields
 from util.decorator.authorization import Authorization
 
@@ -8,7 +8,7 @@ api = Namespace('share', description='공유 API')
 
 @api.route("/userservice")
 @api.doc(security="Bearer Auth")
-class Shared(Resource):
+class Share(Resource):
     @api.response(200, "Success")
     @api.response(400, "Bad request")
     # @Authorization.reject_authorization
@@ -16,5 +16,5 @@ class Shared(Resource):
         """
         전체 공유 단어장 가져오기
         """
-        return SharedService.get_all_shared_books()
+        return ShareService.get_all_shared_books()
 

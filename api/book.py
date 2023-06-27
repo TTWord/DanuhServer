@@ -87,20 +87,20 @@ class BookMaker(Resource):
 @api.doc(security='Bearer Auth')
 class BookShare(Resource):
     @api.expect(book_share)
-    @Authorization.check_authorization
-    def post(self, auth):
+    @Authorization.reject_authorization
+    def post(self):
         """
         단어장 공개
         """
         data = request.get_json()
-        return BookService.add_shared_book(auth, data)
+        return BookService.add_share_book(data)
     
     @api.expect(book_share)
-    @Authorization.check_authorization
-    def delete(self, auth):
+    @Authorization.reject_authorization
+    def delete(self):
         """
         단어장 비공개
         """
         data = request.get_json()
-        return BookService.delete_shared_book(auth, data)
+        return BookService.delete_share_book(data)
     

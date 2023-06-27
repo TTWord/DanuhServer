@@ -1,6 +1,6 @@
 from repository.book_repository import BookRepository
 from repository.word_repository import WordRepository
-from repository.shared_repository import SharedRepository
+from repository.share_repository import ShareRepository
 from db.connect import Database
 from util.custom_response import custom_response
 from util.decorator.service_receiver import ServiceReceiver
@@ -167,10 +167,10 @@ class BookService:
         
     @staticmethod
     @ServiceReceiver.database
-    def add_shared_book(auth, data, db: Database):
+    def add_share_book(data, db: Database):
         try:
             book_repo = BookRepository(db)
-            shared_repo = SharedRepository(db)
+            share_repo = ShareRepository(db)
             
             # 공유할 단어장이 있는지 조회
             book = book_repo.find_one_by_id(id = data['id'])
@@ -180,10 +180,10 @@ class BookService:
             if book['is_shared']:
                 return custom_response("이미 공유 중인 단어장입니다.", code=409)
             
-            shared = shared_repo.add(book['id'], data['comment'])
-            book_repo.update_shared(data['id'], True)
+            share = share_repo.add(book['id'], data['comment'])
+            book_repo.update_share(data['id'], True)
             
-            return custom_response("단어장 공유 추가 성공", data=shared)
+            return custom_response("단어장 공유 추가 성공", data=share)
         except CustomException as e:
             return e.get_response()
         except Exception as e:
@@ -191,19 +191,19 @@ class BookService:
         
     @staticmethod
     @ServiceReceiver.database
-    def delete_shared_book(auth, data, db: Database):
+    def delete_share_book(data, db: Database):
         try:
             book_repo = BookRepository(db)
-            shared_repo = SharedRepository(db)
+            share_repo = ShareRepository(db)
             
             # 공유할 단어장이 있는지 조회
             book = book_repo.find_one_by_id(id = data['id'])
     
             if book is None:
                 return custom_response("단어장이 이미 존재하지 않습니다.", code=404)
-            shared = shared_repo.find_one_by_book_id(book['id'])
-            book = book_repo.update_shared(data['id'], False)
-            shared = shared_repo.delete(shared['id'])
+            share = share_repo.find_one_by_book_id(book['id'])
+            book = book_repo.update_share(data['id'], False)
+            share = share_repo.delete(share['id'])
 
             return custom_response("단어장 공유 삭제 성공", data=book)
         except CustomException as e:

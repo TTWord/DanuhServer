@@ -24,7 +24,7 @@ create table book(
     FOREIGN KEY(user_id) REFERENCES user(id) ON DELETE CASCADE
 );
 
-create table shared(
+create table share(
     id INT PRIMARY KEY auto_increment,
     book_id INT,
     comment VARCHAR(100),
