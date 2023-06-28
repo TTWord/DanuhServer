@@ -22,8 +22,9 @@ class ShareRepository(Connect):
 
         return shared.__dict__
     
-    def find_all(self) -> list:
-        sql = 'SELECT * FROM share'
+    def find_all(self, type: str = 'downloaded', order: str = 'DESC') -> list:
+        sql = f"SELECT * FROM share ORDER BY {type} {order}"
+
         self.cursor.execute(sql)
         result = self.cursor.fetchall()
 
