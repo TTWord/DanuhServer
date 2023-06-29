@@ -63,3 +63,10 @@ class ShareRepository(Connect):
         self.connect.commit()
         
         return {'id': id}
+    
+    def update_column(self, id: int, col: str) -> dict:        
+        sql = f"UPDATE share SET {col} = {col} + 1 WHERE id={id}"
+        self.cursor.execute(sql)
+        self.connect.commit()
+        
+        return {'id': id}
