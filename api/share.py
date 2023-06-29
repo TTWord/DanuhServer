@@ -6,10 +6,11 @@ from flask import request
 
 api = Namespace('share', description='공유 API')
 
+share_info = api.model('공유 정보', {
+    'id': fields.Integer(required=True, description='공유 ID', example=1)
+})
 
-# TODO : 쿼리 파라미터를 통해 여러 조건들을 추가
-#       1. 이름
-#       2. 정렬
+
 @api.route("")
 @api.doc(security="Bearer Auth")
 class Share(Resource):
@@ -27,6 +28,17 @@ class Share(Resource):
         type = request.args.get('type')
 
         return ShareService.get_all_shared_books(data={'name': name, 'order': order, 'type': type})
+
+    @api.expect(share_info)
+    @api.response(200, "Success")
+    @api.response(400, "Bad request")
+    @Authorization.check_authorization
+    def post(self, auth):
+        """
+        공유 단어장 다운로드
+        """
+        data = request.get_json()
+        return ShareService.download_book(auth=auth, data=data)
 
 
 @api.route('/<int:id>')
