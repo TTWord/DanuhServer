@@ -17,7 +17,7 @@ book_info = api.model('단어장 생성', {
 
 book_share = api.model('공유 정보', {
     'id': fields.Integer(required=True, description='단어장 ID', example=1),
-    'comment': fields.String(description='공유 단어장 설명')
+    'comment': fields.String(description='공유 단어장 설명', example='string')
 })
 
 

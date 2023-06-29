@@ -58,8 +58,8 @@ class BookRepository(Connect):
         else:
             return None
     
-    def add(self, user_id: int, name: str) -> dict:
-        sql = f"INSERT INTO book (user_id, name) VALUES ({user_id}, '{name}')"
+    def add(self, user_id: int, name: str, is_downloaded: int = 0) -> dict:
+        sql = f"INSERT INTO book (user_id, name, is_downloaded) VALUES ({user_id}, '{name}', {is_downloaded})"
         self.cursor.execute(sql)
         self.connect.commit()
         
