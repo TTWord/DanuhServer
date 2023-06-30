@@ -56,16 +56,3 @@ class ShareById(Resource):
         ID를 통해 조회
         """
         return ShareService.get_share_by_id(id)
-    
-    @api.expect(update_share_info)
-    @api.response(200, "Success")
-    @api.response(400, "Bad request")
-    # @Authorization.reject_authorization
-    def patch(self, id):
-        """
-        ID를 통해 다운로드, 조회 수 증가
-        """
-        data = request.get_json()
-
-        return ShareService.update_share_by_id(id, data)
-
