@@ -10,7 +10,7 @@ share_info = api.model('공유 정보', {
     'id': fields.Integer(required=True, description='공유 ID', example=1)
 })
 
-share_update = api.model('수정할 공유 정보', {
+update_share_info = api.model('수정할 공유 정보', {
     'type': fields.String(required=True, description='추가할 값(downloaded, checked)', example='downloaded')
 })
 
@@ -43,17 +43,6 @@ class Share(Resource):
         """
         data = request.get_json()
         return ShareService.download_book(auth=auth, data=data)
-    
-    @api.response(200, "Success")
-    @api.response(400, "Bad request")
-    @Authorization.check_authorization
-    def patch(self, auth):
-        """
-        공유 단어장 업데이트
-        """
-        data = request.get_json()
-        return ShareService.update_downloaded_book(auth=auth, data=data)
-
 
 
 @api.route('/<int:id>')
@@ -68,7 +57,7 @@ class ShareById(Resource):
         """
         return ShareService.get_share_by_id(id)
     
-    @api.expect(share_update)
+    @api.expect(update_share_info)
     @api.response(200, "Success")
     @api.response(400, "Bad request")
     # @Authorization.reject_authorization

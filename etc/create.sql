@@ -17,7 +17,7 @@ create table book(
     id INT PRIMARY KEY auto_increment,
     user_id INT,
     name VARCHAR(100),
-    is_downloaded BOOLEAN default 0,
+    downloaded_id INT default 0,
     is_shared BOOLEAN default 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,

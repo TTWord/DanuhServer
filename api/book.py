@@ -15,7 +15,7 @@ book_info = api.model('단어장 생성', {
     'text': fields.String(required=True, description='예측 값 입력', example='You can tell a stranger that this is shiitake mushrooms.')
 })
 
-book_share = api.model('공유 정보', {
+book_share = api.model('공유 설정', {
     'id': fields.Integer(required=True, description='단어장 ID', example=1),
     'comment': fields.String(description='공유 단어장 설명', example='string')
 })
@@ -61,6 +61,13 @@ class BookById(Resource):
         data = request.get_json()
         
         return BookService.update_book(auth=auth, id=id, data=data)
+    
+    @Authorization.check_authorization
+    def patch(self, id, auth):
+        """
+        공유 단어장 업데이트
+        """        
+        return BookService.update_share_book(auth=auth, id=id)
     
     @Authorization.check_authorization
     def delete(self, id, auth):

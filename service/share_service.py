@@ -97,10 +97,14 @@ class ShareService:
             share = share_repo.find_one_by_id(data['id'])
             if share is None:
                 raise CustomException("공유되지 않은 단어장입니다.", code=409)
+            
+            # 다운로드 증가
+            share_repo.update_column(share['id'], 'downloaded')
+
+            # 단어장 이름 복사하여 단어장 생성, 단어 생성
             book = book_repo.find_one_by_id(share['book_id'])
             words = word_repo.find_all_by_book_id(share['book_id'])
-
-            book = book_repo.add(auth['id'], book['name'], True)
+            book = book_repo.add(auth['id'], book['name'], share['id'])
 
             for word in words:
                 word_repo.add(book['id'], word['word'], word['mean'])
