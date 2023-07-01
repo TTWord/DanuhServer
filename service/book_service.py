@@ -152,15 +152,15 @@ class BookService:
             # 변경할 데이터가 있는지 조회
             book = book_repo.find_one_by_id(id = id)
 
-            if auth['id'] == book['user_id']:
+            if auth['id'] != book['user_id']:
                 raise CustomException("단어장 변경 권한이 없습니다.", code=403)
             # 데이터가 없을 경우
             if book is None:
                 raise CustomException("단어장이 존재하지 않습니다.", code=404)
             
-            share = share_repo.find_one_by_id(book['downloaded_id'])
+            share = share_repo.find_one_by_id(book['share_id'])
             if share is None:
-                raise CustomException("공유되지 않은 단어장입니다.", code=409)
+                raise CustomException("다운로드 받은 단어장이 아닙니다.", code=409)
             
             # 다운로드 증가
             share_repo.update_column(share['id'], 'downloaded')
@@ -205,7 +205,7 @@ class BookService:
         
     @staticmethod
     @ServiceReceiver.database
-    def add_share_book(data, db: Database):
+    def add_share_book(auth, data, db: Database):
         try:
             book_repo = BookRepository(db)
             share_repo = ShareRepository(db)
@@ -214,25 +214,26 @@ class BookService:
             book = book_repo.find_one_by_id(id = data['id'])
             
             if book is None:
-                return custom_response("단어장이 이미 존재하지 않습니다.", code=404)
+                raise CustomException("단어장이 존재하지 않습니다.", code=404)
             if book['is_shared']:
-                return custom_response("이미 공유 중인 단어장입니다.", code=409)
-            if book['downloaded_id']:
-                return custom_response("다운로드 받은 단어장입니다.", code=409)
+                raise CustomException("이미 공유 중인 단어장입니다.", code=409)
+            if book['share_id']:
+                raise CustomException("다운로드 받은 단어장입니다.", code=409)
+            if book["user_id"] != auth["id"]:
+                raise CustomException("단어장 제어 권한이 없습니다.", code=403)
             
-            share = share_repo.add(book['id'], data['comment'])
-            book_repo.update_share(data['id'], True)
+            share_repo.add(book['id'], data['comment'])
+            book = book_repo.update_is_shared(data['id'], True)
             
-            return custom_response("단어장 공유 추가 성공", data=share)
+            return custom_response("단어장 공유 추가 성공", data=book)
         except CustomException as e:
             return e.get_response()
         except Exception as e:
-            print(e)
             return custom_response("단어장 공유 추가 실패", code=500)
         
     @staticmethod
     @ServiceReceiver.database
-    def delete_share_book(data, db: Database):
+    def delete_share_book(auth, data, db: Database):
         try:
             book_repo = BookRepository(db)
             share_repo = ShareRepository(db)
@@ -241,11 +242,13 @@ class BookService:
             book = book_repo.find_one_by_id(id = data['id'])
     
             if book is None:
-                return custom_response("단어장이 이미 존재하지 않습니다.", code=404)
-            if book['downloaded_id']:
-                return custom_response("다운로드 받은 단어장입니다.", code=409)
+                raise CustomException("단어장이 존재하지 않습니다.", code=404)
+            if book['share_id']:
+                raise CustomException("다운로드 받은 단어장입니다.", code=409)
+            if book["user_id"] != auth["id"]:
+                raise CustomException("단어장 제어 권한이 없습니다.", code=403)
             share = share_repo.find_one_by_book_id(book['id'])
-            book = book_repo.update_share(data['id'], False)
+            book = book_repo.update_is_shared(data['id'], False)
             share = share_repo.delete(share['id'])
 
             return custom_response("단어장 공유 삭제 성공", data=book)
