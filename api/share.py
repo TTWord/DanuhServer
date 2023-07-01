@@ -10,6 +10,10 @@ share_info = api.model('공유 정보', {
     'id': fields.Integer(required=True, description='공유 ID', example=1)
 })
 
+update_share_info = api.model('수정할 공유 정보', {
+    'type': fields.String(required=True, description='추가할 값(downloaded, checked)', example='downloaded')
+})
+
 
 @api.route("")
 @api.doc(security="Bearer Auth")
@@ -18,7 +22,7 @@ class Share(Resource):
                       'order': 'DESC, ASC(기본 DESC)'})
     @api.response(200, "Success")
     @api.response(400, "Bad request")
-    # @Authorization.reject_authorization
+    @Authorization.reject_authorization
     def get(self):
         """
         공유 단어장 가져오기
@@ -28,7 +32,7 @@ class Share(Resource):
         type = request.args.get('type')
 
         return ShareService.get_all_shared_books(data={'name': name, 'order': order, 'type': type})
-
+    
     @api.expect(share_info)
     @api.response(200, "Success")
     @api.response(400, "Bad request")
@@ -52,4 +56,3 @@ class ShareById(Resource):
         ID를 통해 조회
         """
         return ShareService.get_share_by_id(id)
-    

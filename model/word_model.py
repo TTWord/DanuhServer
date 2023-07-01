@@ -5,8 +5,8 @@ class WordModel:
         self.word = word
         self.mean = mean
         self.is_memorized = is_memorized
-        self.created_at = None
-        self.updated_at = None
+        self.created_at = created_at
+        self.updated_at = updated_at
 
     def __repr__(self):
         return f"Word({self.id}, {self.name})"
