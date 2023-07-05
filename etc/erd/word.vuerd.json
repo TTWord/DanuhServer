@@ -3,9 +3,9 @@
     "version": "2.2.11",
     "width": 2000,
     "height": 2000,
-    "scrollTop": -326,
-    "scrollLeft": 0,
-    "zoomLevel": 0.9,
+    "scrollTop": -711,
+    "scrollLeft": -236,
+    "zoomLevel": 0.7,
     "show": {
       "tableComment": true,
       "columnComment": true,
@@ -188,8 +188,8 @@
         "ui": {
           "active": false,
           "left": 105.3341,
-          "top": 71.3063,
-          "zIndex": 3,
+          "top": 53.8063,
+          "zIndex": 4,
           "widthName": 60,
           "widthComment": 102.140625
         },
@@ -563,10 +563,10 @@
           }
         ],
         "ui": {
-          "active": true,
-          "left": 113.3058,
-          "top": 812.5004,
-          "zIndex": 20,
+          "active": false,
+          "left": 109.9724,
+          "top": 1022.5011,
+          "zIndex": 14,
           "widthName": 60,
           "widthComment": 115.140625
         },
@@ -621,7 +621,7 @@
               "widthDataType": 60,
               "widthDefault": 60
             },
-            "id": "eeca80b7-a548-40fa-8517-a0dbcbb9cb73"
+            "id": "1f4429f1-1f62-40d9-9343-cc5ac23cd5a2"
           },
           {
             "name": "share_id",
@@ -741,9 +741,9 @@
         ],
         "ui": {
           "active": false,
-          "left": 114.3772,
-          "top": 472.7262,
-          "zIndex": 19,
+          "left": 109.9327,
+          "top": 654.0604,
+          "zIndex": 12,
           "widthName": 60,
           "widthComment": 84.5703125
         },
@@ -958,15 +958,100 @@
         ],
         "ui": {
           "active": false,
-          "left": 701.9989,
-          "top": 494.5239,
-          "zIndex": 6,
+          "left": 763.9997,
+          "top": 676.5261,
+          "zIndex": 13,
           "widthName": 60,
           "widthComment": 71.5703125,
           "color": "#00000000"
         },
         "visible": true,
         "id": "233814e5-55af-4cd4-aaa7-cb8b610e926d"
+      },
+      {
+        "name": "recommend",
+        "comment": "추천 테이블",
+        "columns": [
+          {
+            "name": "id",
+            "comment": "추천 식별자",
+            "dataType": "INT",
+            "default": "",
+            "option": {
+              "autoIncrement": false,
+              "primaryKey": false,
+              "unique": false,
+              "notNull": false
+            },
+            "ui": {
+              "active": false,
+              "pk": false,
+              "fk": false,
+              "pfk": false,
+              "widthName": 60,
+              "widthComment": 71.5703125,
+              "widthDataType": 60,
+              "widthDefault": 60
+            },
+            "id": "c331664b-61e7-4e28-bfa5-b60eab428404"
+          },
+          {
+            "name": "book_id",
+            "comment": "단어장 식별자",
+            "dataType": "INT",
+            "default": "",
+            "option": {
+              "autoIncrement": false,
+              "primaryKey": false,
+              "unique": false,
+              "notNull": true
+            },
+            "ui": {
+              "active": false,
+              "pk": false,
+              "fk": true,
+              "pfk": false,
+              "widthName": 60,
+              "widthComment": 84.5703125,
+              "widthDataType": 60,
+              "widthDefault": 60
+            },
+            "id": "8744b773-0c7f-4dd3-beef-94b086e2e8b9"
+          },
+          {
+            "name": "like_user_id",
+            "comment": "유저 식별자",
+            "dataType": "INT",
+            "default": "",
+            "option": {
+              "autoIncrement": false,
+              "primaryKey": false,
+              "unique": false,
+              "notNull": true
+            },
+            "ui": {
+              "active": false,
+              "pk": false,
+              "fk": true,
+              "pfk": false,
+              "widthName": 68.447265625,
+              "widthComment": 71.5703125,
+              "widthDataType": 60,
+              "widthDefault": 60
+            },
+            "id": "3bd54f7c-6799-461a-beb7-f8d2d9a46899"
+          }
+        ],
+        "ui": {
+          "active": false,
+          "left": 25.6124,
+          "top": 386.083,
+          "zIndex": 11,
+          "widthName": 72.47802734375,
+          "widthComment": 71.5703125
+        },
+        "visible": true,
+        "id": "d2294a02-63ec-4e5c-b4e8-db34af1d0e3d"
       }
     ],
     "indexes": []
@@ -979,7 +1064,7 @@
           "active": false,
           "left": 1123.8055555555563,
           "top": 67.24999999999991,
-          "zIndex": 4,
+          "zIndex": 3,
           "width": 284,
           "height": 100
         },
@@ -998,8 +1083,8 @@
           "columnIds": [
             "64fe2a4b-d722-4f60-92ef-c86cc53b6949"
           ],
-          "x": 326.52905546875,
-          "y": 685.2262000000001,
+          "x": 322.08455546875,
+          "y": 866.5604,
           "direction": "bottom"
         },
         "end": {
@@ -1007,39 +1092,13 @@
           "columnIds": [
             "d15677e9-5165-4b22-afec-28718d61007d"
           ],
-          "x": 325.022841015625,
-          "y": 812.5004,
+          "x": 321.689441015625,
+          "y": 1022.5011,
           "direction": "top"
         },
         "constraintName": "fk_book_to_word",
         "visible": true,
         "id": "1bcc6846-d148-4320-973d-7811d6764296"
-      },
-      {
-        "identification": false,
-        "relationshipType": "ZeroN",
-        "startRelationshipType": "Dash",
-        "start": {
-          "tableId": "a861fa85-59fc-480b-a559-86d7d2933d19",
-          "columnIds": [
-            "bf3bdf5e-af17-4205-beff-4741d0544675"
-          ],
-          "x": 327.40270351562503,
-          "y": 263.30629999999996,
-          "direction": "bottom"
-        },
-        "end": {
-          "tableId": "ca9ba2b0-6d77-4caa-bb9e-ef21b6821cb0",
-          "columnIds": [
-            "eeca80b7-a548-40fa-8517-a0dbcbb9cb73"
-          ],
-          "x": 326.52905546875,
-          "y": 472.7262,
-          "direction": "top"
-        },
-        "constraintName": "fk_user_to_book",
-        "visible": true,
-        "id": "c54b7c9c-5964-46c5-ba6c-abf458b6bee1"
       },
       {
         "identification": false,
@@ -1051,7 +1110,7 @@
             "bf3bdf5e-af17-4205-beff-4741d0544675"
           ],
           "x": 549.47130703125,
-          "y": 119.3063,
+          "y": 101.8063,
           "direction": "right"
         },
         "end": {
@@ -1077,7 +1136,7 @@
             "bf3bdf5e-af17-4205-beff-4741d0544675"
           ],
           "x": 549.47130703125,
-          "y": 215.3063,
+          "y": 197.8063,
           "direction": "right"
         },
         "end": {
@@ -1102,8 +1161,8 @@
           "columnIds": [
             "64fe2a4b-d722-4f60-92ef-c86cc53b6949"
           ],
-          "x": 538.6809109375,
-          "y": 578.9762000000001,
+          "x": 534.2364109375,
+          "y": 760.3104,
           "direction": "right"
         },
         "end": {
@@ -1111,13 +1170,91 @@
           "columnIds": [
             "224358e7-3a4b-422c-ac4f-145197a18a7a"
           ],
-          "x": 701.9989,
-          "y": 580.2739,
+          "x": 763.9997,
+          "y": 762.2761,
           "direction": "left"
         },
         "constraintName": "fk_book_to_shared",
         "visible": true,
         "id": "ebf9096f-9977-4712-89f4-b093de91c52c"
+      },
+      {
+        "identification": false,
+        "relationshipType": "OneN",
+        "startRelationshipType": "Dash",
+        "start": {
+          "tableId": "ca9ba2b0-6d77-4caa-bb9e-ef21b6821cb0",
+          "columnIds": [
+            "64fe2a4b-d722-4f60-92ef-c86cc53b6949"
+          ],
+          "x": 216.008627734375,
+          "y": 654.0604,
+          "direction": "top"
+        },
+        "end": {
+          "tableId": "d2294a02-63ec-4e5c-b4e8-db34af1d0e3d",
+          "columnIds": [
+            "8744b773-0c7f-4dd3-beef-94b086e2e8b9"
+          ],
+          "x": 215.6211890625,
+          "y": 516.5830000000001,
+          "direction": "bottom"
+        },
+        "constraintName": "fk_book_to_recommend",
+        "visible": true,
+        "id": "3abf1b2e-8eb1-41a0-998f-8c44494ae205"
+      },
+      {
+        "identification": false,
+        "relationshipType": "OneN",
+        "startRelationshipType": "Dash",
+        "start": {
+          "tableId": "a861fa85-59fc-480b-a559-86d7d2933d19",
+          "columnIds": [
+            "bf3bdf5e-af17-4205-beff-4741d0544675"
+          ],
+          "x": 216.3684017578125,
+          "y": 245.8063,
+          "direction": "bottom"
+        },
+        "end": {
+          "tableId": "d2294a02-63ec-4e5c-b4e8-db34af1d0e3d",
+          "columnIds": [
+            "3bd54f7c-6799-461a-beb7-f8d2d9a46899"
+          ],
+          "x": 215.6211890625,
+          "y": 386.083,
+          "direction": "top"
+        },
+        "constraintName": "fk_user_to_recommend",
+        "visible": true,
+        "id": "61412b81-6520-4153-9651-98559cee718e"
+      },
+      {
+        "identification": false,
+        "relationshipType": "OneN",
+        "startRelationshipType": "Dash",
+        "start": {
+          "tableId": "a861fa85-59fc-480b-a559-86d7d2933d19",
+          "columnIds": [
+            "bf3bdf5e-af17-4205-beff-4741d0544675"
+          ],
+          "x": 438.43700527343753,
+          "y": 245.8063,
+          "direction": "bottom"
+        },
+        "end": {
+          "tableId": "ca9ba2b0-6d77-4caa-bb9e-ef21b6821cb0",
+          "columnIds": [
+            "1f4429f1-1f62-40d9-9343-cc5ac23cd5a2"
+          ],
+          "x": 428.160483203125,
+          "y": 654.0604,
+          "direction": "top"
+        },
+        "constraintName": "fk_user_to_book",
+        "visible": true,
+        "id": "9f0e9cdd-ab3e-4ae5-8929-33544950e516"
       }
     ]
   }

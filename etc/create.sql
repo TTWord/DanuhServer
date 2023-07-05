@@ -24,6 +24,14 @@ create table book(
     FOREIGN KEY(user_id) REFERENCES user(id) ON DELETE CASCADE
 );
 
+create table recommend(
+    id INT PRIMARY KEY auto_increment,
+    like_user_id INT default 0,
+    book_id INT default 0,
+    FOREIGN KEY(like_user_id) REFERENCES user(id) ON DELETE CASCADE,
+    FOREIGN KEY(book_id) REFERENCES book(id) ON DELETE CASCADE
+);
+
 create table share(
     id INT PRIMARY KEY auto_increment,
     book_id INT,

@@ -2,6 +2,7 @@ from repository.share_repository import ShareRepository
 from repository.word_repository import WordRepository
 from repository.book_repository import BookRepository
 from repository.user_repository import UserRepository
+from repository.recommend_repository import RecommendRepository
 from db.connect import Database
 from util.custom_response import custom_response
 from util.decorator.service_receiver import ServiceReceiver
@@ -130,6 +131,30 @@ class ShareService:
                 word_repo.add(book['id'], word['word'], word['mean'])
 
             return custom_response("SUCCESS", data=words)
+        except CustomException as e:
+            return e.get_response()
+        except Exception as e:
+            return custom_response("FAIL", code=500)
+
+    @staticmethod
+    @ServiceReceiver.database  
+    def update_recommend_share(auth, data, db: Database):
+        try:
+            share_repo = ShareRepository(db)
+            recommend_repo = RecommendRepository(db)
+
+            share = share_repo.find_one_by_id(data['id'])
+            recommend = recommend_repo.find_one_by_like_user_id_and_book_id(auth['id'], share['book_id'])
+            if share is None:
+                raise CustomException("공유되지 않은 단어장입니다.", code=409)
+            
+            if recommend:
+                raise CustomException("이미 추천한 단어장입니다.", code=409)
+            
+            # 추천 증가
+            share = share_repo.update_column(share['id'], 'recommended')
+
+            return custom_response("SUCCESS", data=share)
         except CustomException as e:
             return e.get_response()
         except Exception as e:
