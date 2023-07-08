@@ -4,6 +4,7 @@ from util.exception import CustomException
 from db.connect import Database
 from repository.word_repository import WordRepository
 from repository.book_repository import BookRepository
+from repository.share_repository import ShareRepository
 from util.validation import validate_word
 
 
@@ -48,12 +49,18 @@ class WordService:
             
             word_repo = WordRepository(db)
             book_repo = BookRepository(db)
+            share_repo = ShareRepository(db)
 
             book = book_repo.find_one_by_id(book_id)
             if not book:
                 raise CustomException("단어장이 존재하지 않습니다.", code=409)
             elif book["user_id"] != auth["id"]:
                 raise CustomException("단어장 조회 권한이 없습니다.", code=409)
+            
+            # 다운로드 받은 단어장에 대한 예외 적용
+            share = share_repo.find_one_by_id(book['share_id'])
+            if book["id"] != share["id"]:
+                raise CustomException("다운로드 받은 단어장에 대해서 단어를 추가할 수 없습니다.", code=409)
             
             words = word_repo.find_all_by_book_id(book_id=book['id'])
             for word in words:

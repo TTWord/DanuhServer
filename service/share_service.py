@@ -2,11 +2,13 @@ from repository.share_repository import ShareRepository
 from repository.word_repository import WordRepository
 from repository.book_repository import BookRepository
 from repository.user_repository import UserRepository
+from repository.recommend_repository import RecommendRepository
 from db.connect import Database
 from util.custom_response import custom_response
 from util.decorator.service_receiver import ServiceReceiver
 from util.exception import CustomException
 from util.time import get_difference_time
+from collections import defaultdict
 
 
 class ShareService:
@@ -48,6 +50,7 @@ class ShareService:
         try:
             share_repo = ShareRepository(db)
             word_repo = WordRepository(db)
+            book_repo = BookRepository(db)
 
             share = share_repo.find_one_by_id(id)
             if share is None:
@@ -56,9 +59,11 @@ class ShareService:
 
             # 데이터 가공
             book_id = words[0]['book_id']
+            book = book_repo.find_one_by_id(book_id)
             share_repo.update_column(id, 'checked')
             [word.pop('book_id') for word in words]
             data = {
+                'user_id': book['user_id'],
                 'book_id': book_id,
                 'comment': share['comment'],
                 'downloaded': share['downloaded'],
@@ -130,6 +135,63 @@ class ShareService:
                 word_repo.add(book['id'], word['word'], word['mean'])
 
             return custom_response("SUCCESS", data=words)
+        except CustomException as e:
+            return e.get_response()
+        except Exception as e:
+            return custom_response("FAIL", code=500)
+
+    @staticmethod
+    @ServiceReceiver.database  
+    def update_recommend_share(auth, id, db: Database):
+        try:
+            share_repo = ShareRepository(db)
+            recommend_repo = RecommendRepository(db)
+
+            share = share_repo.find_one_by_id(id)
+            recommend = recommend_repo.find_one_by_like_user_id_and_book_id(auth['id'], share['book_id'])
+            if share is None:
+                raise CustomException("공유되지 않은 단어장입니다.", code=409)
+            # 추천이 있는 경우 recommend 삭제, 공유 테이블 recommended -1
+            if recommend:
+                share_repo.update_column(share['id'], 'recommended', -1)
+                recommend_repo.delete(recommend['id'])
+            else:
+                share_repo.update_column(share['id'], 'recommended')
+                recommend_repo.add(auth['id'], share['book_id'])
+
+            return custom_response("SUCCESS", data=share)
+        except CustomException as e:
+            return e.get_response()
+        except Exception as e:
+            return custom_response("FAIL", code=500)
+        
+    @staticmethod
+    @ServiceReceiver.database
+    def get_user_shared_books(auth, data, db: Database):
+        try:
+            share_repo = ShareRepository(db)
+            book_repo = BookRepository(db)
+            user_repo = UserRepository(db)
+
+            # 유저 별 조회
+            books = book_repo.find_all_by_user_id(auth['id'])
+            user = user_repo.find_one_by_user_id(auth['id'])
+
+            filter_books = defaultdict(list)
+            for book in books:
+                if book['share_id']:
+                    share = share_repo.find_one_by_id(book['share_id'])
+                    share['book_name'] = book['name']
+                    share['nickname'] = user['nickname']
+                    share['updated_at'] = get_difference_time(book['updated_at'])
+                    filter_books['downloaded_book'].append(share)
+                if book['is_shared']:
+                    share = share_repo.find_one_by_book_id(book['id'])
+                    share['book_name'] = book['name']
+                    share['nickname'] = user['nickname']
+                    share['updated_at'] = get_difference_time(book['updated_at'])
+                    filter_books['shared_book'].append(share)
+            return custom_response("데이터 조회 성공", code=200, data=filter_books)
         except CustomException as e:
             return e.get_response()
         except Exception as e:

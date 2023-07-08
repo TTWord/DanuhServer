@@ -39,7 +39,7 @@ class ShareRepository(Connect):
         if result is not None:
             shared = ShareModel(id=result['id'], book_id=result['book_id'],
                                 comment=result['comment'], checked=result['checked'],
-                                downloaded=result['downloaded'])
+                                downloaded=result['downloaded'], recommended=result['recommended'])
             return shared.__dict__
         else:
             return None
@@ -54,7 +54,7 @@ class ShareRepository(Connect):
         if result is not None:
             shared = ShareModel(id=result['id'], book_id=result['book_id'],
                                 comment=result['comment'], checked=result['checked'],
-                                downloaded=result['downloaded'])
+                                downloaded=result['downloaded'], recommended=result['recommended'])
             return shared.__dict__
         else:
             return None
@@ -66,9 +66,9 @@ class ShareRepository(Connect):
         
         return {'id': id}
     
-    def update_column(self, id: int, col: str) -> dict:        
-        sql = f"UPDATE share SET {col} = {col} + 1 WHERE id={id}"
+    def update_column(self, id: int, col: str, number: int = 1) -> dict:        
+        sql = f"UPDATE share SET {col} = {col} + {number} WHERE id={id}"
         self.cursor.execute(sql)
         self.connect.commit()
         
-        return {'id': id}
+        return {'id': id, 'col': col}
