@@ -59,7 +59,7 @@ class WordService:
             
             # 다운로드 받은 단어장에 대한 예외 적용
             share = share_repo.find_one_by_id(book['share_id'])
-            if book["id"] != share["id"]:
+            if share and book["id"] != share["book_id"]:
                 raise CustomException("다운로드 받은 단어장에 대해서 단어를 추가할 수 없습니다.", code=409)
             
             words = word_repo.find_all_by_book_id(book_id=book['id'])
@@ -72,6 +72,7 @@ class WordService:
         except CustomException as e:
             return e.get_response()
         except Exception as e:
+            print(e)
             return custom_response("FAIL", code=500)
         
     @staticmethod
