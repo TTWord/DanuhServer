@@ -93,7 +93,10 @@ class ShareService:
             book = book_repo.find_one_by_id(share['book_id'])
             if book['user_id'] == auth['id']:
                 raise CustomException("본인의 단어장은 다운로드 받을 수 없습니다.", code=409)
-
+            book = book_repo.find_one_by_share_id(share['id'])
+            if book:
+                raise CustomException("이미 공유받은 단어장입니다.", code=409)
+            
             # 다운로드 증가
             share_repo.update_column(share['id'], 'downloaded')
 
@@ -104,7 +107,6 @@ class ShareService:
 
             for word in words:
                 word_repo.add(book['id'], word['word'], word['mean'])
-
             return custom_response("SUCCESS", data=words)
         except CustomException as e:
             return e.get_response()
@@ -153,13 +155,13 @@ class ShareService:
                 raise CustomException("공유되지 않은 단어장입니다.", code=409)
             # 추천이 있는 경우 recommend 삭제, 공유 테이블 recommended -1
             if recommend:
-                share_repo.update_column(share['id'], 'recommended', -1)
+                data = share_repo.update_column(share['id'], 'recommended', -1)
                 recommend_repo.delete(recommend['id'])
             else:
-                share_repo.update_column(share['id'], 'recommended')
+                data = share_repo.update_column(share['id'], 'recommended')
                 recommend_repo.add(auth['id'], share['book_id'])
 
-            return custom_response("SUCCESS", data=share)
+            return custom_response("SUCCESS", data=data)
         except CustomException as e:
             return e.get_response()
         except Exception as e:
@@ -175,22 +177,26 @@ class ShareService:
 
             # 유저 별 조회
             books = book_repo.find_all_by_user_id(auth['id'])
-            user = user_repo.find_one_by_user_id(auth['id'])
-
             filter_books = defaultdict(list)
             for book in books:
+                # 다운로드
                 if book['share_id']:
                     share = share_repo.find_one_by_id(book['share_id'])
+                    book = book_repo.find_one_by_id(share['book_id'])
+                    user = user_repo.find_one_by_user_id(book['user_id'])
                     share['book_name'] = book['name']
                     share['nickname'] = user['nickname']
                     share['updated_at'] = get_difference_time(book['updated_at'])
                     filter_books['downloaded_book'].append(share)
+                # 공유
                 if book['is_shared']:
                     share = share_repo.find_one_by_book_id(book['id'])
+                    user = user_repo.find_one_by_user_id(book['user_id'])
                     share['book_name'] = book['name']
                     share['nickname'] = user['nickname']
                     share['updated_at'] = get_difference_time(book['updated_at'])
                     filter_books['shared_book'].append(share)
+
             return custom_response("데이터 조회 성공", code=200, data=filter_books)
         except CustomException as e:
             return e.get_response()

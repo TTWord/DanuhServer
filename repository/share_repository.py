@@ -71,4 +71,4 @@ class ShareRepository(Connect):
         self.cursor.execute(sql)
         self.connect.commit()
         
-        return {'id': id, 'col': col}
+        return {'id': id, 'recommend': number}

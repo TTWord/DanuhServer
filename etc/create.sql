@@ -38,6 +38,7 @@ create table share(
     comment VARCHAR(100),
     checked INT default 0,
     downloaded INT default 0,
+    recommended INT default 0,
     FOREIGN KEY(book_id) REFERENCES book(id) ON DELETE CASCADE
 );
 
