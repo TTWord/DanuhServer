@@ -15,7 +15,7 @@ class RecommendRepository(Connect):
         self.cursor.execute(sql)
         self.connect.commit()
 
-        return {'recommend_id': recommend_info["cert_code"]}
+        return {'recommend_id': recommend_info}
     
     def find_one_by_like_user_id_and_book_id(self, like_user_id: int, book_id: int) -> dict:
         sql = f'SELECT * FROM recommend WHERE like_user_id = {like_user_id} and book_id = {book_id};'
@@ -24,9 +24,23 @@ class RecommendRepository(Connect):
         
         return recommend
     
-    def delete(self, like_user_id: int, book_id: int) -> dict:
+    def find_all_by_like_user_id(self, like_user_id: int) -> dict:
+        sql = f'SELECT * FROM recommend WHERE like_user_id = {like_user_id};'
+        self.cursor.execute(sql)
+        recommend = self.cursor.fetchone()
+        
+        return recommend
+    
+    def delete_like_user_id_and_book_id(self, like_user_id: int, book_id: int) -> dict:
         sql = f"DELETE FROM recommend WHERE like_user_id = {like_user_id} and book_id = {book_id}"
         self.cursor.execute(sql)
         self.connect.commit()
         
         return {'like_user_id': like_user_id, 'book_id': book_id}
+    
+    def delete(self, id: int) -> dict:
+        sql = f"DELETE FROM recommend WHERE id = {id}"
+        self.cursor.execute(sql)
+        self.connect.commit()
+        
+        return {'id': id}

@@ -56,3 +56,32 @@ class ShareById(Resource):
         ID를 통해 조회
         """
         return ShareService.get_share_by_id(id)
+    
+    @api.response(200, "Success")
+    @api.response(400, "Bad request")
+    @Authorization.check_authorization
+    def post(self, auth, id):
+        """
+        추천 하기, 취소
+        """
+        return ShareService.get_share_by_id(auth, id)
+
+
+@api.route('/user')
+@api.doc(security="Bearer Auth")
+class ShareByUser(Resource):
+    @api.response(200, "Success")
+    @api.response(400, "Bad request")
+    @api.doc(params={'name': '이름 필터', 'type': 'downloaded, checked(기본 check)',
+                    'order': 'DESC, ASC(기본 DESC)'})
+    @Authorization.check_authorization
+    def get(self, auth):
+        """
+        유저별 공유 단어장
+        """
+        name = request.args.get('name')
+        order = request.args.get('order')
+        type = request.args.get('type')
+
+        return ShareService.get_user_shared_books(auth=auth, data={'name': name, 'order': order, 'type': type})
+    
