@@ -64,7 +64,7 @@ class ShareById(Resource):
         """
         추천 하기, 취소
         """
-        return ShareService.get_share_by_id(auth, id)
+        return ShareService.update_recommend_share(auth, id)
 
 
 @api.route('/user')

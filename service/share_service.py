@@ -151,13 +151,12 @@ class ShareService:
             recommend = recommend_repo.find_one_by_like_user_id_and_book_id(auth['id'], share['book_id'])
             if share is None:
                 raise CustomException("공유되지 않은 단어장입니다.", code=409)
-            
             # 추천이 있는 경우 recommend 삭제, 공유 테이블 recommended -1
             if recommend:
-                share = share_repo.update_column(share['id'], 'recommended', -1)
+                share_repo.update_column(share['id'], 'recommended', -1)
                 recommend_repo.delete(recommend['id'])
             else:
-                share = share_repo.update_column(share['id'], 'recommended')
+                share_repo.update_column(share['id'], 'recommended')
                 recommend_repo.add(auth['id'], share['book_id'])
 
             return custom_response("SUCCESS", data=share)
@@ -181,9 +180,7 @@ class ShareService:
             filter_books = defaultdict(list)
             for book in books:
                 if book['share_id']:
-                    print(book)
                     share = share_repo.find_one_by_id(book['share_id'])
-                    print(share)
                     share['book_name'] = book['name']
                     share['nickname'] = user['nickname']
                     share['updated_at'] = get_difference_time(book['updated_at'])
@@ -199,10 +196,3 @@ class ShareService:
             return e.get_response()
         except Exception as e:
             return custom_response("FAIL", code=500)
-        
-
-#       "book_name": "단어장 이름2",
-#       "comment": "string",
-#       "nickname": "김흐긴",
-#       "recommended": 0,
-#       "updated_at": "7일 전"
