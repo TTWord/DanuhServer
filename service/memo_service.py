@@ -36,9 +36,10 @@ class MemoService:
                 raise CustomException("WORD_LESS_THAN_COUNT", code=400)
             
             if data['count'] > len(word_book):
-                number = len(words)
+                number = len(word_book)
             else:
                 number = data['count']    
+
             random_words = random.sample(word_book, number)
             
             return custom_response("SUCCESS", code=200, data={"words": random_words})
