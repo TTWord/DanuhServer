@@ -51,6 +51,14 @@ class WordService:
             book_repo = BookRepository(db)
             share_repo = ShareRepository(db)
 
+            word_len = 0
+            books = book_repo.find_all_by_user_id(auth['id'])
+            for book in books:
+                word_len += len(word_repo.find_all_by_book_id(book['id']))
+
+            if word_len > 200:
+                raise CustomException("사용자의 추가한 단어가 200개를 초과합니다.", code=409)
+
             book = book_repo.find_one_by_id(book_id)
             if not book:
                 raise CustomException("단어장이 존재하지 않습니다.", code=409)
