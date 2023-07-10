@@ -1,6 +1,8 @@
 from repository.user_repository import UserRepository
 from repository.file_repository import FileRepository
-from repository.certification_repository import CertificationRepository
+from repository.book_repository import BookRepository
+from repository.word_repository import WordRepository
+from repository.share_repository import ShareRepository
 from util.decorator.service_receiver import ServiceReceiver
 from util.custom_response import custom_response
 from util.exception import CustomException
@@ -9,7 +11,6 @@ from config import config
 from db.connect import Database
 from werkzeug.utils import secure_filename
 from flask import url_for
-from datetime import datetime
 import os
 
 
@@ -134,9 +135,24 @@ class UserService:
         try:
             user_repo = UserRepository(db)
             file_repo = FileRepository(db)
-
+            book_repo = BookRepository(db)
+            word_repo = WordRepository(db)
+            share_repo = ShareRepository(db)
             user = user_repo.find_one_by_user_id(auth["id"])
+            books = book_repo.find_all_by_user_id(auth['id'])
             
+            word_count = 0
+            share_count = 0
+            download_count = 0
+            recommend_count = 0
+            for book in books:
+                word_count += len(word_repo.find_all_by_book_id(book['id']))
+                if book['is_shared']:
+                    share_count += 1
+                    share = share_repo.find_one_by_book_id(book['id'])
+                    download_count += share['downloaded']
+                    recommend_count += share['recommended']
+
             info = {"username": user["username"], "nickname": user["nickname"]}
             
             file = file_repo.find_one_by_user_id(auth['id'])
@@ -146,7 +162,11 @@ class UserService:
             info.update(
                 {
                     "url": config["DOMAIN"]
-                    + url_for("static", filename=file["file_path"])
+                    + url_for("static", filename=file["file_path"]),
+                    "word_count": word_count,
+                    "share_count": share_count,
+                    "download_count": download_count,
+                    "recommend_count": download_count
                 }
             )
             return custom_response("SUCCESS", data=info)
