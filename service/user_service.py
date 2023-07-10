@@ -171,13 +171,12 @@ class UserService:
             info = {"id": auth['id'], "username": user["username"], "nickname": user["nickname"]}
             
             file = file_repo.find_one_by_user_id(auth['id'])
-            if not file:
-                return custom_response("SUCCESS", data=info)
-
+            if file:
+                info.update({"url": config["DOMAIN"]
+                            + url_for("static", filename=file["file_path"])})
+                                 
             info.update(
                 {
-                    "url": config["DOMAIN"]
-                    + url_for("static", filename=file["file_path"]),
                     "word_count": word_count,
                     "share_count": share_count,
                     "download_count": download_count,
