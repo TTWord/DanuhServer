@@ -1,5 +1,5 @@
 class UserModel:
-    def __init__(self, id: int, username: str, password: str, nickname: str = None, 
+    def __init__(self, id: int, username: str, password: str = None, nickname: str = None, 
                  created_at: str = None, updated_at: str = None):
         self.id = id
         self.username = username
