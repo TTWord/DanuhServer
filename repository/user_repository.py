@@ -49,17 +49,17 @@ class UserRepository(Connect):
         
         if result:
             user = UserModel(id=result['id'], username=result['username'], 
-                             nickname=result['nickname'])
+                             nickname=result['nickname'], password=result['password'])
             return user.__dict__
         else:
             return None
     
     def update(self, id: int, username: str, password: str, nickname: str) -> dict:
-        sql = f"UPDATE user SET password={password}, nickname='{nickname}' WHERE id = {id}"
+        sql = f"UPDATE user SET username='{username}', password='{password}', nickname='{nickname}' WHERE id = {id}"
         self.cursor.execute(sql)
         self.connect.commit()
-        
-        user = UserModel(id=id, username=username, nickname=nickname)
+
+        user = UserModel(id=id, username=username, nickname=nickname, password=password)
         
         return user.__dict__
     

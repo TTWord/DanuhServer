@@ -25,6 +25,20 @@ change_nickname = api.model(
     },
 )
 
+change_password = api.model(
+    "비밀번호 변경",
+    {
+        "from_password": fields.String(
+            required=True, description="변경전 비밀번호"
+        ),
+        "to_password": fields.String(
+            required=True, description="변경할 비밀번호"
+        ),
+        "to_password2": fields.String(
+            required=True, description="변경할 비밀번호 확인"
+        ),
+    },
+)
 
 user_sign_up = api.model(
     "회원 가입",
@@ -89,6 +103,7 @@ class User(Resource):
 
 
 @api.route("/<int:id>")
+@api.doc(security="Bearer Auth")
 class UserById(Resource):
     def get(self, id):
         """
@@ -96,10 +111,11 @@ class UserById(Resource):
         """
         return UserService.get_user_by_id(id)
 
-    @api.expect(user_sign_up)
+    @Authorization.reject_authorization
+    @api.expect(change_password)
     def put(self, id):
         """
-        유저 ID로 유저 수정
+        유저 ID로 비밀번호 수정
         """
         data = request.get_json()
 
