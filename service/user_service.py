@@ -7,6 +7,7 @@ from util.decorator.service_receiver import ServiceReceiver
 from util.custom_response import custom_response
 from util.exception import CustomException
 from util.password_encryption import compare_passwords, encrypt_password
+from util.validation import validate_password
 from config import config
 from db.connect import Database
 from werkzeug.utils import secure_filename
@@ -41,6 +42,9 @@ class UserService:
             
             if not compare_passwords(data['from_password'], user['password']):
                 raise CustomException("기존 비밀번호가 일치하지 않습니다.", code=409)
+            
+            if not validate_password(data['to_password']):
+                raise CustomException("비밀번호 양식이 유효하지 않습니다.", code=409)
 
             if data['from_password'] == data['to_password']:
                 raise CustomException("현재 비밀번호와 바꿀 비밀번호가 동일합니다.", code=409)
