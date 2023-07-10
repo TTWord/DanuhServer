@@ -87,12 +87,21 @@ class BookService:
             if book is not None:
                 raise CustomException("단어장 이름이 중복입니다.", code=409)
             
-            book_info = book_repo.add(user_id = auth['id'], name = data["name"])
+            book = book_repo.add(user_id = auth['id'], name = data["name"])
 
-            book_id = book_info["id"]
+            book_id = book["id"]
             word_repo = WordRepository(db)
 
             dict_check = defaultdict(str)
+            
+            word_len = 0
+            books = book_repo.find_all_by_user_id(auth['id'])
+            for book in books:
+                word_len += len(word_repo.find_all_by_book_id(book['id']))
+
+            if word_len + len(result['words']) > 200:
+                raise CustomException("사용자의 추가한 단어가 200개를 초과합니다.", code=409)
+            
             for word, mean in result['words'].items():
                 if word not in dict_check.keys() and mean != dict_check[word]:
                     dict_check[word] = mean
@@ -100,7 +109,7 @@ class BookService:
             for word, mean in result['words'].items():
                 word_repo.add(book_id, word, mean)
 
-            return custom_response("데이터 추가 성공", data=book_info)
+            return custom_response("데이터 추가 성공", data=book)
         except CustomException as e:
             return e.get_response()
         except Exception as e:
