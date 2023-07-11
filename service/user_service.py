@@ -49,9 +49,6 @@ class UserService:
             if data['from_password'] == data['to_password']:
                 raise CustomException("현재 비밀번호와 바꿀 비밀번호가 동일합니다.", code=409)
             
-            if data['to_password'] != data['to_password2']:
-                raise CustomException("신규 비밀번호가 일치하지 않습니다.", code=409)
-            
             new_password = encrypt_password(data["to_password"]).decode("utf-8")
             user = user_repo.update(
                 id, user["username"], new_password, user["nickname"]

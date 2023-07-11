@@ -33,10 +33,7 @@ change_password = api.model(
         ),
         "to_password": fields.String(
             required=True, description="변경할 비밀번호"
-        ),
-        "to_password2": fields.String(
-            required=True, description="변경할 비밀번호 확인"
-        ),
+        )
     },
 )
 
@@ -111,7 +108,6 @@ class UserById(Resource):
         """
         return UserService.get_user_by_id(id)
 
-    @Authorization.reject_authorization
     @api.expect(change_password)
     def put(self, id):
         """
