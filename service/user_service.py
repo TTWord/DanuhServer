@@ -32,10 +32,10 @@ class UserService:
 
     @staticmethod
     @ServiceReceiver.database
-    def update_user(id, data, db: Database):
+    def update_user(auth, data, db: Database):
         try:
             user_repo = UserRepository(db)
-            user = user_repo.find_one_by_user_id(id)
+            user = user_repo.find_one_by_user_id(auth['id'])
 
             if not user:
                 raise CustomException("유저가 존재하지 않습니다.", code=409)
@@ -50,10 +50,7 @@ class UserService:
                 raise CustomException("현재 비밀번호와 바꿀 비밀번호가 동일합니다.", code=409)
             
             new_password = encrypt_password(data["to_password"]).decode("utf-8")
-            user = user_repo.update(
-                id, user["username"], new_password, user["nickname"]
-            )
-
+            user = user_repo.update(auth['id'], user["username"], new_password, user["nickname"])
             return custom_response("SUCCESS", data=user)
         except CustomException as e:
             return e.get_response()

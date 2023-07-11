@@ -98,6 +98,14 @@ class User(Resource):
         input_data = request.get_json()
         return UserService.update_user_by_nickname(auth, input_data)
 
+    @Authorization.check_authorization
+    def patch(self, auth):
+        """
+        유저 ID로 비밀번호 수정
+        """
+        data = request.get_json()
+        return UserService.update_user(auth=auth, data=data)
+
 
 @api.route("/<int:id>")
 @api.doc(security="Bearer Auth")
@@ -107,15 +115,6 @@ class UserById(Resource):
         유저 ID로 유저 조회
         """
         return UserService.get_user_by_id(id)
-
-    @api.expect(change_password)
-    def put(self, id):
-        """
-        유저 ID로 비밀번호 수정
-        """
-        data = request.get_json()
-
-        return UserService.update_user(id=id, data=data)
 
     def delete(self, id):
         """
