@@ -98,6 +98,7 @@ class User(Resource):
         input_data = request.get_json()
         return UserService.update_user_by_nickname(auth, input_data)
 
+    @api.expect(change_password)
     @Authorization.check_authorization
     def patch(self, auth):
         """
