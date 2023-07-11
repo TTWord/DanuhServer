@@ -51,7 +51,7 @@ class UserService:
             
             new_password = encrypt_password(data["to_password"]).decode("utf-8")
             user = user_repo.update(auth['id'], user["username"], new_password, user["nickname"])
-            return custom_response("SUCCESS", data=user)
+            return custom_response("SUCCESS")
         except CustomException as e:
             return e.get_response()
         except Exception as e:
