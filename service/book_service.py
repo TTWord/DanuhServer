@@ -24,9 +24,9 @@ class BookService:
     def get_books_by_user_id(auth, db: Database):
         try:
             books = BookRepository(db).find_all_by_user_id(user_id = auth['id'])
-            return custom_response("데이터 조회 성공", data=books,)
+            return custom_response("SUCCESS", data=books,)
         except:
-            return custom_response("단어장 목록 조회 실패", code=500)
+            return custom_response("FAIL", code=500)
     
     @staticmethod
     @ServiceReceiver.database
@@ -35,23 +35,23 @@ class BookService:
             book = BookRepository(db).find_one_by_id(id)
             
             if book is None:
-                raise CustomException("단어장이 존재하지 않습니다.", code=404)
+                raise CustomException("BOOK_NOT_FOUND", code=404)
             
             if book["user_id"] != auth["id"]:
-                raise CustomException("단어장 조회 권한이 없습니다.", code=403)
+                raise CustomException("BOOK_ACCESS_DENIED", code=403)
             
-            return custom_response("데이터 조회 성공", code=200, data=book)
+            return custom_response("SUCCESS", code=200, data=book)
         except CustomException as e:
             return e.get_response()
         except Exception as e:
-            return custom_response("단어장 조회 실패", code=500)
+            return custom_response("FAIL", code=500)
     
     @staticmethod
     @ServiceReceiver.database
     def add_book(auth, data, db: Database):
         try:
             if data["name"] is None:
-                raise CustomException("데이터에 단어장 이름이 없습니다.")
+                raise CustomException("BOOK_NOT_HAS_NAME")
             
             book_repo = BookRepository(db)
             
@@ -59,15 +59,15 @@ class BookService:
             book = book_repo.find_one_by_name_and_user_id(name = data["name"], user_id = auth['id'])
             
             if book is not None:
-                raise CustomException("단어장 이름이 중복입니다.", code=409)
+                raise CustomException("BOOK_DUPLICATE_NAME", code=409)
             
             book = book_repo.add(user_id = auth['id'], name = data["name"])
             
-            return custom_response("데이터 추가 성공", data=book)
+            return custom_response("SUCCESS", data=book)
         except CustomException as e:
             return e.get_response()
         except:
-            return custom_response("단어장 추가 실패", code=500)
+            return custom_response("FAIL", code=500)
         
     @staticmethod
     @ServiceReceiver.database
@@ -77,7 +77,7 @@ class BookService:
             response = requests.post(url, json=data)
             result = json.loads(response.content)
             if data["name"] is None:
-                raise CustomException("데이터에 단어장 이름이 없습니다.")
+                raise CustomException("BOOK_NOT_HAS_NAME")
 
             book_repo = BookRepository(db)
             
@@ -85,7 +85,7 @@ class BookService:
             book = book_repo.find_one_by_name_and_user_id(name = data["name"], user_id = auth['id'])
             
             if book is not None:
-                raise CustomException("단어장 이름이 중복입니다.", code=409)
+                raise CustomException("BOOK_ALREADY_EXIST", code=409)
             
             book = book_repo.add(user_id = auth['id'], name = data["name"])
 
@@ -100,7 +100,7 @@ class BookService:
                 word_len += len(word_repo.find_all_by_book_id(book['id']))
 
             if word_len + len(result['words']) > 200:
-                raise CustomException("사용자의 추가한 단어가 200개를 초과합니다.", code=409)
+                raise CustomException("WORD_MORE_THAN_LIMIT", code=409)
             
             for word, mean in result['words'].items():
                 if word not in dict_check.keys() and mean != dict_check[word]:
@@ -109,18 +109,18 @@ class BookService:
             for word, mean in result['words'].items():
                 word_repo.add(book_id, word, mean)
 
-            return custom_response("데이터 추가 성공", data=book)
+            return custom_response("SUCCESS", data=book)
         except CustomException as e:
             return e.get_response()
         except Exception as e:
-            return custom_response("단어장 추가 실패", code=500)
+            return custom_response("FAIL", code=500)
         
     @staticmethod
     @ServiceReceiver.database
     def update_book(auth, id, data, db: Database):
         try:
             if data["name"] is None:
-                raise CustomException("전송한 데이터에 변경할 단어장 이름이 없습니다.")
+                raise CustomException("BOOK_NOT_HAS_NAME")
             
             book_repo = BookRepository(db)
             
@@ -129,26 +129,26 @@ class BookService:
             
             # 데이터가 없을 경우
             if book is None:
-                raise CustomException("단어장이 존재하지 않습니다.", code=404)
+                raise CustomException("BOOK_NOT_FOUND", code=404)
             
             # 같은 유저에 같은 이름을 가진 단어장이 있는지 체크
             same_book = book_repo.find_one_by_name_and_user_id(name = data["name"], user_id = auth['id'])
             
             # 중복 체크
             if same_book is not None:
-                raise CustomException("단어장 이름이 중복입니다.", code=409)
+                raise CustomException("BOOK_ALREADY_EXIST", code=409)
             
             # 유저 ID 검사
             if book["user_id"] != auth["id"]:
-                raise CustomException("단어장 변경 권한이 없습니다.", code=403)
+                raise CustomException("BOOK_ACCESS_DENIED", code=403)
             
             book = book_repo.update(id = id, name = data["name"])
             
-            return custom_response("단어장 수정 성공", data=book)
+            return custom_response("SUCCESS", data=book)
         except CustomException as e:
             return e.get_response()
         except:
-            return custom_response("단어장 수정 실패", code=500)
+            return custom_response("FAIL", code=500)
             
     @staticmethod
     @ServiceReceiver.database
@@ -162,14 +162,14 @@ class BookService:
             book = book_repo.find_one_by_id(id = id)
 
             if auth['id'] != book['user_id']:
-                raise CustomException("단어장 변경 권한이 없습니다.", code=403)
+                raise CustomException("BOOK_ACCESS_DENIED", code=403)
             # 데이터가 없을 경우
             if book is None:
-                raise CustomException("단어장이 존재하지 않습니다.", code=404)
+                raise CustomException("BOOK_NOT_FOUND", code=404)
             
             share = share_repo.find_one_by_id(book['share_id'])
             if share is None:
-                raise CustomException("다운로드 받은 단어장이 아닙니다.", code=409)
+                raise CustomException("BOOK_NOT_DOWNLOADED", code=409)
             
             # 다운로드 증가
             share_repo.update_column(share['id'], 'downloaded')
@@ -187,7 +187,7 @@ class BookService:
         except CustomException as e:
             return e.get_response()
         except:
-            return custom_response("단어장 수정 실패", code=500)
+            return custom_response("FAIL", code=500)
         
     @staticmethod
     @ServiceReceiver.database
@@ -199,18 +199,18 @@ class BookService:
             book = book_repo.find_one_by_id(id = id)
             
             if book is None:
-                return custom_response("단어장이 이미 존재하지 않습니다.", code=404)
+                return custom_response("BOOK_NOT_FOUND", code=404)
             
             # 권한 조회
             if book["user_id"] == auth["id"]:
                 book_repo.delete(id=id)
-                return custom_response("단어장 삭제 성공")
+                return custom_response("SUCCESS")
             else:
-                CustomException("단어장 삭제 권한이 없습니다.", code=403)
+                raise CustomException("BOOK_ACCESS_DENIED", code=403)
         except CustomException as e:
             return e.get_response()
         except:
-            return custom_response("단어장 삭제 실패", code=500)
+            return custom_response("FAIL", code=500)
         
     @staticmethod
     @ServiceReceiver.database
@@ -223,22 +223,22 @@ class BookService:
             book = book_repo.find_one_by_id(id = data['id'])
             
             if book is None:
-                raise CustomException("단어장이 존재하지 않습니다.", code=404)
+                raise CustomException("BOOK_NOT_FOUND", code=404)
             if book['is_shared']:
-                raise CustomException("이미 공유 중인 단어장입니다.", code=409)
+                raise CustomException("BOOK_ALREADY_SHARED", code=409)
             if book['share_id']:
-                raise CustomException("다운로드 받은 단어장입니다.", code=409)
+                raise CustomException("BOOK_DOWNLOADED", code=409)
             if book["user_id"] != auth["id"]:
-                raise CustomException("단어장 제어 권한이 없습니다.", code=403)
+                raise CustomException("BOOK_ACCESS_DENIED", code=403)
             
             share_repo.add(book['id'], data['comment'])
             book = book_repo.update_is_shared(data['id'], True)
             
-            return custom_response("단어장 공유 추가 성공", data=book)
+            return custom_response("SUCCESS", data=book)
         except CustomException as e:
             return e.get_response()
         except Exception as e:
-            return custom_response("단어장 공유 추가 실패", code=500)
+            return custom_response("FAIL", code=500)
         
     @staticmethod
     @ServiceReceiver.database
@@ -251,17 +251,17 @@ class BookService:
             book = book_repo.find_one_by_id(id = data['id'])
     
             if book is None:
-                raise CustomException("단어장이 존재하지 않습니다.", code=404)
+                raise CustomException("BOOK_NOT_FOUND", code=404)
             if book['share_id']:
-                raise CustomException("다운로드 받은 단어장입니다.", code=409)
+                raise CustomException("BOOK_DOWNLOADED", code=409)
             if book["user_id"] != auth["id"]:
-                raise CustomException("단어장 제어 권한이 없습니다.", code=403)
+                raise CustomException("BOOK_ACCESS_DENIED", code=403)
             share = share_repo.find_one_by_book_id(book['id'])
             book = book_repo.update_is_shared(data['id'], False)
             share = share_repo.delete(share['id'])
 
-            return custom_response("단어장 공유 삭제 성공", data=book)
+            return custom_response("SUCCESS", data=book)
         except CustomException as e:
             return e.get_response()
         except Exception as e:
-            return custom_response("단어장 공유 삭제 실패", code=500)
+            return custom_response("FAIL", code=500)
