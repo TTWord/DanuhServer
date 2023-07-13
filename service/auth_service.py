@@ -22,7 +22,7 @@ class AuthService:
             user = UserRepository(db).find_one_by_username(user_credentials["username"])
 
             if not user:
-                raise CustomException("아이디나 비밀번호가 일치하지 않습니다.", code=409)
+                raise CustomException("USER_NOT_FOUND", code=409)
             else:
                 payload_access = {
                     "id": user["id"],
@@ -42,7 +42,7 @@ class AuthService:
                     }
                     return custom_response("SUCCESS", data=token)
                 else:
-                    raise CustomException("아이디나 비밀번호가 일치하지 않습니다.", code=409)
+                    raise CustomException("AUTH_ACCESS_FAILD", code=409)
         except CustomException as e:
             return e.get_response()
         except Exception as e:
@@ -77,7 +77,7 @@ class AuthService:
 
             # error 발생 시 로그인 페이지로 redirect
             if "error" in auth_info:
-                raise CustomException("인증을 실패하였습니다.", code=409)
+                raise CustomException("AUTH_ACCESS_FAILD", code=409)
 
             info = oauth.userinfo("Bearer " + auth_info["access_token"])
 
@@ -143,11 +143,11 @@ class AuthService:
         nickname = data["nickname"]
 
         if not nickname:
-            raise CustomException("INVALID_USERNAME", code=409)
+            raise CustomException("USER_INVALID_USERNAME", code=409)
         user = UserRepository(db).find_one_by_nickname(nickname)
 
         if user is not None:
-            raise CustomException("DUPLICATE_NICKNAME", code=409)
+            raise CustomException("USER_DUPLICATE_NICKNAME", code=409)
 
         return custom_response("SUCCESS")
 
@@ -160,13 +160,13 @@ class AuthService:
 
             if is_username:
                 # 이미 존재하는 유저입니다
-                raise CustomException("DUPLICATE_USERNAME", code=409)
+                raise CustomException("USER_DUPLICATE_USERNAME", code=409)
             elif not validate_email(input_data["username"]):
                 # 유효하지 않은 이메일 형식
-                raise CustomException("INVALID_FORMAT_USERNAME", code=409)
+                raise CustomException("USER_INVALID_FORMAT_USERNAME", code=409)
             elif not validate_password(input_data["password"]):
                 # 유효하지 않은 비밀번호 형식 (암호는 8자 이상의 하나 이상의 숫자, 문자, 특수문자이어야 합니다)
-                raise CustomException("INVALID_FORMAT_PASSWORD", code=409)
+                raise CustomException("USER_INVALID_FORMAT_PASSWORD", code=409)
             to_email = input_data["username"]
             subject = config["STML_SUBJECT"]
             body = config["STML_BODY"]
@@ -209,10 +209,10 @@ class AuthService:
 
             if cert_info["expired_time"] < datetime.now():
                 # 인증코드 만료
-                raise CustomException("EXPIRED_AUTH_CODE", code=403)
+                raise CustomException("AUTH_EXPIRED_CODE", code=403)
             elif not cert_info["cert_code"] == user_data["certification_id"]:
                 # 인증코드 불일치
-                raise CustomException("INCORRECT_AUTH_CODE", code=403)
+                raise CustomException("AUTH_INCORRECT_CODE", code=403)
 
             user_data["password"] = encrypt_password(user_data["password"]).decode("utf-8")
 

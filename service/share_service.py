@@ -42,7 +42,7 @@ class ShareService:
             share['updated_at'] = get_difference_time(book['updated_at'])
             shares.append(share)
 
-        return custom_response("데이터 조회 성공", code=200, data=shares)
+        return custom_response("SUCCESS", code=200, data=shares)
         
     @staticmethod
     @ServiceReceiver.database
@@ -54,7 +54,7 @@ class ShareService:
 
             share = share_repo.find_one_by_id(id)
             if share is None:
-                raise CustomException("공유되지 않은 단어장입니다.", code=409)
+                raise CustomException("SHARE_NOT_FOUND", code=409)
             words = word_repo.find_all_by_book_id(share['book_id'])
 
             # 데이터 가공
@@ -87,15 +87,15 @@ class ShareService:
             
             share = share_repo.find_one_by_id(data['id'])
             if share is None:
-                raise CustomException("공유되지 않은 단어장입니다.", code=409)
+                raise CustomException("SHARE_NOT_FOUND", code=409)
             
             # 본인의 단어장 여부
             book = book_repo.find_one_by_id(share['book_id'])
             if book['user_id'] == auth['id']:
-                raise CustomException("본인의 단어장은 다운로드 받을 수 없습니다.", code=409)
+                raise CustomException("SHARE_BOOK_OWNER", code=409)
             book = book_repo.find_one_by_share_id(share['id'])
             if book:
-                raise CustomException("이미 공유받은 단어장입니다.", code=409)
+                raise CustomException("SHARE_ALREADY_EXIST", code=409)
             
             # 다운로드 증가
             share_repo.update_column(share['id'], 'downloaded')
@@ -123,7 +123,7 @@ class ShareService:
             
             share = share_repo.find_one_by_id(data['id'])
             if share is None:
-                raise CustomException("공유되지 않은 단어장입니다.", code=409)
+                raise CustomException("SHARE_NOT_FOUND", code=409)
             
             # 다운로드 증가
             share_repo.update_column(share['id'], 'downloaded')
@@ -152,7 +152,7 @@ class ShareService:
             share = share_repo.find_one_by_id(id)
             recommend = recommend_repo.find_one_by_like_user_id_and_book_id(auth['id'], share['book_id'])
             if share is None:
-                raise CustomException("공유되지 않은 단어장입니다.", code=409)
+                raise CustomException("SHARE_NOT_FOUND", code=409)
             # 추천이 있는 경우 recommend 삭제, 공유 테이블 recommended -1
             if recommend:
                 data = share_repo.update_column(share['id'], 'recommended', -1)
@@ -197,7 +197,7 @@ class ShareService:
                     share['updated_at'] = get_difference_time(book['updated_at'])
                     filter_books['shared_book'].append(share)
 
-            return custom_response("데이터 조회 성공", code=200, data=filter_books)
+            return custom_response("SUCCESS", code=200, data=filter_books)
         except CustomException as e:
             return e.get_response()
         except Exception as e:

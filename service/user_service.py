@@ -23,7 +23,7 @@ class UserService:
             user_repo = UserRepository(db)
             user = user_repo.find_one_by_user_id(id)
             if not user:
-                raise CustomException("유저가 존재하지 않습니다.", code=409)
+                raise CustomException("USER_NOT_FOUND", code=409)
             return custom_response("SUCCESS", data=user)
         except CustomException as e:
             return e.get_response()
@@ -38,16 +38,16 @@ class UserService:
             user = user_repo.find_one_by_user_id(auth['id'])
 
             if not user:
-                raise CustomException("유저가 존재하지 않습니다.", code=409)
+                raise CustomException("USER_NOT_FOUND", code=409)
             
             if not compare_passwords(data['from_password'], user['password']):
-                raise CustomException("기존 비밀번호가 일치하지 않습니다.", code=409)
+                raise CustomException("USER_INVALID_ACESSSS", code=409)
             
             if not validate_password(data['to_password']):
-                raise CustomException("비밀번호 양식이 유효하지 않습니다.", code=409)
+                raise CustomException("USER_INVALID_FORMAT_PASSWORD", code=409)
 
             if data['from_password'] == data['to_password']:
-                raise CustomException("현재 비밀번호와 바꿀 비밀번호가 동일합니다.", code=409)
+                raise CustomException("USER_SAME_PASSWORD", code=409)
             
             new_password = encrypt_password(data["to_password"]).decode("utf-8")
             user = user_repo.update(auth['id'], user["username"], new_password, user["nickname"])
@@ -65,7 +65,7 @@ class UserService:
             file_repo = FileRepository(db)
             user = user_repo.find_one_by_username(user_data["username"])
             if not user:
-                raise CustomException("유저가 존재하지 않습니다.", code=409)
+                raise CustomException("USER_NOT_FOUND", code=409)
             
             file = file_repo.find_one_by_user_id(user['id'])
             if file:
@@ -87,7 +87,7 @@ class UserService:
 
             user = user_repo.find_one_by_user_id(id)
             if not user:
-                raise CustomException("유저가 존재하지 않습니다.", code=409)
+                raise CustomException("USER_NOT_FOUND", code=409)
             
             file = file_repo.find_one_by_user_id(user['id'])
             if file:
@@ -107,7 +107,7 @@ class UserService:
             user_repo = UserRepository(db)
             user = user_repo.find_one_by_user_id(auth["id"])
             if user["nickname"] == data["to_nickname"]:
-                raise CustomException("닉네임이 중복입니다.", code=409)
+                raise CustomException("USER_DUPLICATE_NICKNAME", code=409)
             user = user_repo.update_nickname(user["id"], data["to_nickname"])
             return custom_response("SUCCESS", data=user)
         except CustomException as e:
