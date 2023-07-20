@@ -16,7 +16,13 @@ class BookService:
     @ServiceReceiver.database
     def get_books_all(db):
         books = BookRepository(db).find_all()
+        share = ShareRepository(db)
         
+        for book in books:
+            if book['is_shared']:
+                share = share.find_one_by_book_id(book['id'])
+                book['comment'] = share['comment']
+
         return { "code" : 200, "data" : books }
     
     @staticmethod
@@ -24,7 +30,14 @@ class BookService:
     def get_books_by_user_id(auth, db: Database):
         try:
             books = BookRepository(db).find_all_by_user_id(user_id = auth['id'])
-            return custom_response("SUCCESS", data=books,)
+            share = ShareRepository(db)
+
+            for book in books:  
+                if book['is_shared']:
+                    share = share.find_one_by_book_id(book['id'])
+                    book['comment'] = share['comment']
+
+            return custom_response("SUCCESS", data=books)
         except:
             return custom_response("FAIL", code=500)
     
@@ -32,6 +45,7 @@ class BookService:
     @ServiceReceiver.database
     def get_book_by_id(auth, id, db: Database):
         try:
+            share = ShareRepository(db)
             book = BookRepository(db).find_one_by_id(id)
             
             if book is None:
@@ -40,6 +54,9 @@ class BookService:
             if book["user_id"] != auth["id"]:
                 raise CustomException("BOOK_ACCESS_DENIED", code=403)
             
+            if book['is_shared']:
+                share = share.find_one_by_book_id(book['id'])
+                book['comment'] = share['comment']
             return custom_response("SUCCESS", code=200, data=book)
         except CustomException as e:
             return e.get_response()
@@ -236,7 +253,7 @@ class BookService:
                 share_repo.update_comment(share['id'], data['comment'])
             else:
                 share_repo.add(book['id'], data['comment'])
-            book = book_repo.update_is_shared(data['id'], True)
+            book = book_repo.update_is_shared(data['id'], 1)
             
             return custom_response("SUCCESS", data=book)
         except CustomException as e:
@@ -261,7 +278,7 @@ class BookService:
             if book["user_id"] != auth["id"]:
                 raise CustomException("BOOK_ACCESS_DENIED", code=403)
             share = share_repo.find_one_by_book_id(book['id'])
-            book = book_repo.update_is_shared(data['id'], False)
+            book = book_repo.update_is_shared(data['id'], 0)
             share = share_repo.delete(share['id'])
 
             return custom_response("SUCCESS", data=book)
