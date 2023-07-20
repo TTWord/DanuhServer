@@ -72,3 +72,10 @@ class ShareRepository(Connect):
         self.connect.commit()
         
         return {'id': id, 'recommend': number}
+    
+    def update_comment(self, id: int, comment: str) -> dict:        
+        sql = f"UPDATE share SET comment = '{comment}' WHERE id={id}"
+        self.cursor.execute(sql)
+        self.connect.commit()
+        
+        return {'id': id, 'comment': comment}

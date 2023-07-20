@@ -221,17 +221,21 @@ class BookService:
             
             # 공유할 단어장이 있는지 조회
             book = book_repo.find_one_by_id(id = data['id'])
-            
+            share = share_repo.find_one_by_book_id(book['id'])
+
             if book is None:
                 raise CustomException("BOOK_NOT_FOUND", code=404)
-            if book['is_shared']:
+            if book['is_shared'] and data['comment'] == share['comment']:
                 raise CustomException("BOOK_ALREADY_SHARED", code=409)
             if book['share_id']:
                 raise CustomException("BOOK_DOWNLOADED", code=409)
             if book["user_id"] != auth["id"]:
                 raise CustomException("BOOK_ACCESS_DENIED", code=403)
             
-            share_repo.add(book['id'], data['comment'])
+            if share:
+                share_repo.update_comment(share['id'], data['comment'])
+            else:
+                share_repo.add(book['id'], data['comment'])
             book = book_repo.update_is_shared(data['id'], True)
             
             return custom_response("SUCCESS", data=book)
