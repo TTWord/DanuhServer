@@ -106,10 +106,10 @@ class MemoService:
 
             problem = []
             for dict in random_word:
-                problem.append({"answer": {'word': dict['word'], 'mean': dict['mean']}, 
-                                "word_id": dict['id'], "is_memorized": dict['is_memorized']})
+                problem.append({'word': dict['word'], 'mean': dict['mean'], 
+                                "is_memorized": dict['is_memorized']})
 
-            return custom_response("SUCCESS", code=200, data={"problem": problem})
+            return custom_response("SUCCESS", code=200, data={"words": problem})
         except CustomException as e:
             return e.get_response()
         except Exception as e:

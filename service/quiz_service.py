@@ -128,6 +128,11 @@ class QuizService:
                 raise CustomException("BOOK_IDS_NOT_INSERTED", code=403)
             elif "count" not in data.keys():
                 data['count'] = 10
+            elif "choice_count" not in data.keys():
+                data['choice_count'] = 4
+
+            if data['choice_count'] <= 1 or data['choice_count'] > 4:
+                raise CustomException("QUIZ_COUNT_ERROR", code=409)
 
             book_repo = BookRepository(db)
             word_repo = WordRepository(db)
@@ -166,7 +171,7 @@ class QuizService:
                 answer_options = [{'word': random_word['word'], 'mean':random_word['mean']}]
                 word_book_copy = [word for word in words if word != random_word]
 
-                while len(answer_options) < 4:
+                while len(answer_options) < data['choice_count']:
                     random_meaning = random.choice(word_book_copy)
                     random_meaning = {'word': random_meaning['word'], 'mean':random_meaning['mean']}
 
@@ -249,7 +254,7 @@ class QuizService:
             if len(books) == len(data['book_ids']):
                 books = "전체"
             else:
-                books = ','.join(str(s['name']) for s in books)
+                books = ','.join(str(book['name']) for book in books if book['id'] in data['book_ids'])
 
             for book_id in data['book_ids']:
                 words.extend(word_repo.find_all_by_book_id(book_id))

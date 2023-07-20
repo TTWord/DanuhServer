@@ -12,6 +12,11 @@ quiz_info = api.model('퀴즈 정보', {
     'memorized_filter': fields.Boolean(required=False, description='암기 필터링', example=False)
 })
 
+blind_quiz_info = api.model('객관식 블라인드 퀴즈 정보', {
+    **quiz_info,
+    'choice_count': fields.Integer(required=False, description='선택지 개수', example=4)
+})
+
 result_info = api.model('결과 정보', {
     'correct': fields.Integer(required=True, description='정답 개수'),
     'count': fields.Integer(required=True, description='단어 개수'),
@@ -61,11 +66,11 @@ class BlindShortQuiz(Resource):
 @api.route("/blind/multiple")
 @api.doc(security='Bearer Auth')
 class BlindMultipleQuiz(Resource):
-    @api.expect(quiz_info)
+    @api.expect(blind_quiz_info)
     @Authorization.check_authorization
     def post(self, auth):
         """
-        블라인드 주관식 문제 생성
+        블라인드 객관식 문제 생성
         """
         data = request.get_json()
         return QuizService.generate_blind_multiple_quiz_service(auth=auth, data=data)
