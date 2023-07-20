@@ -6,43 +6,21 @@ from service.memo_service import MemoService
 
 api = Namespace('memo', description='메모 API')
 
-memo_info = api.model('메모 정보', {
+word_info = api.model('단어 정보', {
     'word_id': fields.Integer(required=True, description='풀이 개수', example=10),
     'is_memorized': fields.Boolean(required=False, description='암기 여부', example=False)
 })
 
-result_info = api.model('결과 정보', {
-    'correct': fields.Integer(required=True, description='정답 개수'),
-    'count': fields.Integer(required=True, description='단어 개수'),
-    'book_ids': fields.String(required=True, description='단어장 아이디(&로 구분)', example='1&2')
+memo_info = api.model('암기 정보', {
+    'book_ids': fields.String(required=True, description='단어장 ID', example="19&21"),
+    'count': fields.Integer(required=True, description='풀이 개수', example=10)
 })
 
 
 @api.route("")
 @api.doc(security='Bearer Auth')
 class Memo(Resource):
-    @api.doc(params={'count': '단어 개수', 'book_ids': '단어장 아이디(&로 구분)'})
-    @Authorization.check_authorization
-    def get(self, auth):
-        """
-        단어 암기( &로 구분)
-        """
-        count = request.args.get('count')
-        book_ids = request.args.get('book_ids')
-        book_ids = [int(book_id) for book_id in book_ids.split("&")]
-        return MemoService.generate_memo_service(auth=auth, data={ 'book_ids': book_ids, 'count': int(count) })
-    
-    @api.expect(result_info)
-    @Authorization.check_authorization
-    def post(self, auth):
-        """
-        암기 결과 페이지
-        """
-        data = request.get_json()
-        data['book_ids'] = [int(book_id) for book_id in data['book_ids'].split("&")]
-        return MemoService.get_result_service(auth=auth, data=data)
-    
-    @api.expect(memo_info)
+    @api.expect(word_info)
     @Authorization.reject_authorization
     def patch(self):
         """
@@ -50,3 +28,31 @@ class Memo(Resource):
         """
         data = request.get_json()
         return MemoService.update_memo_service(data=data)
+    
+
+@api.route("/flashcard")
+@api.doc(security='Bearer Auth')
+class FlashCardMemo(Resource):
+    @api.expect(memo_info)
+    @Authorization.check_authorization
+    def post(self, auth):
+        """
+        플래시 카드 암기 생성
+        """
+        data = request.get_json()
+
+        return MemoService.generate_flash_memo_service(auth=auth, data=data)
+    
+
+@api.route("/blind")
+@api.doc(security='Bearer Auth')
+class BlindMemo(Resource):
+    @api.expect(memo_info)
+    @Authorization.check_authorization
+    def post(self, auth):
+        """
+        블라인드 암기 생성
+        """
+        data = request.get_json()
+        
+        return MemoService.generate_blind_memo_service(auth=auth, data=data)

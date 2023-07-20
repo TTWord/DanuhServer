@@ -29,6 +29,7 @@ class Authorization:
             except CustomException as e:
                 return e.get_response()
             except Exception as e:
+                print(e)
                 return custom_response("FAIL", code=500)
 
         return wrapper
