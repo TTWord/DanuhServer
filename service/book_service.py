@@ -253,7 +253,7 @@ class BookService:
                 share_repo.update_comment(share['id'], data['comment'])
             else:
                 share_repo.add(book['id'], data['comment'])
-            book = book_repo.update_is_shared(data['id'], 1)
+            book = book_repo.update_is_shared(data['id'], True)
             
             return custom_response("SUCCESS", data=book)
         except CustomException as e:
@@ -278,7 +278,7 @@ class BookService:
             if book["user_id"] != auth["id"]:
                 raise CustomException("BOOK_ACCESS_DENIED", code=403)
             share = share_repo.find_one_by_book_id(book['id'])
-            book = book_repo.update_is_shared(data['id'], 0)
+            book = book_repo.update_is_shared(data['id'], False)
             share = share_repo.delete(share['id'])
 
             return custom_response("SUCCESS", data=book)

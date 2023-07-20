@@ -98,7 +98,7 @@ class BookRepository(Connect):
         
         return {'id': id}
     
-    def update_is_shared(self, id: int, is_shared: int) -> dict:
+    def update_is_shared(self, id: int, is_shared: bool) -> dict:
         sql = f"UPDATE book SET is_shared = {is_shared} WHERE id = {id}"
         self.cursor.execute(sql)
         self.connect.commit()
