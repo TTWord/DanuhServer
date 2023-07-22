@@ -15,12 +15,13 @@ class BookService:
     @staticmethod
     @ServiceReceiver.database
     def get_books_all(db):
-        books = BookRepository(db).find_all()
-        share = ShareRepository(db)
+        book_repo = BookRepository(db).find_all()
+        share_repo = ShareRepository(db)
         
+        books = book_repo.find_all()
         for book in books:
             if book['is_shared']:
-                share = share.find_one_by_book_id(book['id'])
+                share = share_repo.find_one_by_book_id(book['id'])
                 book['comment'] = share['comment']
 
         return { "code" : 200, "data" : books }
@@ -29,24 +30,28 @@ class BookService:
     @ServiceReceiver.database
     def get_books_by_user_id(auth, db: Database):
         try:
-            books = BookRepository(db).find_all_by_user_id(user_id = auth['id'])
-            share = ShareRepository(db)
+            book_repo = BookRepository(db)
+            share_repo = ShareRepository(db)
 
+            books = book_repo.find_all_by_user_id(user_id = auth['id'])
             for book in books:  
                 if book['is_shared']:
-                    share = share.find_one_by_book_id(book['id'])
+                    share = share_repo.find_one_by_book_id(book['id'])
                     book['comment'] = share['comment']
 
             return custom_response("SUCCESS", data=books)
-        except:
+        except Exception as e:
+
             return custom_response("FAIL", code=500)
     
     @staticmethod
     @ServiceReceiver.database
     def get_book_by_id(auth, id, db: Database):
         try:
-            share = ShareRepository(db)
-            book = BookRepository(db).find_one_by_id(id)
+            share_repo = ShareRepository(db)
+            book_repo = BookRepository(db)
+
+            book = book_repo.find_one_by_id(id)
             
             if book is None:
                 raise CustomException("BOOK_NOT_FOUND", code=404)
@@ -55,7 +60,7 @@ class BookService:
                 raise CustomException("BOOK_ACCESS_DENIED", code=403)
             
             if book['is_shared']:
-                share = share.find_one_by_book_id(book['id'])
+                share = share_repo.find_one_by_book_id(book['id'])
                 book['comment'] = share['comment']
             return custom_response("SUCCESS", code=200, data=book)
         except CustomException as e:
@@ -228,7 +233,13 @@ class BookService:
             return e.get_response()
         except:
             return custom_response("FAIL", code=500)
-        
+# 공유 단어장 추가 시
+# share 추가
+# book의 is_shared True
+
+# 공유 단어장 삭제 시
+# share 삭제
+# book의 share_id
     @staticmethod
     @ServiceReceiver.database
     def add_share_book(auth, data, db: Database):

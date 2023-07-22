@@ -3,7 +3,7 @@ class BookModel:
         self.id = id
         self.name = name
         self.user_id = user_id
-        self.is_shared = is_shared
+        self.is_shared = bool(is_shared)
         self.share_id = share_id
         self.created_at = created_at
         self.updated_at = updated_at
