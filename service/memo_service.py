@@ -86,17 +86,17 @@ class MemoService:
             word_repo = WordRepository(db)
 
             book_ids = [int(book_id) for book_id in data['book_ids'].split("&")]
-
+            all_words = []
             for book_id in book_ids:
                 book = book_repo.find_one_by_id(id = book_id)
-                
                 if book is None:
                     raise CustomException("BOOK_NOT_FOUND", code=409)
                 
                 if book['user_id'] != auth['id']:
                     raise CustomException("BOOK_ACCESS_DENIED", code=403)
-                all_words = word_repo.find_all_by_book_id(book_id = book_id)
-            
+                words = word_repo.find_all_by_book_id(book_id = book_id)
+                all_words.extend(words)
+
             if data['count'] > len(all_words):
                 number = len(all_words)
             else:
