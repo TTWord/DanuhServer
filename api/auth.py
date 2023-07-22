@@ -45,6 +45,8 @@ user_sign_up = api.model(
 )
 
 
+# TODO : model 정리 필요
+#       - 부가적인 정보에 따라서 많은 모델을 생성해야함
 @api.route("/signin")
 class UserSignIn(Resource):
     @api.expect(user_sign_in, validate=True)

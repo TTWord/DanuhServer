@@ -4,7 +4,7 @@ class WordModel:
         self.book_id = book_id
         self.word = word
         self.mean = mean
-        self.is_memorized = is_memorized
+        self.is_memorized = bool(is_memorized)
         self.created_at = created_at
         self.updated_at = updated_at
 
