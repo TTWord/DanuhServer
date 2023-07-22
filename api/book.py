@@ -17,7 +17,8 @@ book_info = api.model('단어장 생성', {
 
 book_share = api.model('공유 설정', {
     'id': fields.Integer(required=True, description='단어장 ID', example=1),
-    'comment': fields.String(description='공유 단어장 설명', example='string')
+    'comment': fields.String(description='공유 단어장 설명', example='string'),
+    'share': fields.Boolean(required=True, description='공개여부', example=True)
 })
 
 
@@ -99,17 +100,7 @@ class BookShare(Resource):
     @Authorization.check_authorization
     def post(self, auth):
         """
-        단어장 공개
+        단어장 공개 수정
         """
         data = request.get_json()
-        return BookService.add_share_book(auth, data)
-    
-    @api.expect(book_share)
-    @Authorization.check_authorization
-    def delete(self, auth):
-        """
-        단어장 비공개
-        """
-        data = request.get_json()
-        return BookService.delete_share_book(auth, data)
-    
+        return BookService.share_book(auth, data)

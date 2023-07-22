@@ -233,65 +233,49 @@ class BookService:
             return e.get_response()
         except:
             return custom_response("FAIL", code=500)
-# 공유 단어장 추가 시
-# share 추가
-# book의 is_shared True
 
-# 공유 단어장 삭제 시
-# share 삭제
-# book의 share_id
     @staticmethod
     @ServiceReceiver.database
-    def add_share_book(auth, data, db: Database):
+    def share_book(auth, data, db: Database):
         try:
             book_repo = BookRepository(db)
             share_repo = ShareRepository(db)
             
             # 공유할 단어장이 있는지 조회
             book = book_repo.find_one_by_id(id = data['id'])
-            share = share_repo.find_one_by_book_id(book['id'])
-
             if book is None:
                 raise CustomException("BOOK_NOT_FOUND", code=404)
-            if book['is_shared'] and data['comment'] == share['comment']:
-                raise CustomException("BOOK_ALREADY_SHARED", code=409)
             if book['share_id']:
                 raise CustomException("BOOK_DOWNLOADED", code=409)
             if book["user_id"] != auth["id"]:
                 raise CustomException("BOOK_ACCESS_DENIED", code=403)
             
-            if share:
-                share_repo.update_comment(share['id'], data['comment'])
+            # 공유 상태인 경우
+            if book['is_shared']:
+                share = share_repo.find_one_by_book_id(book['id'])
+                # 공유 -> 공유
+                if data['share']:
+                    # 변경할 comment가 같은 경우만 동작
+                    if data['comment'] != share['comment']:
+                        share_repo.update_comment(share['id'], data['comment'])
+                    else:
+                        raise CustomException("BOOK_ALREADY_SHARED", code=409)
+                    book = {'id': book['id'], 'is_shared': book['is_shared']}
+
+                # 공유 -> 비공유 comment 유무 상관 x
+                else:
+                    book = book_repo.update_is_shared(data['id'], False)
+                    share = share_repo.delete(share['id'])
+            # 비공유 상태인 경우
             else:
-                share_repo.add(book['id'], data['comment'])
-            book = book_repo.update_is_shared(data['id'], True)
-            
-            return custom_response("SUCCESS", data=book)
-        except CustomException as e:
-            return e.get_response()
-        except Exception as e:
-            return custom_response("FAIL", code=500)
-        
-    @staticmethod
-    @ServiceReceiver.database
-    def delete_share_book(auth, data, db: Database):
-        try:
-            book_repo = BookRepository(db)
-            share_repo = ShareRepository(db)
-            
-            # 공유할 단어장이 있는지 조회
-            book = book_repo.find_one_by_id(id = data['id'])
-    
-            if book is None:
-                raise CustomException("BOOK_NOT_FOUND", code=404)
-            if book['share_id']:
-                raise CustomException("BOOK_DOWNLOADED", code=409)
-            if book["user_id"] != auth["id"]:
-                raise CustomException("BOOK_ACCESS_DENIED", code=403)
-            share = share_repo.find_one_by_book_id(book['id'])
-            book = book_repo.update_is_shared(data['id'], False)
-            share = share_repo.delete(share['id'])
-
+                # 비공유 -> 공유 comment 상관 x
+                if data['share']:
+                    share_repo.add(book['id'], data['comment'])
+                    book = book_repo.update_is_shared(data['id'], True)
+                # 비공유 -> 비공유 동작 x
+                else:
+                    book = {'id': book['id'], 'is_shared': book['is_shared']}
+                
             return custom_response("SUCCESS", data=book)
         except CustomException as e:
             return e.get_response()
