@@ -24,6 +24,8 @@ result_info = api.model('결과 정보', {
 })
 
 
+# TODO : model 정리 필요
+#       - 부가적인 정보에 따라서 많은 모델을 생성해야함
 @api.route("/multiple")
 @api.doc(security='Bearer Auth')
 class MultipleQuiz(Resource):

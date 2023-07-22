@@ -55,6 +55,9 @@ post_parser = api.parser()
 post_parser.add_argument("file", type=FileStorage, location="files")
 
 
+# TODO : 닉네임으로 조회하기 필요(상대방 프로필 보기)
+# TODO : model 정리 필요
+#       - 부가적인 정보에 따라서 많은 모델을 생성해야함
 @api.route("/userservice")
 @api.doc(security="Bearer Auth")
 class User(Resource):
