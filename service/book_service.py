@@ -73,7 +73,7 @@ class BookService:
     def add_book(auth, data, db: Database):
         try:
             if data["name"] is None:
-                raise CustomException("BOOK_NOT_HAS_NAME")
+                raise CustomException("BOOK_NOT_HAS_NAME", code=404)
             
             book_repo = BookRepository(db)
             
@@ -99,7 +99,7 @@ class BookService:
             response = requests.post(url, json=data)
             result = json.loads(response.content)
             if data["name"] is None:
-                raise CustomException("BOOK_NOT_HAS_NAME")
+                raise CustomException("BOOK_NOT_HAS_NAME", code=404)
 
             book_repo = BookRepository(db)
             
@@ -142,8 +142,8 @@ class BookService:
     def update_book(auth, id, data, db: Database):
         try:
             if data["name"] is None:
-                raise CustomException("BOOK_NOT_HAS_NAME")
-            
+                raise CustomException("BOOK_NOT_HAS_NAME", code=404)
+
             book_repo = BookRepository(db)
             
             # 변경할 데이터가 있는지 조회

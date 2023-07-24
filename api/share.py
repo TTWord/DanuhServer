@@ -18,10 +18,10 @@ update_share_info = api.model('수정할 공유 정보', {
 @api.route("")
 @api.doc(security="Bearer Auth")
 class Share(Resource):
+    @api.response(200, "SUCCESS")
+    @api.response(500, "FAIL")
     @api.doc(params={'name': '이름 필터', 'type': 'downloaded, checked(기본 check)',
                       'order': 'DESC, ASC(기본 DESC)'})
-    @api.response(200, "Success")
-    @api.response(400, "Bad request")
     @Authorization.reject_authorization
     def get(self):
         """
@@ -32,10 +32,11 @@ class Share(Resource):
         type = request.args.get('type')
 
         return ShareService.get_all_shared_books(data={'name': name, 'order': order, 'type': type})
-    
+
+    @api.response(200, "SUCCESS")
+    @api.response(409, "SHARE_NOT_FOUND, SHARE_BOOK_OWNER, SHARE_ALREADY_EXIST")
+    @api.response(500, "FAIL")
     @api.expect(share_info)
-    @api.response(200, "Success")
-    @api.response(400, "Bad request")
     @Authorization.check_authorization
     def post(self, auth):
         """
@@ -48,8 +49,9 @@ class Share(Resource):
 @api.route('/<int:id>')
 @api.doc(security="Bearer Auth")
 class ShareById(Resource):
-    @api.response(200, "Success")
-    @api.response(400, "Bad request")
+    @api.response(200, "SUCCESS")
+    @api.response(409, "SHARE_NOT_FOUND")
+    @api.response(500, "FAIL")
     # @Authorization.reject_authorization
     def get(self, id):
         """
@@ -57,8 +59,9 @@ class ShareById(Resource):
         """
         return ShareService.get_share_by_id(id)
     
-    @api.response(200, "Success")
-    @api.response(400, "Bad request")
+    @api.response(200, "SUCCESS")
+    @api.response(409, "SHARE_NOT_FOUND")
+    @api.response(500, "FAIL")
     @Authorization.check_authorization
     def post(self, auth, id):
         """
@@ -70,8 +73,8 @@ class ShareById(Resource):
 @api.route('/user')
 @api.doc(security="Bearer Auth")
 class ShareByUser(Resource):
-    @api.response(200, "Success")
-    @api.response(400, "Bad request")
+    @api.response(200, "SUCCESS")
+    @api.response(500, "FAIL")
     @api.doc(params={'name': '이름 필터', 'type': 'downloaded, checked(기본 check)',
                     'order': 'DESC, ASC(기본 DESC)'})
     @Authorization.check_authorization
