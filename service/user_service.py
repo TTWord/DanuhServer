@@ -162,8 +162,11 @@ class UserService:
                     download_count += share['downloaded']
                     recommend_count += share['recommended']
 
-            info = {"id": auth['id'], "username": user["username"], "nickname": user["nickname"]}
-            
+            social = user['username'].split('_')
+            username = social[1] if '_' in user['username'] else social[0]
+            info = {"id": auth['id'], "username": username, "nickname": user["nickname"],
+                    "login_type": user['login_type']}
+                
             file = file_repo.find_one_by_user_id(auth['id'])
             if file:
                 info.update({"url": config["DOMAIN"]
@@ -174,7 +177,7 @@ class UserService:
                     "word_count": word_count,
                     "share_count": share_count,
                     "download_count": download_count,
-                    "recommend_count": recommend_count
+                    "recommend_count": recommend_count,
                 }
             )
             return custom_response("SUCCESS", data=info)

@@ -6,18 +6,19 @@ class UserRepository(Connect):
     def add(self, user_info: dict) -> dict:
         sql = f"""
             INSERT INTO user (
-                username, password, nickname
+                username, password, nickname, login_type
             )
             VALUES(
                 '{user_info['username']}',
                 '{user_info['password']}',
-                '{user_info['nickname']}'
+                '{user_info['nickname']}',
+                '{user_info['login_type']}'
             );
         """
         self.cursor.execute(sql)
         self.connect.commit()
         user = UserModel(id=self.cursor.lastrowid, username=user_info['username'], 
-                         nickname=user_info['nickname'])
+                         nickname=user_info['nickname'], login_type=user_info['login_type'])
         
         return user.__dict__
 
@@ -32,8 +33,15 @@ class UserRepository(Connect):
         sql = f'SELECT * FROM user where username = "{user_name}"'
         self.cursor.execute(sql)
         result = self.cursor.fetchone()
-
-        return result
+    
+        if result:
+            user = UserModel(id=result['id'], username=result['username'], 
+                             nickname=result['nickname'], password=result['password'],
+                             login_type=result['login_type'])
+            
+            return user.__dict__
+        else:
+            return None
     
     def find_one_by_nickname(self, nickname: str) -> dict:
         sql = f'SELECT * FROM user where nickname = "{nickname}"'
@@ -49,7 +57,9 @@ class UserRepository(Connect):
         
         if result:
             user = UserModel(id=result['id'], username=result['username'], 
-                             nickname=result['nickname'], password=result['password'])
+                             nickname=result['nickname'], password=result['password'],
+                             login_type=result['login_type'])
+            
             return user.__dict__
         else:
             return None
