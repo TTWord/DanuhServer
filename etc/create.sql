@@ -3,12 +3,15 @@ drop table book;
 drop table word;
 drop table certification;
 drop table file;
+drop table share;
+drop table commend;
 
 create table user(
     id INT PRIMARY KEY auto_increment,
     username VARCHAR(100) unique,
     password VARCHAR(100),
     nickname VARCHAR(100),
+    login_type VARCHAR(20),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
