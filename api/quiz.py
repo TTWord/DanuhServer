@@ -29,6 +29,11 @@ result_info = api.model('결과 정보', {
 @api.route("/multiple")
 @api.doc(security='Bearer Auth')
 class MultipleQuiz(Resource):
+    @api.response(200, "SUCCESS")
+    @api.response(400, "WORD_LESS_THAN_COUNT")
+    @api.response(403, "BOOK_IDS_NOT_INSERTED, BOOK_ACCESS_DENIED")
+    @api.response(409, "BOOK_NOT_FOUND")
+    @api.response(500, "FAIL")
     @api.expect(quiz_info)
     @Authorization.check_authorization
     def post(self, auth):
@@ -39,9 +44,14 @@ class MultipleQuiz(Resource):
 
         return QuizService.generate_multiple_quiz_service(auth=auth, data=data)
 
+
 @api.route("/short")
 @api.doc(security='Bearer Auth')
 class ShortQuiz(Resource):
+    @api.response(200, "SUCCESS")
+    @api.response(403, "BOOK_IDS_NOT_INSERTED, BOOK_ACCESS_DENIED")
+    @api.response(409, "BOOK_NOT_FOUND")
+    @api.response(500, "FAIL")
     @api.expect(quiz_info)
     @Authorization.check_authorization
     def post(self, auth):
@@ -55,6 +65,10 @@ class ShortQuiz(Resource):
 @api.route("/blind/short")
 @api.doc(security='Bearer Auth')
 class BlindShortQuiz(Resource):
+    @api.response(200, "SUCCESS")
+    @api.response(403, "BOOK_IDS_NOT_INSERTED, BOOK_ACCESS_DENIED")
+    @api.response(409, "BOOK_NOT_FOUND")
+    @api.response(500, "FAIL")
     @api.expect(quiz_info)
     @Authorization.check_authorization
     def post(self, auth):
@@ -68,6 +82,11 @@ class BlindShortQuiz(Resource):
 @api.route("/blind/multiple")
 @api.doc(security='Bearer Auth')
 class BlindMultipleQuiz(Resource):
+    @api.response(200, "SUCCESS")
+    @api.response(400, "WORD_LESS_THAN_COUNT")
+    @api.response(403, "BOOK_IDS_NOT_INSERTED, BOOK_ACCESS_DENIED")
+    @api.response(409, "BOOK_NOT_FOUND, QUIZ_COUNT_ERROR")
+    @api.response(500, "FAIL")
     @api.expect(blind_quiz_info)
     @Authorization.check_authorization
     def post(self, auth):
@@ -81,6 +100,9 @@ class BlindMultipleQuiz(Resource):
 @api.route("")
 @api.doc(security='Bearer Auth')
 class ResultQuiz(Resource):
+    @api.response(200, "SUCCESS")
+    @api.response(403, "BOOK_IDS_NOT_INSERTED")
+    @api.response(500, "FAIL")
     @api.expect(result_info)
     @Authorization.check_authorization
     def post(self, auth):

@@ -27,6 +27,8 @@ book_share = api.model('공유 설정', {
 @api.route("")
 @api.doc(security='Bearer Auth')
 class Book(Resource):
+    @api.response(200, "SUCCESS")
+    @api.response(500, "FAIL")
     @Authorization.check_authorization
     def get(self, auth):
         """
@@ -34,6 +36,10 @@ class Book(Resource):
         """
         return BookService.get_books_by_user_id(auth)
     
+    @api.response(200, "SUCCESS")
+    @api.response(404, "BOOK_NOT_HAS_NAME")
+    @api.response(409, "BOOK_DUPLICATE_NAME")
+    @api.response(500, "FAIL")
     @api.expect(book_name)
     @Authorization.check_authorization
     def post(self, auth):
@@ -48,13 +54,22 @@ class Book(Resource):
 @api.route('/<int:id>')
 @api.doc(security='Bearer Auth')
 class BookById(Resource):
+    @api.response(200, "SUCCESS")
+    @api.response(403, "BOOK_ACCESS_DENIED")
+    @api.response(404, "BOOK_NOT_FOUND")
+    @api.response(500, "FAIL")
     @Authorization.check_authorization
     def get(self, id, auth):
         """
         단어장 ID로 단어장 조회
         """
         return BookService.get_book_by_id(auth, id)
-    
+
+    @api.response(200, "SUCCESS")
+    @api.response(403, "BOOK_ACCESS_DENIED")
+    @api.response(404, "BOOK_NOT_HAS_NAME, BOOK_NOT_FOUND")
+    @api.response(409, "BOOK_ALREADY_EXIST")
+    @api.response(500, "FAIL")
     @Authorization.check_authorization
     @api.expect(book_name)
     def put(self, id, auth):
@@ -64,14 +79,23 @@ class BookById(Resource):
         data = request.get_json()
         
         return BookService.update_book(auth=auth, id=id, data=data)
-    
+
+    @api.response(200, "SUCCESS")
+    @api.response(403, "BOOK_ACCESS_DENIED")
+    @api.response(404, "BOOK_NOT_FOUND")
+    @api.response(409, "BOOK_NOT_DOWNLOADED")
+    @api.response(500, "FAIL")
     @Authorization.check_authorization
     def patch(self, id, auth):
         """
         공유 단어장 업데이트
         """        
         return BookService.update_share_book(auth=auth, id=id)
-    
+
+    @api.response(200, "SUCCESS")
+    @api.response(403, "BOOK_ACCESS_DENIED")
+    @api.response(404, "BOOK_NOT_FOUND")
+    @api.response(500, "FAIL")
     @Authorization.check_authorization
     def delete(self, id, auth):
         """
@@ -83,6 +107,10 @@ class BookById(Resource):
 @api.route('/generate')
 @api.doc(security='Bearer Auth')
 class BookMaker(Resource):
+    @api.response(200, "SUCCESS")
+    @api.response(404, "BOOK_NOT_HAS_NAME")
+    @api.response(409, "BOOK_ALREADY_EXIST, WORD_MORE_THAN_LIMIT")
+    @api.response(500, "FAIL")
     @api.expect(book_info)
     @Authorization.check_authorization
     def post(self, auth):
@@ -96,6 +124,11 @@ class BookMaker(Resource):
 @api.route('/share')
 @api.doc(security='Bearer Auth')
 class BookShare(Resource):
+    @api.response(200, "SUCCESS")
+    @api.response(403, "BOOK_ACCESS_DENIED")
+    @api.response(404, "BOOK_NOT_FOUND")
+    @api.response(409, "BOOK_DOWNLOADED, BOOK_ALREADY_SHARED")
+    @api.response(500, "FAIL")
     @api.expect(book_share)
     @Authorization.check_authorization
     def post(self, auth):

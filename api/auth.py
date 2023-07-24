@@ -50,8 +50,9 @@ user_sign_up = api.model(
 @api.route("/signin")
 class UserSignIn(Resource):
     @api.expect(user_sign_in, validate=True)
-    @api.response(200, "Success")
-    @api.response(400, "Bad request")
+    @api.response(200, "SUCCESS")
+    @api.response(409, "USER_NOT_FOUND, AUTH_ACCESS_FAILD")
+    @api.response(500, "FAIL")
     def post(self):
         """
         로그인
@@ -62,6 +63,9 @@ class UserSignIn(Resource):
 
 @api.route("/check/nickname")
 class CheckNickname(Resource):
+    @api.response(200, "SUCCESS")
+    @api.response(409, "USER_INVALID_USERNAME, USER_DUPLICATE_NICKNAME")
+    @api.response(500, "FAIL")
     def post(self):
         """
         닉네임 중복 확인
@@ -74,8 +78,9 @@ class CheckNickname(Resource):
 @api.route("/sendmail")
 class SendMail(Resource):
     @api.expect(email_content, validate=True)
-    @api.response(200, "Success")
-    @api.response(400, "Bad request")
+    @api.response(200, "SUCCESS")
+    @api.response(409, "USER_DUPLICATE_USERNAME, USER_INVALID_FORMAT_USERNAME, USER_INVALID_FORMAT_PASSWORD")
+    @api.response(500, "FAIL")
     def post(self):
         """
         인증 메일 전송
@@ -86,8 +91,9 @@ class SendMail(Resource):
 
 @api.route("/signup")
 class UserSignUp(Resource):
-    @api.response(200, "Success")
-    @api.response(400, "Bad request")
+    @api.response(200, "SUCCESS")
+    @api.response(403, "AUTH_EXPIRED_CODE, AUTH_INCORRECT_CODE")
+    @api.response(500, "FAIL")
     @api.expect(user_sign_up, validate=True)
     def post(self):
         """
@@ -100,8 +106,8 @@ class UserSignUp(Resource):
 @api.route("/refreshtoken")
 @api.doc(security="Bearer Auth")
 class RefreshToken(Resource):
-    @api.response(200, "Success")
-    @api.response(400, "Bad request")
+    @api.response(200, "SUCCESS")
+    @api.response(500, "FAIL")
     @RefreshToken.check_authorization
     def post(self, auth):
         """
@@ -112,8 +118,9 @@ class RefreshToken(Resource):
 
 @api.route("/<service>")
 class OAuth(Resource):
-    @api.response(200, "Success")
-    @api.response(400, "Bad request")
+    @api.response(200, "SUCCESS")
+    @api.response(409, "AUTH_ACCESS_FAILD, USER_ALREADY_REGISTERED")
+    @api.response(500, "FAIL")
     def get(self, service):
         """
         소셜 로그인 정보 전달(백엔드 정보 전달용)
@@ -121,8 +128,8 @@ class OAuth(Resource):
         code = request.args.get("code")
         return AuthService.social_auth_api(service, code)
 
-    @api.response(200, "Success")
-    @api.response(400, "Bad request")
+    @api.response(200, "SUCCESS")
+    @api.response(500, "FAIL")
     def post(self, service):
         """
         소셜 로그인

@@ -61,8 +61,8 @@ post_parser.add_argument("file", type=FileStorage, location="files")
 @api.route("/userservice")
 @api.doc(security="Bearer Auth")
 class User(Resource):
-    @api.response(200, "Success")
-    @api.response(400, "Bad request")
+    @api.response(200, "SUCCESS")
+    @api.response(500, "FAIL")
     @Authorization.check_authorization
     def get(self, auth):
         """
@@ -70,8 +70,8 @@ class User(Resource):
         """
         return UserService.get_user_profile(auth)
 
-    @api.response(200, "Success")
-    @api.response(400, "Bad request")
+    @api.response(200, "SUCCESS")
+    @api.response(500, "FAIL")
     @api.expect(post_parser)
     @Authorization.check_authorization
     def post(self, auth):
@@ -81,8 +81,9 @@ class User(Resource):
         file = request.files["file"]
         return UserService.update_user_profile(auth, file)
 
-    @api.response(200, "Success")
-    @api.response(400, "Bad request")
+    @api.response(200, "SUCCESS")
+    @api.response(409, "USER_NOT_FOUND")
+    @api.response(500, "FAIL")
     @Authorization.check_authorization
     def delete(self, auth):
         """
@@ -90,8 +91,9 @@ class User(Resource):
         """
         return UserService.delete_user_by_username(auth)
 
-    @api.response(200, "Success")
-    @api.response(400, "Bad request")
+    @api.response(200, "SUCCESS")
+    @api.response(409, "USER_DUPLICATE_NICKNAME")
+    @api.response(500, "FAIL")
     @api.expect(change_nickname, validate=True)
     @Authorization.check_authorization
     def put(self, auth):
@@ -101,6 +103,8 @@ class User(Resource):
         input_data = request.get_json()
         return UserService.update_user_by_nickname(auth, input_data)
 
+    @api.response(200, "SUCCESS")
+    @api.response(500, "FAIL")
     @api.expect(change_password)
     @Authorization.check_authorization
     def patch(self, auth):
@@ -114,12 +118,18 @@ class User(Resource):
 @api.route("/<int:id>")
 @api.doc(security="Bearer Auth")
 class UserById(Resource):
+    @api.response(200, "SUCCESS")
+    @api.response(409, "USER_NOT_FOUND")
+    @api.response(500, "FAIL")
     def get(self, id):
         """
         유저 ID로 유저 조회
         """
         return UserService.get_user_by_id(id)
-
+    
+    @api.response(200, "SUCCESS")
+    @api.response(409, "USER_NOT_FOUND")
+    @api.response(500, "FAIL")
     def delete(self, id):
         """
         유저 ID로 유저 삭제

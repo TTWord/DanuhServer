@@ -15,8 +15,10 @@ word_info = api.model('추가 정보', {
 @api.route('/<int:book_id>')
 @api.doc(security='Bearer Auth')
 class WordByBook(Resource):
-    @api.response(200, 'Success')
-    @api.response(400, 'Fail')
+    @api.response(200, "SUCCESS")
+    @api.response(403, "BOOK_ACCESS_DENIED")
+    @api.response(409, "BOOK_NOT_FOUND")
+    @api.response(500, "FAIL")
     @Authorization.check_authorization
     def get(self, book_id, auth):
         """
@@ -24,8 +26,10 @@ class WordByBook(Resource):
         """
         return WordService.get_words_by_book_id(book_id, auth)
     
-    @api.response(200, 'Success')
-    @api.response(400, 'Fail')
+    @api.response(200, "SUCCESS")
+    @api.response(400, "WORD_COUNT_MORE_THAN_LIMIT")
+    @api.response(409, "WORD_MORE_THAN_LIMIT, BOOK_NOT_FOUND, BOOK_ACCESS_DENIED, BOOK_DOWNLOADED, WORD_ALREADY_EXIST")
+    @api.response(500, "FAIL")
     @api.expect(word_info)
     @Authorization.check_authorization
     def post(self, book_id, auth):
@@ -39,17 +43,21 @@ class WordByBook(Resource):
 @api.route('/id/<int:id>')
 @api.doc(security='Bearer Auth')
 class WordById(Resource):
-    @api.response(200, 'Success')
-    @api.response(400, 'Fail')
+    @api.response(200, "SUCCESS")
+    @api.response(409, "BOOK_NOT_FOUND")
+    @api.response(500, "FAIL")
     @Authorization.reject_authorization
     def get(self, id):
         """
         단어 ID로 단어 조회
         """
         return WordService.get_word_by_id(id)
-
-    @api.response(200, 'Success')
-    @api.response(400, 'Fail')
+    
+    @api.response(200, "SUCCESS")
+    @api.response(400, "WORD_COUNT_MORE_THAN_LIMIT")
+    @api.response(403, "BOOK_ACCESS_DENIED")
+    @api.response(409, "WORD_NOT_FOUND")
+    @api.response(500, "FAIL")
     @api.expect(word_info)
     @Authorization.check_authorization
     def put(self, id, auth):
@@ -59,8 +67,10 @@ class WordById(Resource):
         data = request.get_json()
         return WordService.update(id, data, auth)
     
-    @api.response(200, 'Success')
-    @api.response(400, 'Fail')
+    @api.response(200, "SUCCESS")
+    @api.response(403, "BOOK_ACCESS_DENIED")
+    @api.response(404, "WORD_NOT_FOUND")
+    @api.response(500, "FAIL")
     @Authorization.check_authorization
     def delete(self, id, auth):
         """

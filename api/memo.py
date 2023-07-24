@@ -20,6 +20,9 @@ memo_info = api.model('암기 정보', {
 @api.route("")
 @api.doc(security='Bearer Auth')
 class Memo(Resource):
+    @api.response(200, "SUCCESS")
+    @api.response(409, "WORD_NOT_FOUND")
+    @api.response(500, "FAIL")
     @api.expect(word_info)
     @Authorization.reject_authorization
     def patch(self):
@@ -33,6 +36,11 @@ class Memo(Resource):
 @api.route("/flashcard")
 @api.doc(security='Bearer Auth')
 class FlashCardMemo(Resource):
+    @api.response(200, "SUCCESS")
+    @api.response(400, "WORD_LESS_THAN_COUNT")
+    @api.response(403, "BOOK_IDS_NOT_INSERTED, BOOK_ACCESS_DENIED")
+    @api.response(409, "BOOK_NOT_FOUND")
+    @api.response(500, "FAIL")
     @api.expect(memo_info)
     @Authorization.check_authorization
     def post(self, auth):
@@ -47,6 +55,10 @@ class FlashCardMemo(Resource):
 @api.route("/blind")
 @api.doc(security='Bearer Auth')
 class BlindMemo(Resource):
+    @api.response(200, "SUCCESS")
+    @api.response(403, "BOOK_IDS_NOT_INSERTED, BOOK_ACCESS_DENIED")
+    @api.response(409, "BOOK_NOT_FOUND")
+    @api.response(500, "FAIL")
     @api.expect(memo_info)
     @Authorization.check_authorization
     def post(self, auth):
