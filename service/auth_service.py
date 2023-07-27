@@ -123,6 +123,8 @@ class AuthService:
                         + user['login_type']
                         + "&message="
                         + "USER_ALREADY_REGISTERED"
+                        + "&email="
+                        + username
                     )
                     
             payload_access = {
