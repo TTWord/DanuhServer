@@ -11,7 +11,7 @@ from db.connect import Database
 from config import config
 from datetime import datetime, timedelta
 import random
-from flask import redirect
+from flask import redirect, url_for
 
 
 class AuthService:
@@ -69,6 +69,7 @@ class AuthService:
     @ServiceReceiver.database
     def social_auth_api(service, code, db: Database):
         try:
+            REDIRECT_URI_SOCIAL = config["REDIRECT_URI_SOCIAL"]
             # 전달받은 authorization code를 통해서 access_token을 발급
             service = service.lower()
 
@@ -77,7 +78,12 @@ class AuthService:
 
             # error 발생 시 로그인 페이지로 redirect
             if "error" in auth_info:
-                raise CustomException("AUTH_ACCESS_FAILD", code=409)
+                # 409
+                return redirect(
+                    REDIRECT_URI_SOCIAL
+                    + "&message="
+                    + "AUTH_ACCESS_FAILD"
+                )
 
             info = oauth.userinfo("Bearer " + auth_info["access_token"])
 
@@ -111,8 +117,14 @@ class AuthService:
             else:
                 # 유저가 존재하며 서비스가 다른 경우
                 if user['login_type'] != service:
-                    raise CustomException("USER_ALREADY_REGISTERED", code=409, data={"service": service})
-            
+                    return redirect(
+                        REDIRECT_URI_SOCIAL
+                        + "?service="
+                        + user['login_type']
+                        + "&message="
+                        + "USER_ALREADY_REGISTERED"
+                    )
+                    
             payload_access = {
                 "id": user["id"],
                 "username": user["username"],
@@ -128,7 +140,6 @@ class AuthService:
                 "access_token": generate_token(payload_access, secret),
                 "refresh_token": generate_token(payload_reflash, secret),
             }
-            REDIRECT_URI_SOCIAL = config["REDIRECT_URI_SOCIAL"]
 
             return redirect(
                 REDIRECT_URI_SOCIAL
@@ -138,10 +149,18 @@ class AuthService:
                 + token["refresh_token"]
                 + "&ismember="
                 + is_member
+                + "&message="
+                + "SUCCESS"
             )
         except CustomException as e:
             return e.get_response()
         except Exception as e:
+            # TODO : 서버 에러시 return
+            # return redirect(
+            #     REDIRECT_URI_SOCIAL
+            #     + "&message="
+            #     + "FAIL"
+            # )
             return custom_response("FAIL", code=500)
 
     @staticmethod
