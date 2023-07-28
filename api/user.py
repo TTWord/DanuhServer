@@ -138,7 +138,7 @@ class UserById(Resource):
         return UserService.delete_user_by_id(id=id)
 
 
-@api.route("/userservice/profile/<int:id>")
+@api.route("/profile/<int:id>")
 @api.doc(security="Bearer Auth")
 class OtherUser(Resource):
     @api.response(200, "SUCCESS")
