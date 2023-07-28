@@ -88,3 +88,21 @@ class ShareByUser(Resource):
 
         return ShareService.get_user_shared_books(auth=auth, data={'name': name, 'order': order, 'type': type})
     
+
+@api.route('/user/other/<int:id>')
+@api.doc(security="Bearer Auth")
+class ShareByOtherUser(Resource):
+    @api.response(200, "SUCCESS")
+    @api.response(500, "FAIL")
+    @api.doc(params={'type': 'downloaded, checked(기본 check)',
+                    'order': 'DESC, ASC(기본 DESC)'})
+    @Authorization.reject_authorization
+    def get(self, id):
+        """
+        상대 유저 공유 단어장 목록
+        """
+        order = request.args.get('order')
+        type = request.args.get('type')
+
+        return ShareService.get_other_user_shared_books(id=id, data={'order': order, 'type': type})
+    

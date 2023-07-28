@@ -50,7 +50,7 @@ class UserRepository(Connect):
 
         return result
     
-    def find_one_by_user_id(self, id: int) -> dict:
+    def find_one_by_user_id(self, id: int, password: bool = False) -> dict:
         sql = f'SELECT * FROM user where id = "{id}"'
         self.cursor.execute(sql)
         result = self.cursor.fetchone()
@@ -59,6 +59,8 @@ class UserRepository(Connect):
             user = UserModel(id=result['id'], username=result['username'], 
                              nickname=result['nickname'], password=result['password'],
                              login_type=result['login_type'])
+            if password:
+                del user['password']
             
             return user.__dict__
         else:

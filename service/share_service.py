@@ -202,3 +202,29 @@ class ShareService:
             return e.get_response()
         except Exception as e:
             return custom_response("FAIL", code=500)
+        
+    @staticmethod
+    @ServiceReceiver.database
+    def get_other_user_shared_books(id, data, db: Database):
+        try:
+            share_repo = ShareRepository(db)
+            book_repo = BookRepository(db)
+            user_repo = UserRepository(db)
+
+            # 유저 별 조회
+            books = book_repo.find_all_by_user_id(id)
+            filter_books = []
+            for book in books:
+                if book['is_shared']:
+                    share = share_repo.find_one_by_book_id(book['id'])
+                    user = user_repo.find_one_by_user_id(book['user_id'])
+                    share['book_name'] = book['name']
+                    share['nickname'] = user['nickname']
+                    share['updated_at'] = get_difference_time(book['updated_at'])
+                    filter_books.append(share)
+
+            return custom_response("SUCCESS", code=200, data=filter_books)
+        except CustomException as e:
+            return e.get_response()
+        except Exception as e:
+            return custom_response("FAIL", code=500)
