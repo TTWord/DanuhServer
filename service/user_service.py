@@ -32,10 +32,10 @@ class UserService:
 
     @staticmethod
     @ServiceReceiver.database
-    def update_user(auth, data, db: Database):
+    def update_user_password(auth, data, db: Database):
         try:
             user_repo = UserRepository(db)
-            user = user_repo.find_one_by_user_id(auth['id'])
+            user = user_repo.find_one_by_user_id(auth['id'], True)
 
             if not user:
                 raise CustomException("USER_NOT_FOUND", code=409)
@@ -162,12 +162,58 @@ class UserService:
                     download_count += share['downloaded']
                     recommend_count += share['recommended']
 
-            social = user['username'].split('_')
-            username = social[1] if '_' in user['username'] else social[0]
-            info = {"id": auth['id'], "username": username, "nickname": user["nickname"],
+            info = {"id": auth['id'], "username": user['username'], "nickname": user["nickname"],
                     "login_type": user['login_type']}
                 
             file = file_repo.find_one_by_user_id(auth['id'])
+            if file:
+                info.update({"url": config["DOMAIN"]
+                            + url_for("static", filename=file["file_path"])})
+                                 
+            info.update(
+                {
+                    "word_count": word_count,
+                    "share_count": share_count,
+                    "download_count": download_count,
+                    "recommend_count": recommend_count,
+                }
+            )
+            return custom_response("SUCCESS", data=info)
+        except CustomException as e:
+            return e.get_response()
+        except Exception as e:
+            return custom_response("FAIL", code=500)
+
+    @staticmethod
+    @ServiceReceiver.database
+    def get_another_user_profile(id, db: Database):
+        try:
+            user_repo = UserRepository(db)
+            file_repo = FileRepository(db)
+            book_repo = BookRepository(db)
+            word_repo = WordRepository(db)
+            share_repo = ShareRepository(db)
+
+            user = user_repo.find_one_by_user_id(id)
+            if not user:
+                raise CustomException("USER_NOT_FOUND", code=409)
+            
+            books = book_repo.find_all_by_user_id(id)
+            word_count = 0
+            share_count = 0
+            download_count = 0
+            recommend_count = 0
+            for book in books:
+                word_count += len(word_repo.find_all_by_book_id(book['id']))
+                if book['is_shared']:
+                    share_count += 1
+                    share = share_repo.find_one_by_book_id(book['id'])
+                    download_count += share['downloaded']
+                    recommend_count += share['recommended']
+
+            info = {"id": id, "nickname": user["nickname"]}
+                
+            file = file_repo.find_one_by_user_id(id)
             if file:
                 info.update({"url": config["DOMAIN"]
                             + url_for("static", filename=file["file_path"])})

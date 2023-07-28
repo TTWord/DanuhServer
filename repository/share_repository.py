@@ -30,6 +30,13 @@ class ShareRepository(Connect):
 
         return result
     
+    def find_all_by_book_id(self, book_id: str = "", type: str = 'downloaded', order: str = 'DESC') -> list:
+        sql = f"SELECT * FROM share WHERE book_id IN ({book_id}) ORDER BY {type} {order}"
+        self.cursor.execute(sql)
+        result = self.cursor.fetchall()
+
+        return result
+    
     def find_one_by_id(self, id: int) -> dict:
         shared = None
 
