@@ -19,11 +19,6 @@ class ShareService:
         book_repo = BookRepository(db)
         user_repo = UserRepository(db)
 
-        if not data['type']:
-            data['type'] = 'downloaded'
-        if not data['order']:
-            data['order'] = 'DESC'
-
         all_share = share_repo.find_all(data['type'], data['order'])
 
         shares = []
@@ -211,19 +206,22 @@ class ShareService:
             book_repo = BookRepository(db)
             user_repo = UserRepository(db)
 
-            # 유저 별 조회
             books = book_repo.find_all_by_user_id(id)
+            book_ids = ",".join([str(book['id']) for book in books])
+            sheres = share_repo.find_all_by_book_id(book_ids, data['type'], data['order'])
+            
             filter_books = []
-            for book in books:
-                if book['is_shared']:
-                    share = share_repo.find_one_by_book_id(book['id'])
-                    user = user_repo.find_one_by_user_id(book['user_id'])
-                    share['book_name'] = book['name']
-                    share['nickname'] = user['nickname']
-                    share['updated_at'] = get_difference_time(book['updated_at'])
-                    filter_books.append(share)
+            shares = []
+            for share in sheres:
+                book = book_repo.find_one_by_id(share['book_id'])
+                share['book_name'] = book['name']
 
-            return custom_response("SUCCESS", code=200, data=filter_books)
+                user = user_repo.find_one_by_user_id(book['user_id'])
+                share['nickname'] = user['nickname']
+                        
+                share['updated_at'] = get_difference_time(book['updated_at'])
+                shares.append(share)
+            return custom_response("SUCCESS", code=200, data=shares)
         except CustomException as e:
             return e.get_response()
         except Exception as e:

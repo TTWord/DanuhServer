@@ -102,6 +102,18 @@ class User(Resource):
         """
         input_data = request.get_json()
         return UserService.update_user_by_nickname(auth, input_data)
+    
+    @api.response(200, "SUCCESS")
+    @api.response(409, "USER_NOT_FOUND, USER_INVALID_ACESSSS, USER_INVALID_FORMAT_PASSWORD, USER_SAME_PASSWORD")
+    @api.response(500, "FAIL")
+    @api.expect(change_password)
+    @Authorization.check_authorization
+    def patch(self, auth):
+        """
+        유저 ID로 비밀번호 수정
+        """
+        data = request.get_json()
+        return UserService.update_user_password(auth=auth, data=data)
 
 
 @api.route("/<int:id>")
@@ -124,17 +136,6 @@ class UserById(Resource):
         유저 ID로 유저 삭제
         """
         return UserService.delete_user_by_id(id=id)
-
-    @api.response(200, "SUCCESS")
-    @api.response(500, "FAIL")
-    @api.expect(change_password)
-    @Authorization.check_authorization
-    def patch(self, auth):
-        """
-        유저 ID로 비밀번호 수정
-        """
-        data = request.get_json()
-        return UserService.update_user_password(auth=auth, data=data)  
 
 
 @api.route("/userservice/profile/<int:id>")

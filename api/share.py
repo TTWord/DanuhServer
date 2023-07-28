@@ -20,7 +20,7 @@ update_share_info = api.model('수정할 공유 정보', {
 class Share(Resource):
     @api.response(200, "SUCCESS")
     @api.response(500, "FAIL")
-    @api.doc(params={'name': '이름 필터', 'type': 'downloaded, checked(기본 check)',
+    @api.doc(params={'name': '이름 필터', 'type': 'downloaded, checked(기본 checked)',
                       'order': 'DESC, ASC(기본 DESC)'})
     @Authorization.reject_authorization
     def get(self):
@@ -28,8 +28,8 @@ class Share(Resource):
         공유 단어장 가져오기
         """
         name = request.args.get('name')
-        order = request.args.get('order')
-        type = request.args.get('type')
+        order = request.args.get('order', default="checked", type=str)
+        type = request.args.get('type', default="DESC", type=str)
 
         return ShareService.get_all_shared_books(data={'name': name, 'order': order, 'type': type})
 
@@ -52,7 +52,7 @@ class ShareById(Resource):
     @api.response(200, "SUCCESS")
     @api.response(409, "SHARE_NOT_FOUND")
     @api.response(500, "FAIL")
-    # @Authorization.reject_authorization
+    @Authorization.reject_authorization
     def get(self, id):
         """
         ID를 통해 조회
@@ -75,7 +75,7 @@ class ShareById(Resource):
 class ShareByUser(Resource):
     @api.response(200, "SUCCESS")
     @api.response(500, "FAIL")
-    @api.doc(params={'name': '이름 필터', 'type': 'downloaded, checked(기본 check)',
+    @api.doc(params={'name': '이름 필터', 'type': 'downloaded, checked(기본 checked)',
                     'order': 'DESC, ASC(기본 DESC)'})
     @Authorization.check_authorization
     def get(self, auth):
@@ -83,26 +83,26 @@ class ShareByUser(Resource):
         유저별 공유 단어장
         """
         name = request.args.get('name')
-        order = request.args.get('order')
-        type = request.args.get('type')
+        order = request.args.get('order', default="checked", type=str)
+        type = request.args.get('type', default="DESC", type=str)
 
         return ShareService.get_user_shared_books(auth=auth, data={'name': name, 'order': order, 'type': type})
     
 
-@api.route('/user/other/<int:id>')
+@api.route('/user/<int:user_id>')
 @api.doc(security="Bearer Auth")
 class ShareByOtherUser(Resource):
     @api.response(200, "SUCCESS")
     @api.response(500, "FAIL")
-    @api.doc(params={'type': 'downloaded, checked(기본 check)',
+    @api.doc(params={'type': 'downloaded, checked(기본 checked)',
                     'order': 'DESC, ASC(기본 DESC)'})
     @Authorization.reject_authorization
-    def get(self, id):
+    def get(self, user_id):
         """
-        상대 유저 공유 단어장 목록
+        다른 유저 공유 단어장 목록
         """
-        order = request.args.get('order')
-        type = request.args.get('type')
+        order = request.args.get('order', default="DESC", type=str)
+        type = request.args.get('type', default="checked", type=str)
 
-        return ShareService.get_other_user_shared_books(id=id, data={'order': order, 'type': type})
+        return ShareService.get_other_user_shared_books(id=user_id, data={'order': order, 'type': type})
     

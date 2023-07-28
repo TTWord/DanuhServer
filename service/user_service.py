@@ -195,8 +195,10 @@ class UserService:
             share_repo = ShareRepository(db)
 
             user = user_repo.find_one_by_user_id(id)
-            books = book_repo.find_all_by_user_id(id)
+            if not user:
+                raise CustomException("USER_NOT_FOUND", code=409)
             
+            books = book_repo.find_all_by_user_id(id)
             word_count = 0
             share_count = 0
             download_count = 0
