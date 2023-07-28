@@ -3,9 +3,9 @@
     "version": "2.2.11",
     "width": 2000,
     "height": 2000,
-    "scrollTop": -388,
-    "scrollLeft": -147,
-    "zoomLevel": 0.6,
+    "scrollTop": -348,
+    "scrollLeft": -234,
+    "zoomLevel": 1,
     "show": {
       "tableComment": true,
       "columnComment": true,
@@ -954,13 +954,36 @@
               "widthDefault": 60
             },
             "id": "af692feb-ff9d-4e33-8cde-a03bc68065d1"
+          },
+          {
+            "name": "recommended",
+            "comment": "추천 수",
+            "dataType": "INT",
+            "default": "",
+            "option": {
+              "autoIncrement": false,
+              "primaryKey": false,
+              "unique": false,
+              "notNull": false
+            },
+            "ui": {
+              "active": false,
+              "pk": false,
+              "fk": false,
+              "pfk": false,
+              "widthName": 87.26171875,
+              "widthComment": 60,
+              "widthDataType": 60,
+              "widthDefault": 60
+            },
+            "id": "ea85c461-2fdb-4816-8e76-e66c89ef6f48"
           }
         ],
         "ui": {
           "active": false,
           "left": 763.9997,
-          "top": 676.5261,
-          "zIndex": 7,
+          "top": 667.5261,
+          "zIndex": 27,
           "widthName": 60,
           "widthComment": 71.5703125,
           "color": "#00000000"
@@ -1043,10 +1066,10 @@
           }
         ],
         "ui": {
-          "active": true,
+          "active": false,
           "left": 25.6124,
           "top": 384.4163,
-          "zIndex": 10,
+          "zIndex": 16,
           "widthName": 72.47802734375,
           "widthComment": 71.5703125
         },
@@ -1171,7 +1194,7 @@
             "224358e7-3a4b-422c-ac4f-145197a18a7a"
           ],
           "x": 763.9997,
-          "y": 762.2761,
+          "y": 763.5261,
           "direction": "left"
         },
         "constraintName": "fk_book_to_shared",
