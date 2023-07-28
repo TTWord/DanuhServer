@@ -263,6 +263,8 @@ class BookService:
                     book = {'id': book['id'], 'is_shared': book['is_shared']}
 
                 # 공유 -> 비공유 comment 유무 상관 x
+                # TODO - recommend 테이블에 연결된 데이터 처리
+                # TODO - 다운로드 받은 단어장에 대해서 공유 단어장이 비공유 처리 되었을 때 에러 발생하는 문제 해결 필요
                 else:
                     book = book_repo.update_is_shared(data['id'], False)
                     share = share_repo.delete(share['id'])
