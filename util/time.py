@@ -1,8 +1,8 @@
-from datetime import datetime
+import datetime
 
 
 def get_difference_time(t):
-    time_difference = datetime.now() - t
+    time_difference = datetime.datetime.now() - datetime.timedelta(hours=9) - t
 
     # Extract the days, hours, and minutes from the time difference
     days = time_difference.days
