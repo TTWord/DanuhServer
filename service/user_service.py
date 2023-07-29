@@ -156,9 +156,9 @@ class UserService:
             recommend_count = 0
             for book in books:
                 word_count += len(word_repo.find_all_by_book_id(book['id']))
-                if book['is_shared']:
+                share = share_repo.find_one_by_book_id(book['id'])
+                if share:
                     share_count += 1
-                    share = share_repo.find_one_by_book_id(book['id'])
                     download_count += share['downloaded']
                     recommend_count += share['recommended']
 
@@ -205,7 +205,8 @@ class UserService:
             recommend_count = 0
             for book in books:
                 word_count += len(word_repo.find_all_by_book_id(book['id']))
-                if book['is_shared']:
+                share = share_repo.find_one_by_book_id(book['id'])
+                if share:
                     share_count += 1
                     share = share_repo.find_one_by_book_id(book['id'])
                     download_count += share['downloaded']

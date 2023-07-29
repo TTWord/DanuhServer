@@ -86,3 +86,10 @@ class ShareRepository(Connect):
         self.connect.commit()
         
         return {'id': id, 'comment': comment}
+    
+    def update_is_shared(self, id: int, is_shared: bool) -> dict:        
+        sql = f"UPDATE share SET is_shared = {is_shared} WHERE id = {id}"
+        self.cursor.execute(sql)
+        self.connect.commit()
+
+        return {'id': id, 'is_shared': is_shared}

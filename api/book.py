@@ -47,7 +47,6 @@ class Book(Resource):
         단어장 추가
         """
         data = request.get_json()
-        
         return BookService.add_book(auth, data)
     
 

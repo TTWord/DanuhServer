@@ -3,6 +3,7 @@ from repository.word_repository import WordRepository
 from repository.book_repository import BookRepository
 from repository.user_repository import UserRepository
 from repository.recommend_repository import RecommendRepository
+from repository.book_share_repository import BookShareRepository
 from db.connect import Database
 from util.custom_response import custom_response
 from util.decorator.service_receiver import ServiceReceiver
@@ -20,7 +21,8 @@ class ShareService:
         user_repo = UserRepository(db)
 
         all_share = share_repo.find_all(data['type'], data['order'])
-
+        
+        # TODO : 공유 단어장 필터링 (최신순, 인기순, 다운로드순)
         shares = []
         for share in all_share:
             book = book_repo.find_one_by_id(share['book_id'])
@@ -33,7 +35,8 @@ class ShareService:
             if data['name']:
                 if not (data['name'] in book['name'] or data['name'] in user['nickname']):
                     continue
-                    
+            
+            # TODO : 단어 개수로 수정
             share['updated_at'] = get_difference_time(book['updated_at'])
             shares.append(share)
 
@@ -107,35 +110,6 @@ class ShareService:
             return e.get_response()
         except Exception as e:
             return custom_response("FAIL", code=500)
-        
-    @staticmethod
-    @ServiceReceiver.database
-    def update_downloaded_book(auth, data, db: Database):
-        try:
-            share_repo = ShareRepository(db)
-            word_repo = WordRepository(db)
-            book_repo = BookRepository(db)
-            
-            share = share_repo.find_one_by_id(data['id'])
-            if share is None:
-                raise CustomException("SHARE_NOT_FOUND", code=409)
-            
-            # 다운로드 증가
-            share_repo.update_column(share['id'], 'downloaded')
-
-            # 단어장 이름 복사하여 단어장 생성, 단어 생성
-            book = book_repo.find_one_by_id(share['book_id'])
-            words = word_repo.find_all_by_book_id(share['book_id'])
-            book = book_repo.add(auth['id'], book['name'], True)
-
-            for word in words:
-                word_repo.add(book['id'], word['word'], word['mean'])
-
-            return custom_response("SUCCESS", data=words)
-        except CustomException as e:
-            return e.get_response()
-        except Exception as e:
-            return custom_response("FAIL", code=500)
 
     @staticmethod
     @ServiceReceiver.database  
@@ -161,7 +135,10 @@ class ShareService:
             return e.get_response()
         except Exception as e:
             return custom_response("FAIL", code=500)
-        
+
+    # TODO:
+    # - 나의 단어장 -> 공유한 단어장(최신순)
+    # - 나의 단어장 -> 공유받은 단어장(최신순)
     @staticmethod
     @ServiceReceiver.database
     def get_user_shared_books(auth, data, db: Database):

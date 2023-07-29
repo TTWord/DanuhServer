@@ -37,7 +37,7 @@ create table recommend(
 create table share(
     id INT PRIMARY KEY auto_increment,
     book_id INT,
-    is_shared BOOLEAN default 0,
+    is_shared BOOLEAN default 1,
     comment VARCHAR(100),
     checked INT default 0,
     downloaded INT default 0,
