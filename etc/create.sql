@@ -42,6 +42,8 @@ create table share(
     checked INT default 0,
     downloaded INT default 0,
     recommended INT default 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY(book_id) REFERENCES book(id) ON DELETE CASCADE
 );
 

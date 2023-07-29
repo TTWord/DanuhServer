@@ -250,6 +250,12 @@ class BookService:
             if book["user_id"] != auth["id"]:
                 raise CustomException("BOOK_ACCESS_DENIED", code=403)
             
+            # TODO: 공유 상태에 대한 리펙토링 필요
+            #       - 공유 -> 공유, 비공유가 아닌 비공유, 공유 -> 공유로 구조 수정 필요
+            # 공유 -> 비공유 comment 유무 상관 x
+            # TODO - recommend 테이블에 연결된 데이터 처리
+            # TODO - 다운로드 받은 단어장에 대해서 공유 단어장이 비공유 처리 되었을 때 에러 발생하는 문제 해결 필요
+            
             # 공유 상태인 경우
             if book['is_shared']:
                 share = share_repo.find_one_by_book_id(book['id'])
@@ -258,20 +264,20 @@ class BookService:
                     # 변경할 comment가 같은 경우만 동작
                     if data['comment'] != share['comment']:
                         share_repo.update_comment(share['id'], data['comment'])
+                        if len(data['comment']) > 200:
+                            raise CustomException("SHARE_COMMENT_UPPER_THAN_LIMIT", code=409)
                     else:
                         raise CustomException("BOOK_ALREADY_SHARED", code=409)
                     book = {'id': book['id'], 'is_shared': book['is_shared']}
-
-                # 공유 -> 비공유 comment 유무 상관 x
-                # TODO - recommend 테이블에 연결된 데이터 처리
-                # TODO - 다운로드 받은 단어장에 대해서 공유 단어장이 비공유 처리 되었을 때 에러 발생하는 문제 해결 필요
                 else:
                     book = book_repo.update_is_shared(data['id'], False)
-                    share = share_repo.delete(share['id'])
+                    # share = share_repo.delete(share['id'])
             # 비공유 상태인 경우
             else:
                 # 비공유 -> 공유 comment 상관 x
                 if data['share']:
+                    if len(data['comment']) > 200:
+                        raise CustomException("SHARE_COMMENT_UPPER_THAN_LIMIT", code=409)
                     share_repo.add(book['id'], data['comment'])
                     book = book_repo.update_is_shared(data['id'], True)
                 # 비공유 -> 비공유 동작 x
