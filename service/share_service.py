@@ -56,7 +56,7 @@ class ShareService:
             words = word_repo.find_all_by_book_id(share['book_id'])
 
             # 데이터 가공
-            book_id = words[0]['book_id']
+            book_id = share['book_id']
             book = book_repo.find_one_by_id(book_id)
             share_repo.update_column(id, 'checked')
             [word.pop('book_id') for word in words]
