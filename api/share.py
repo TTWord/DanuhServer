@@ -20,7 +20,7 @@ update_share_info = api.model('수정할 공유 정보', {
 class Share(Resource):
     @api.response(200, "SUCCESS")
     @api.response(500, "FAIL")
-    @api.doc(params={'type': 'popularity, downloaded, update_at(기본 update_at)',
+    @api.doc(params={'name': '이름 필터', 'type': 'popularity, downloaded, update_at(기본 update_at)',
                     'order': 'DESC, ASC(기본 DESC)'})
     @Authorization.reject_authorization
     def get(self):
@@ -70,9 +70,9 @@ class ShareById(Resource):
         return ShareService.update_recommend_share(auth, id)
 
 
-@api.route('/user')
+@api.route('/user/share')
 @api.doc(security="Bearer Auth")
-class ShareByUser(Resource):
+class ShareByUserShare(Resource):
     @api.response(200, "SUCCESS")
     @api.response(500, "FAIL")
     @api.doc(params={'type': 'popularity, downloaded, update_at(기본 update_at)',
@@ -82,11 +82,29 @@ class ShareByUser(Resource):
         """
         유저별 공유 단어장
         """
-        name = request.args.get('name')
         order = request.args.get('order', default="DESC", type=str)
         type = request.args.get('type', default="update_at", type=str)
 
-        return ShareService.get_user_shared_books(auth=auth, data={'name': name, 'order': order, 'type': type})
+        return ShareService.get_user_shared_books(auth=auth, data={'order': order, 'type': type})
+
+
+@api.route('/user/download')
+@api.doc(security="Bearer Auth")
+class ShareByUserDownload(Resource):
+    @api.response(200, "SUCCESS")
+    @api.response(500, "FAIL")
+    @api.doc(params={'type': 'update_at(기본 update_at)', 'filter': '추천 단어장 필터링(기본 False)',
+                    'order': 'DESC, ASC(기본 DESC)'})
+    @Authorization.check_authorization
+    def get(self, auth):
+        """
+        유저별 다운로드 단어장
+        """
+        type = request.args.get('type', default="update_at", type=str)
+        order = request.args.get('order', default="DESC", type=str)
+        filter = request.args.get('filter', default=False, type=bool)
+
+        return ShareService.get_user_downloaded_books(auth=auth, data={'filter': filter, 'order': order, 'type': type})
     
 
 @api.route('/user/<int:user_id>')

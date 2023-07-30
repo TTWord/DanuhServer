@@ -9,6 +9,7 @@ from util.custom_response import custom_response
 from util.decorator.service_receiver import ServiceReceiver
 from util.exception import CustomException
 from util.time import get_difference_time
+from util.sort import sorted_by_value
 from collections import defaultdict
 
 
@@ -19,14 +20,16 @@ class ShareService:
         share_repo = ShareRepository(db)
         book_repo = BookRepository(db)
         user_repo = UserRepository(db)
+        word_repo = WordRepository(db)
 
-        all_share = share_repo.find_all(data['type'], data['order'])
+        all_share = share_repo.find_all()
         
         # TODO : 공유 단어장 필터링 (최신순, 인기순, 다운로드순)
         shares = []
         for share in all_share:
             book = book_repo.find_one_by_id(share['book_id'])
             share['book_name'] = book['name']
+            share['updated_at'] = book['updated_at']
 
             user = user_repo.find_one_by_user_id(book['user_id'])
             share['nickname'] = user['nickname']
@@ -36,9 +39,18 @@ class ShareService:
                 if not (data['name'] in book['name'] or data['name'] in user['nickname']):
                     continue
             
-            # TODO : 단어 개수로 수정
-            share['updated_at'] = get_difference_time(book['updated_at'])
+            share['word_count'] = len(word_repo.find_all_by_book_id(book['id']))
+            if data["type"] == "popularity":
+                share['popularity'] = share['downloaded'] + share['recommended']
             shares.append(share)
+
+        order = True if data['order'] == "DESC" else False
+        if data["type"] == "popularity":
+            shares = sorted_by_value(shares, order, "popularity", "checked")
+            [share.pop('popularity') for share in shares]
+        else:
+            shares = sorted_by_value(shares, order, data['type'])
+
 
         return custom_response("SUCCESS", code=200, data=shares)
         
@@ -138,10 +150,46 @@ class ShareService:
 
     # TODO:
     # - 나의 단어장 -> 공유한 단어장(최신순)
-    # - 나의 단어장 -> 공유받은 단어장(최신순)
+    # - 나의 단어장 -> 공유받은 단어장(최신순, 추천받은 단어장)
     @staticmethod
     @ServiceReceiver.database
     def get_user_shared_books(auth, data, db: Database):
+        try:
+            share_repo = ShareRepository(db)
+            book_repo = BookRepository(db)
+            user_repo = UserRepository(db)
+
+            # 유저 별 조회
+            books = book_repo.find_all_by_user_id(auth['id'])
+            filter_books = defaultdict(list)
+            for book in books:
+                share = share_repo.find_one_by_book_id(book['id'])
+                if not share:
+                    continue
+                book = book_repo.find_one_by_id(share['book_id'])
+                user = user_repo.find_one_by_user_id(book['user_id'])
+                share['book_name'] = book['name']
+                share['nickname'] = user['nickname']
+                share['updated_at'] = get_difference_time(book['updated_at'])
+                filter_books['downloaded_book'].append(share)
+                # 공유
+                if book['is_shared']:
+                    share = share_repo.find_one_by_book_id(book['id'])
+                    user = user_repo.find_one_by_user_id(book['user_id'])
+                    share['book_name'] = book['name']
+                    share['nickname'] = user['nickname']
+                    share['updated_at'] = get_difference_time(book['updated_at'])
+                    filter_books['shared_book'].append(share)
+
+            return custom_response("SUCCESS", code=200, data=filter_books)
+        except CustomException as e:
+            return e.get_response()
+        except Exception as e:
+            return custom_response("FAIL", code=500)
+
+    @staticmethod
+    @ServiceReceiver.database
+    def get_user_downloaded_books(auth, data, db: Database):
         try:
             share_repo = ShareRepository(db)
             book_repo = BookRepository(db)
@@ -174,7 +222,7 @@ class ShareService:
             return e.get_response()
         except Exception as e:
             return custom_response("FAIL", code=500)
-        
+          
     @staticmethod
     @ServiceReceiver.database
     def get_other_user_shared_books(id, data, db: Database):
@@ -186,10 +234,10 @@ class ShareService:
 
             books = book_repo.find_all_by_user_id(id)
             book_ids = ",".join([str(book['id']) for book in books])
-            sheres = share_repo.find_all_by_book_id(book_ids, data['type'], data['order'])
+            shares = share_repo.find_all_by_book_id(book_ids)
             
-            shares = []
-            for share in sheres:
+            filter_shares = []
+            for share in shares:
                 book = book_repo.find_one_by_id(share['book_id'])
                 share['book_name'] = book['name']
 
@@ -200,8 +248,8 @@ class ShareService:
                 share['word_count'] = len(words)
                 del share['checked']
 
-                shares.append(share)
-            return custom_response("SUCCESS", code=200, data=shares)
+                filter_shares.append(share)
+            return custom_response("SUCCESS", code=200, data=filter_shares)
         except CustomException as e:
             return e.get_response()
         except Exception as e:
