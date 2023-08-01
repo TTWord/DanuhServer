@@ -64,6 +64,7 @@ class BookService:
             
             share = share_repo.find_one_by_book_id(book['id'])
             if share:
+                book['is_sharing'] = True
                 book['comment'] = share['comment']
             return custom_response("SUCCESS", code=200, data=book)
         except CustomException as e:
