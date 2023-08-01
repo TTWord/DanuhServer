@@ -1,6 +1,7 @@
 from repository.book_repository import BookRepository
 from repository.word_repository import WordRepository
 from repository.share_repository import ShareRepository
+from repository.book_share_repository import BookShareRepository
 from db.connect import Database
 from util.custom_response import custom_response
 from util.decorator.service_receiver import ServiceReceiver
@@ -20,8 +21,8 @@ class BookService:
         
         books = book_repo.find_all()
         for book in books:
-            if book['is_shared']:
-                share = share_repo.find_one_by_book_id(book['id'])
+            share = share_repo.find_one_by_book_id(book['id'])
+            if share:
                 book['comment'] = share['comment']
 
         return { "code" : 200, "data" : books }
@@ -34,9 +35,9 @@ class BookService:
             share_repo = ShareRepository(db)
 
             books = book_repo.find_all_by_user_id(user_id = auth['id'])
-            for book in books:  
-                if book['is_shared']:
-                    share = share_repo.find_one_by_book_id(book['id'])
+            for book in books:
+                share = share_repo.find_one_by_book_id(book['id'])
+                if share:
                     book['comment'] = share['comment']
 
             return custom_response("SUCCESS", data=books)
@@ -59,8 +60,8 @@ class BookService:
             if book["user_id"] != auth["id"]:
                 raise CustomException("BOOK_ACCESS_DENIED", code=403)
             
-            if book['is_shared']:
-                share = share_repo.find_one_by_book_id(book['id'])
+            share = share_repo.find_one_by_book_id(book['id'])
+            if share:
                 book['comment'] = share['comment']
             return custom_response("SUCCESS", code=200, data=book)
         except CustomException as e:
@@ -79,8 +80,7 @@ class BookService:
             
             # 데이터 중복 검사
             book = book_repo.find_one_by_name_and_user_id(name = data["name"], user_id = auth['id'])
-            
-            if book is not None:
+            if book:
                 raise CustomException("BOOK_DUPLICATE_NAME", code=409)
             
             book = book_repo.add(user_id = auth['id'], name = data["name"])
@@ -179,6 +179,7 @@ class BookService:
             book_repo = BookRepository(db)
             share_repo = ShareRepository(db)
             word_repo = WordRepository(db)
+            book_share_repo = BookShareRepository(db)
 
             # 변경할 데이터가 있는지 조회
             book = book_repo.find_one_by_id(id = id)
@@ -189,18 +190,20 @@ class BookService:
             if book is None:
                 raise CustomException("BOOK_NOT_FOUND", code=404)
             
-            share = share_repo.find_one_by_id(book['share_id'])
-            if share is None:
+            if book['is_downloaded'] is None:
                 raise CustomException("BOOK_NOT_DOWNLOADED", code=409)
             
+            book_share = book_share_repo.find_one_by_book_id(id)
+            share = share_repo.find_one_by_book_id(book_share['share_id'])
+
             # 다운로드 증가
-            share_repo.update_column(share['id'], 'downloaded')
+            share_repo.update_column(book_share['share_id'], 'downloaded')
 
             # 단어장 이름 복사하여 기존의 단어장 삭제, 생성, 단어 생성
-            book = book_repo.find_one_by_id(share['book_id'])
-            words = word_repo.find_all_by_book_id(share['book_id'])
-            book_repo.delete(share['book_id'])
-            book = book_repo.add(auth['id'], book['name'], share['id'])
+            share_book = book_repo.find_one_by_id(share['book_id'])
+            words = word_repo.find_all_by_book_id(share_book['book_id'])
+            book_repo.delete(id)
+            book = book_repo.add(auth['id'], share_book['name'], True)
 
             for word in words:
                 word_repo.add(book['id'], word['word'], word['mean'])
@@ -245,38 +248,40 @@ class BookService:
             book = book_repo.find_one_by_id(id = data['id'])
             if book is None:
                 raise CustomException("BOOK_NOT_FOUND", code=404)
-            if book['share_id']:
+            if book['is_downloaded']:
                 raise CustomException("BOOK_DOWNLOADED", code=409)
             if book["user_id"] != auth["id"]:
                 raise CustomException("BOOK_ACCESS_DENIED", code=403)
-            
+
+            share = share_repo.find_one_by_book_id(data['id'])
             # 공유 상태인 경우
-            if book['is_shared']:
-                share = share_repo.find_one_by_book_id(book['id'])
+            if share:
                 # 공유 -> 공유
                 if data['share']:
-                    # 변경할 comment가 같은 경우만 동작
+                    if len(data['comment']) > 200:
+                        raise CustomException("SHARE_COMMENT_UPPER_THAN_LIMIT", code=409)
+                    # 변경할 comment가 다른 경우만 동작
                     if data['comment'] != share['comment']:
                         share_repo.update_comment(share['id'], data['comment'])
                     else:
                         raise CustomException("BOOK_ALREADY_SHARED", code=409)
-                    book = {'id': book['id'], 'is_shared': book['is_shared']}
-
-                # 공유 -> 비공유 comment 유무 상관 x
-                # TODO - recommend 테이블에 연결된 데이터 처리
-                # TODO - 다운로드 받은 단어장에 대해서 공유 단어장이 비공유 처리 되었을 때 에러 발생하는 문제 해결 필요
+                    book = {'id': book['id'], 'is_shared': share['is_shared']}
+                # 공유 -> 비공유
                 else:
-                    book = book_repo.update_is_shared(data['id'], False)
-                    share = share_repo.delete(share['id'])
+                    share = share_repo.update_is_shared(share['id'], False)
+                    book = {'id': book['id'], 'is_shared': False}
+                    # share = share_repo.delete(share['id'])
             # 비공유 상태인 경우
             else:
                 # 비공유 -> 공유 comment 상관 x
                 if data['share']:
+                    if len(data['comment']) > 200:
+                        raise CustomException("SHARE_COMMENT_UPPER_THAN_LIMIT", code=409)
                     share_repo.add(book['id'], data['comment'])
-                    book = book_repo.update_is_shared(data['id'], True)
+                    book = {'id': book['id'], 'is_shared': True}
                 # 비공유 -> 비공유 동작 x
                 else:
-                    book = {'id': book['id'], 'is_shared': book['is_shared']}
+                    book = {'id': book['id'], 'is_shared': False}
                 
             return custom_response("SUCCESS", data=book)
         except CustomException as e:

@@ -22,16 +22,16 @@ class ShareRepository(Connect):
 
         return shared.__dict__
     
-    def find_all(self, type: str = 'downloaded', order: str = 'DESC') -> list:
-        sql = f"SELECT * FROM share ORDER BY {type} {order}"
+    def find_all(self) -> list:
+        sql = f"SELECT * FROM share"
 
         self.cursor.execute(sql)
         result = self.cursor.fetchall()
 
         return result
-    
-    def find_all_by_book_id(self, book_id: str = "", type: str = 'downloaded', order: str = 'DESC') -> list:
-        sql = f"SELECT * FROM share WHERE book_id IN ({book_id}) ORDER BY {type} {order}"
+
+    def find_all_by_book_id(self, book_id: str = "") -> list:
+        sql = f"SELECT * FROM share WHERE book_id IN ({book_id})"
         self.cursor.execute(sql)
         result = self.cursor.fetchall()
 
@@ -86,3 +86,10 @@ class ShareRepository(Connect):
         self.connect.commit()
         
         return {'id': id, 'comment': comment}
+    
+    def update_is_shared(self, id: int, is_shared: bool) -> dict:        
+        sql = f"UPDATE share SET is_shared = {is_shared} WHERE id = {id}"
+        self.cursor.execute(sql)
+        self.connect.commit()
+
+        return {'id': id, 'is_shared': is_shared}

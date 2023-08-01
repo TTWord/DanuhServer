@@ -20,8 +20,7 @@ create table book(
     id INT PRIMARY KEY auto_increment,
     user_id INT,
     name VARCHAR(100),
-    share_id INT default 0,
-    is_shared BOOLEAN default 0,
+    is_downloaded BOOLEAN default 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY(user_id) REFERENCES user(id) ON DELETE CASCADE
@@ -38,11 +37,20 @@ create table recommend(
 create table share(
     id INT PRIMARY KEY auto_increment,
     book_id INT,
+    is_shared BOOLEAN default 1,
     comment VARCHAR(100),
     checked INT default 0,
     downloaded INT default 0,
     recommended INT default 0,
     FOREIGN KEY(book_id) REFERENCES book(id) ON DELETE CASCADE
+);
+
+create table book_share(
+    id INT PRIMARY KEY auto_increment,
+    book_id INT default 0,
+    share_id INT default 0,
+    FOREIGN KEY(book_id) REFERENCES book(id) ON DELETE CASCADE,
+    FOREIGN KEY(share_id) REFERENCES share(id) ON DELETE CASCADE
 );
 
 create table word(
