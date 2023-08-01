@@ -274,9 +274,23 @@ class ShareService:
                 
                 words = word_repo.find_all_by_book_id(book['id'])
                 share['word_count'] = len(words)
-                del share['checked']
+                share['updated_at'] = book['updated_at']
 
+                del share['is_shared'], share['comment']
+
+                if data["type"] == "popularity":
+                    share['popularity'] = share['downloaded'] + share['recommended']
+                
                 filter_shares.append(share)
+
+            order = True if data['order'] == "DESC" else False
+            if data["type"] == "popularity":
+                filter_shares = sorted_by_value(filter_shares, order, "popularity", "checked")
+                [filter_share.pop('popularity') for filter_share in filter_shares]
+            else:
+                filter_shares = sorted_by_value(filter_shares, order, data['type'])
+            [filter_share.pop('updated_at') for filter_share in filter_shares]
+            [filter_share.pop('checked') for filter_share in filter_shares]
             return custom_response("SUCCESS", code=200, data=filter_shares)
         except CustomException as e:
             return e.get_response()

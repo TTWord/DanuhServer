@@ -5,6 +5,7 @@ drop table certification;
 drop table file;
 drop table share;
 drop table commend;
+drop table book_share;
 
 create table user(
     id INT PRIMARY KEY auto_increment,
