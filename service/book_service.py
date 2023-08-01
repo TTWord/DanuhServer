@@ -252,12 +252,7 @@ class BookService:
                 raise CustomException("BOOK_DOWNLOADED", code=409)
             if book["user_id"] != auth["id"]:
                 raise CustomException("BOOK_ACCESS_DENIED", code=403)
-            
-            # TODO: 공유 상태에 대한 리펙토링 필요
-            #       - 공유 -> 공유, 비공유가 아닌 비공유, 공유 -> 공유로 구조 수정 필요
-            # 공유 -> 비공유 comment 유무 상관 x
-            # TODO - recommend 테이블에 연결된 데이터 처리
-            # TODO - 다운로드 받은 단어장에 대해서 공유 단어장이 비공유 처리 되었을 때 에러 발생하는 문제 해결 필요
+
             share = share_repo.find_one_by_book_id(data['id'])
             # 공유 상태인 경우
             if share:

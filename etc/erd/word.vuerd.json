@@ -3,9 +3,9 @@
     "version": "2.2.11",
     "width": 2000,
     "height": 2000,
-    "scrollTop": -817,
-    "scrollLeft": -671,
-    "zoomLevel": 0.8,
+    "scrollTop": -215,
+    "scrollLeft": -475,
+    "zoomLevel": 0.9,
     "show": {
       "tableComment": true,
       "columnComment": true,
@@ -1330,7 +1330,7 @@
             "name": "is_shared",
             "comment": "",
             "dataType": "BOOLEAN",
-            "default": "0",
+            "default": "True",
             "option": {
               "autoIncrement": false,
               "primaryKey": false,
@@ -1446,7 +1446,7 @@
           "active": false,
           "left": 1133,
           "top": 1003.25,
-          "zIndex": 20,
+          "zIndex": 13,
           "widthName": 60,
           "widthComment": 60
         },

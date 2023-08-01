@@ -31,13 +31,6 @@ class BookShareRepository(Connect):
         
         return book_share
     
-    def find_all_by_book_id(self, book_id: int) -> dict:
-        sql = f'SELECT * FROM book_share WHERE book_id = {book_id};'
-        self.cursor.execute(sql)
-        book_share = self.cursor.fetchone()
-        
-        return book_share
-    
     def delete_book_id_and_share_id(self, book_id: int, share_id: int) -> dict:
         sql = f"DELETE FROM book_share WHERE like_user_id = {book_id} and book_id = {share_id}"
         self.cursor.execute(sql)

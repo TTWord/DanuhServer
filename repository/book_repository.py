@@ -57,21 +57,6 @@ class BookRepository(Connect):
             return book
         else:
             return None
-        
-    # def find_one_by_share_id(self, share_id: int) -> dict:
-    #     book = None
-        
-    #     sql = f'SELECT * FROM book WHERE share_id = "{share_id}"'
-    #     self.cursor.execute(sql)
-    #     result = self.cursor.fetchone()
-        
-    #     if result is not None:
-    #         book = BookModel(id=result['id'], name=result['name'], user_id=result['user_id'], 
-    #                                is_downloaded=result['is_downloaded'],
-    #                                created_at=result['created_at'], updated_at=result['updated_at'])
-    #         return book
-    #     else:
-    #         return None
     
     def add(self, user_id: int, name: str, is_downloaded: bool = False) -> dict:
         sql = f"INSERT INTO book (user_id, name, is_downloaded) VALUES ({user_id}, '{name}', {is_downloaded})"
