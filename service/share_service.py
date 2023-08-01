@@ -117,8 +117,8 @@ class ShareService:
             count = 0
             for book in books:
                 if book['is_downloaded']:
-                    book_share_repo.find_one_by_book_id_and_share_id(book['id'], share['id'])
-                    if book_share_repo:
+                    book_share = book_share_repo.find_one_by_book_id_and_share_id(book['id'], share['id'])
+                    if book_share:
                         count += 1
 
             if count:
@@ -214,6 +214,8 @@ class ShareService:
             recommend_repo = RecommendRepository(db)
             book_share_repo = BookShareRepository(db)
 
+            print(data['filter'])
+            print(type(data['filter']))
             # 유저 별 조회
             books = book_repo.find_all_by_user_id(auth['id'])
             filter_books = []
@@ -226,7 +228,7 @@ class ShareService:
                 book = book_repo.find_one_by_id(share['book_id'])
                 user = user_repo.find_one_by_user_id(book['user_id'])
                 recommend = recommend_repo.find_one_by_like_user_id_and_book_id(auth['id'], book['id'])
-
+                print(recommend)
                 share['book_name'] = book['name']
                 share['nickname'] = user['nickname']
                 share['word_count'] = len(word_repo.find_all_by_book_id(book['id']))
@@ -249,6 +251,7 @@ class ShareService:
         except CustomException as e:
             return e.get_response()
         except Exception as e:
+            print(e)
             return custom_response("FAIL", code=500)
           
     @staticmethod

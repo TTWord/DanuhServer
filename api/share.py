@@ -93,7 +93,7 @@ class ShareByUserShare(Resource):
 class ShareByUserDownload(Resource):
     @api.response(200, "SUCCESS")
     @api.response(500, "FAIL")
-    @api.doc(params={'type': 'updated_at(기본 updated_at)', 'filter': '추천 단어장 필터링(기본 False)',
+    @api.doc(params={'type': 'updated_at(기본 updated_at)', 'filter': '추천 단어장 필터링(기본 true)',
                     'order': 'DESC, ASC(기본 DESC)'})
     @Authorization.check_authorization
     def get(self, auth):
@@ -102,7 +102,7 @@ class ShareByUserDownload(Resource):
         """
         type = request.args.get('type', default="updated_at", type=str)
         order = request.args.get('order', default="DESC", type=str)
-        filter = request.args.get('filter', default=False, type=bool)
+        filter = True if str(request.args.get('filter', default="false", type=str)) == "true" else False
 
         return ShareService.get_user_downloaded_books(auth=auth, data={'filter': filter, 'order': order, 'type': type})
     
