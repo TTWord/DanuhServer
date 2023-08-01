@@ -106,7 +106,7 @@ class ShareByUserDownload(Resource):
 
         return ShareService.get_user_downloaded_books(auth=auth, data={'filter': filter, 'order': order, 'type': type})
     
-
+    
 @api.route('/user/<int:user_id>')
 @api.doc(security="Bearer Auth")
 class ShareByOtherUser(Resource):
