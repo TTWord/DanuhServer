@@ -50,6 +50,40 @@ user_sign_up = api.model(
         ),
     },
 )
+user_sign_up = api.model(
+    "회원 가입",
+    {
+        **user_name,
+        "password": fields.String(
+            required=True, description="비밀번호", example="a123456!"
+        ),
+        "nickname": fields.String(required=True, description="닉네임", example="김흐긴"),
+        "certification_id": fields.String(
+            required=True, description="인증ID", example="474825"
+        ),
+    },
+)
+
+require_info = api.model(
+    "버그 신고",
+    {
+        "type": fields.String(
+            required=True, description="유형", example="버그 신고"
+        ),
+        "contents": fields.String(
+            required=True, description="내용", example="잘 안되요.."
+        ),
+    },
+)
+
+delete_info = api.model(
+    "삭제 시 불편한 점",
+    {
+        "contents": fields.String(
+            required=True, description="불만 사항", example="너무 느려요.."
+        ),
+    },
+)
 
 post_parser = api.parser()
 post_parser.add_argument("file", type=FileStorage, location="files")
@@ -149,3 +183,37 @@ class OtherUser(Resource):
         상대 유저 프로필 보기
         """
         return UserService.get_another_user_profile(id)
+    
+    
+@api.route("userservice/issue")
+@api.doc(security="Bearer Auth")
+class InputRequire(Resource):
+    @api.response(200, "SUCCESS")
+    @api.response(409, "USER_NOT_FOUND")
+    @api.response(500, "FAIL")
+    @api.expect(require_info)
+    # @Authorization.check_authorization
+    def post(self):
+        """
+        건의 사항/ 버그 신고
+        """
+        data = request.get_json()
+        # type, string
+        return UserService.report_to_danuh(data)
+    
+
+@api.route("/userservice/survey")
+@api.doc(security="Bearer Auth")
+class Survey(Resource):
+    @api.response(200, "SUCCESS")
+    @api.response(409, "USER_NOT_FOUND")
+    @api.response(500, "FAIL")
+    @api.expect(delete_info)
+    # @Authorization.check_authorization
+    def post(self):
+        """
+        탈퇴 시 불편한 점
+        """
+        data = request.get_json()
+        # string
+        return UserService.report_to_danuh(data)
