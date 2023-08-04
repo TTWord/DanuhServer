@@ -92,16 +92,13 @@ class AuthService:
             if service == "kakao":
                 username = str(info["kakao_account"]["email"])
                 password = encrypt_password(str(info["id"])).decode("utf-8")
-                nickname = info["properties"]["nickname"] + str(info["id"])[:4]
             elif service == "google":
                 username = str(info["email"])
                 password = encrypt_password(str(info["email"])).decode("utf-8")
-                nickname = info["name"] +info["id"][:4]
             # TODO: APPLE 로그인 추가
             elif service == "apple":
                 username = str(info["sub"])
                 password = encrypt_password(str(info["sub"])).decode("utf-8")
-                nickname = info["email"]
             user = user_refo.find_one_by_username(username)
 
             is_member = "1"
@@ -109,7 +106,7 @@ class AuthService:
                 data = {
                     "username": username,
                     "password": password,
-                    "nickname": nickname,
+                    "nickname": "",
                     "login_type": service
                 }
                 user = user_refo.add(data)
@@ -126,7 +123,11 @@ class AuthService:
                         + "&email="
                         + username
                     )
-                    
+                
+            nickname = "0"
+            if user['nickname']:
+                nickname = "1"
+
             payload_access = {
                 "id": user["id"],
                 "username": user["username"],
@@ -151,18 +152,14 @@ class AuthService:
                 + token["refresh_token"]
                 + "&ismember="
                 + is_member
+                + "&nickname="
+                + nickname
                 + "&message="
                 + "SUCCESS"
             )
         except CustomException as e:
             return e.get_response()
         except Exception as e:
-            # TODO : 서버 에러시 return
-            # return redirect(
-            #     REDIRECT_URI_SOCIAL
-            #     + "&message="
-            #     + "FAIL"
-            # )
             return custom_response("FAIL", code=500)
 
     @staticmethod
