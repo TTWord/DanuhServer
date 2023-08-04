@@ -66,8 +66,7 @@ class WordService:
                 raise CustomException("BOOK_ACCESS_DENIED", code=409)
             
             # 다운로드 받은 단어장에 대한 예외 적용
-            share = share_repo.find_one_by_id(book['share_id'])
-            if share and book["id"] != share["book_id"]:
+            if book['is_downloaded']:
                 raise CustomException("BOOK_DOWNLOADED", code=409)
             
             words = word_repo.find_all_by_book_id(book_id=book['id'])
