@@ -13,6 +13,7 @@ from util.exception import CustomException
 from util.time import get_difference_time
 from util.sort import sorted_by_value
 from collections import defaultdict
+from flask import url_for
 
 
 class ShareService:
@@ -96,7 +97,8 @@ class ShareService:
             file = file_repo.find_one_by_user_id(user['id'])
 
             if file:
-                url = {"url": config["DOMAIN"] + "/" + file['file_path']}
+                url = {"url": config["DOMAIN"]
+                            + url_for("static", filename=file["file_path"])}
                 data.update(url)
 
             return custom_response("SUCCESS", data=data)
