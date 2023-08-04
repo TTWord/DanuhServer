@@ -9,7 +9,7 @@ from util.exception import CustomException
 from util.password_encryption import compare_passwords, encrypt_password
 from util.validation import validate_password
 from config import config
-from db.connect import Database
+from db.connect import Database, MongoDatabase
 from werkzeug.utils import secure_filename
 from flask import url_for
 import os
@@ -232,3 +232,19 @@ class UserService:
             return e.get_response()
         except Exception as e:
             return custom_response("FAIL", code=500)
+
+    @staticmethod
+    @ServiceReceiver.mongodb
+    def report_to_danuh(data, client: MongoDatabase):
+        try:
+            if "type" in data.keys():
+                client.danuh.report.insert_one({"type": data['type'],
+                                           'str': data['contents']})
+            else:
+                client.danuh.survey.insert_one({'str': data['contents']})
+            
+            return custom_response("SUCCESS")
+        except CustomException as e:
+            return e.get_response()
+        except Exception as e:
+            return custom_response("FAIL", code=500) 

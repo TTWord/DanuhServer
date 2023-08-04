@@ -44,7 +44,7 @@ class ShareRepository(Connect):
         self.cursor.execute(sql)
         result = self.cursor.fetchone()
         if result is not None:
-            shared = ShareModel(id=result['id'], book_id=result['book_id'],
+            shared = ShareModel(id=result['id'], book_id=result['book_id'], is_shared= result['is_shared'],
                                 comment=result['comment'], checked=result['checked'],
                                 downloaded=result['downloaded'], recommended=result['recommended'])
             return shared.__dict__
@@ -59,7 +59,7 @@ class ShareRepository(Connect):
         result = self.cursor.fetchone()
         
         if result is not None:
-            shared = ShareModel(id=result['id'], book_id=result['book_id'],
+            shared = ShareModel(id=result['id'], book_id=result['book_id'], is_shared=result['is_shared'],
                                 comment=result['comment'], checked=result['checked'],
                                 downloaded=result['downloaded'], recommended=result['recommended'])
             return shared.__dict__

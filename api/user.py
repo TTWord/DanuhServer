@@ -51,6 +51,27 @@ user_sign_up = api.model(
     },
 )
 
+report_info = api.model(
+    "버그 신고",
+    {
+        "type": fields.String(
+            required=True, description="유형", example="버그 신고"
+        ),
+        "contents": fields.String(
+            required=True, description="내용", example="잘 안되요.."
+        )
+    },
+)
+
+survey_info = api.model(
+    "삭제 시 불편한 점",
+    {
+        "contents": fields.String(
+            required=True, description="불만 사항", example="너무 느려요.."
+        )
+    },
+)
+
 post_parser = api.parser()
 post_parser.add_argument("file", type=FileStorage, location="files")
 
@@ -149,3 +170,37 @@ class OtherUser(Resource):
         상대 유저 프로필 보기
         """
         return UserService.get_another_user_profile(id)
+    
+    
+@api.route("/userservice/report")
+@api.doc(security="Bearer Auth")
+class Report(Resource):
+    @api.response(200, "SUCCESS")
+    @api.response(409, "USER_NOT_FOUND")
+    @api.response(500, "FAIL")
+    @api.expect(report_info)
+    # @Authorization.check_authorization
+    def post(self):
+        """
+        건의 사항/ 버그 신고
+        """
+        data = request.get_json()
+        # type, string
+        return UserService.report_to_danuh(data)
+    
+
+@api.route("/userservice/survey")
+@api.doc(security="Bearer Auth")
+class Survey(Resource):
+    @api.response(200, "SUCCESS")
+    @api.response(409, "USER_NOT_FOUND")
+    @api.response(500, "FAIL")
+    @api.expect(survey_info)
+    # @Authorization.check_authorization
+    def post(self):
+        """
+        탈퇴 시 불편한 점
+        """
+        data = request.get_json()
+        # string
+        return UserService.report_to_danuh(data)

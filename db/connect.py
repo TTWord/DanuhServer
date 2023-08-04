@@ -1,5 +1,7 @@
 import pymysql
+from pymongo import MongoClient
 from config import config
+
 
 class Database:
     def __init__(self):
@@ -18,6 +20,7 @@ class Database:
     def disconnect(self):
         self.connection.close()
 
+
 class Connect:
     def __init__(self, database):
         self.connect = database.connection
@@ -30,3 +33,18 @@ class Connect:
     def select(self, sql):
         self.cursor.execute(sql)
         return self.cursor.fetchone()
+    
+
+class MongoDatabase:
+    def __init__(self):
+        self.host = config["MONGODB_HOST"]
+    
+    def __repr__(self):
+        return f"MongoDatabase({self.host})"
+      
+    def connect(self):
+        self.client = MongoClient(host=self.host)
+        return self.client
+
+    def disconnect(self):
+        self.client.close()
