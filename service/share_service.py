@@ -4,7 +4,9 @@ from repository.book_repository import BookRepository
 from repository.user_repository import UserRepository
 from repository.recommend_repository import RecommendRepository
 from repository.book_share_repository import BookShareRepository
+from repository.file_repository import FileRepository
 from db.connect import Database
+from config import config
 from util.custom_response import custom_response
 from util.decorator.service_receiver import ServiceReceiver
 from util.exception import CustomException
@@ -66,6 +68,8 @@ class ShareService:
             share_repo = ShareRepository(db)
             word_repo = WordRepository(db)
             book_repo = BookRepository(db)
+            file_repo = FileRepository(db)
+            user_repo = UserRepository(db)
 
             share = share_repo.find_one_by_id(id)
             if share is None:
@@ -75,16 +79,24 @@ class ShareService:
             # 데이터 가공
             book_id = share['book_id']
             book = book_repo.find_one_by_id(book_id)
+            user = user_repo.find_one_by_user_id(id=book['user_id'])
             share_repo.update_column(id, 'checked')
             [word.pop('book_id') for word in words]
             data = {
-                'user_id': book['user_id'],
+                'nickname': user['nickname'],
                 'book_id': book_id,
+                'book_name': book['name'],
                 'comment': share['comment'],
+                'recommended': share['recommended'],
                 'downloaded': share['downloaded'],
                 'checked': share['checked'],
                 'words': words
             }
+            file = file_repo.find_one_by_user_id(user['id'])
+
+            if file:
+                url = {"url": config["DOMAIN"] + "/" + file['file_path']}
+                data.update(url)
 
             return custom_response("SUCCESS", data=data)
         except CustomException as e:
