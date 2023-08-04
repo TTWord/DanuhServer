@@ -241,8 +241,10 @@ class UserService:
                 client.danuh.report.insert_one({"type": data['type'],
                                            'str': data['contents']})
             else:
-                client.danuh.survey.insert_one({'str': data['contents']})
-            
+                contents = data['contents'].split(",")
+                for content in contents:
+                    client.danuh.survey.insert_one({'str': content})
+                    
             return custom_response("SUCCESS")
         except CustomException as e:
             return e.get_response()

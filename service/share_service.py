@@ -83,6 +83,7 @@ class ShareService:
             share_repo.update_column(id, 'checked')
             [word.pop('book_id') for word in words]
             data = {
+                'user_id': user['id'],
                 'nickname': user['nickname'],
                 'book_id': book_id,
                 'book_name': book['name'],
