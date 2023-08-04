@@ -38,15 +38,12 @@ class Connect:
 class MongoDatabase:
     def __init__(self):
         self.host = config["MONGODB_HOST"]
-        self.user = config["MONGODB_USER"]
-        self.password = config["MONGODB_PASSWORD"]
     
     def __repr__(self):
-        return f"MongoDatabase({self.host}, {self.user}, {self.password}, {self.database})"
+        return f"MongoDatabase({self.host})"
       
     def connect(self):
-        # self.client = MongoClient(host=self.host, user=self.user, password=self.password)
-        self.client = MongoClient()
+        self.client = MongoClient(host=self.host)
         return self.client
 
     def disconnect(self):

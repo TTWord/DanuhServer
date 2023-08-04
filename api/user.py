@@ -50,21 +50,8 @@ user_sign_up = api.model(
         ),
     },
 )
-user_sign_up = api.model(
-    "회원 가입",
-    {
-        **user_name,
-        "password": fields.String(
-            required=True, description="비밀번호", example="a123456!"
-        ),
-        "nickname": fields.String(required=True, description="닉네임", example="김흐긴"),
-        "certification_id": fields.String(
-            required=True, description="인증ID", example="474825"
-        ),
-    },
-)
 
-require_info = api.model(
+report_info = api.model(
     "버그 신고",
     {
         "type": fields.String(
@@ -72,16 +59,16 @@ require_info = api.model(
         ),
         "contents": fields.String(
             required=True, description="내용", example="잘 안되요.."
-        ),
+        )
     },
 )
 
-delete_info = api.model(
+survey_info = api.model(
     "삭제 시 불편한 점",
     {
         "contents": fields.String(
             required=True, description="불만 사항", example="너무 느려요.."
-        ),
+        )
     },
 )
 
@@ -185,13 +172,13 @@ class OtherUser(Resource):
         return UserService.get_another_user_profile(id)
     
     
-@api.route("userservice/issue")
+@api.route("/userservice/report")
 @api.doc(security="Bearer Auth")
-class InputRequire(Resource):
+class Report(Resource):
     @api.response(200, "SUCCESS")
     @api.response(409, "USER_NOT_FOUND")
     @api.response(500, "FAIL")
-    @api.expect(require_info)
+    @api.expect(report_info)
     # @Authorization.check_authorization
     def post(self):
         """
@@ -208,7 +195,7 @@ class Survey(Resource):
     @api.response(200, "SUCCESS")
     @api.response(409, "USER_NOT_FOUND")
     @api.response(500, "FAIL")
-    @api.expect(delete_info)
+    @api.expect(survey_info)
     # @Authorization.check_authorization
     def post(self):
         """
