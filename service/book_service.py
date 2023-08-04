@@ -257,35 +257,36 @@ class BookService:
                 raise CustomException("BOOK_ACCESS_DENIED", code=403)
 
             share = share_repo.find_one_by_book_id(data['id'])
-            # 공유 상태인 경우
+            if len(data['comment']) > 200:
+                raise CustomException("SHARE_COMMENT_UPPER_THAN_LIMIT", code=409)
+            
+            # 공유 상태 추가한 경우
             if share:
-                # 공유 -> 공유
                 if data['share']:
-                    if len(data['comment']) > 200:
-                        raise CustomException("SHARE_COMMENT_UPPER_THAN_LIMIT", code=409)
                     # 변경할 comment가 다른 경우만 동작
                     if data['comment'] != share['comment']:
                         share_repo.update_comment(share['id'], data['comment'])
-                    else:
+
+                    if data['comment'] == share['comment'] and share['is_shared']:
                         raise CustomException("BOOK_ALREADY_SHARED", code=409)
-                    book = {'id': book['id'], 'is_shared': share['is_shared']}
+                    if not share['is_shared']:
+                        share_repo.update_is_shared(share['id'], data['share'])
+
+                    book = {'id': book['id'], 'is_shared': data['share']}
                 # 공유 -> 비공유
                 else:
-                    share = share_repo.update_is_shared(share['id'], False)
-                    book = {'id': book['id'], 'is_shared': False}
-                    # share = share_repo.delete(share['id'])
-            # 비공유 상태인 경우
+                    share = share_repo.update_is_shared(share['id'], data['share'])
+                    book = {'id': book['id'], 'is_shared': data['share']}
+            # 추가한 적 없는 경우
             else:
                 # 비공유 -> 공유 comment 상관 x
                 if data['share']:
-                    if len(data['comment']) > 200:
-                        raise CustomException("SHARE_COMMENT_UPPER_THAN_LIMIT", code=409)
                     share_repo.add(book['id'], data['comment'])
-                    book = {'id': book['id'], 'is_shared': True}
+                    book = {'id': book['id'], 'is_shared': data['share']}
                 # 비공유 -> 비공유 동작 x
                 else:
-                    book = {'id': book['id'], 'is_shared': False}
-                
+                    book = {'id': book['id'], 'is_shared': data['share']}
+                    
             return custom_response("SUCCESS", data=book)
         except CustomException as e:
             return e.get_response()
