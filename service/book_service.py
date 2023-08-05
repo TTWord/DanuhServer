@@ -267,8 +267,6 @@ class BookService:
                     if data['comment'] != share['comment']:
                         share_repo.update_comment(share['id'], data['comment'])
 
-                    if data['comment'] == share['comment'] and share['is_shared']:
-                        raise CustomException("BOOK_ALREADY_SHARED", code=409)
                     if not share['is_shared']:
                         share_repo.update_is_shared(share['id'], data['share'])
 

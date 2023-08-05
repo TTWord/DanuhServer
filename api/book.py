@@ -126,7 +126,7 @@ class BookShare(Resource):
     @api.response(200, "SUCCESS")
     @api.response(403, "BOOK_ACCESS_DENIED")
     @api.response(404, "BOOK_NOT_FOUND")
-    @api.response(409, "BOOK_DOWNLOADED, BOOK_ALREADY_SHARED, SHARE_COMMENT_UPPER_THAN_LIMIT")
+    @api.response(409, "BOOK_DOWNLOADED, SHARE_COMMENT_UPPER_THAN_LIMIT")
     @api.response(500, "FAIL")
     @api.expect(book_share)
     @Authorization.check_authorization
