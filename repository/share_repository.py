@@ -23,12 +23,17 @@ class ShareRepository(Connect):
         return shared.__dict__
     
     def find_all(self) -> list:
+        shares = []
         sql = f"SELECT * FROM share"
 
         self.cursor.execute(sql)
         result = self.cursor.fetchall()
-
-        return result
+        for row in result:
+            shares.append(ShareModel(id=row['id'], book_id=row['book_id'], is_shared=row['is_shared'],
+                                comment=row['comment'], checked=row['checked'],
+                                downloaded=row['downloaded'], recommended=row['recommended']))
+        
+        return [share.__dict__ for share in shares]
 
     def find_all_by_book_id(self, book_id: str = "") -> list:
         sql = f"SELECT * FROM share WHERE book_id IN ({book_id})"

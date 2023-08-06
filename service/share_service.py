@@ -25,11 +25,12 @@ class ShareService:
             book_repo = BookRepository(db)
             user_repo = UserRepository(db)
             word_repo = WordRepository(db)
-
             all_share = share_repo.find_all()
             
             shares = []
             for share in all_share:
+                if not share['is_shared']:
+                    continue
                 book = book_repo.find_one_by_id(share['book_id'])
                 share['book_name'] = book['name']
                 share['updated_at'] = book['updated_at']
@@ -41,7 +42,7 @@ class ShareService:
                 if data['name']:
                     if not (data['name'] in book['name'] or data['name'] in user['nickname']):
                         continue
-                
+                del share['is_shared']
                 share['word_count'] = len(word_repo.find_all_by_book_id(book['id']))
                 if data["type"] == "popularity":
                     share['popularity'] = share['downloaded'] + share['recommended']

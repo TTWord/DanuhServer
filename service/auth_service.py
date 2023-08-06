@@ -165,16 +165,21 @@ class AuthService:
     @staticmethod
     @ServiceReceiver.database
     def check_nickname(data, db: Database):
-        nickname = data["nickname"]
+        try:
+            nickname = data["nickname"]
 
-        if not nickname:
-            raise CustomException("USER_INVALID_USERNAME", code=409)
-        user = UserRepository(db).find_one_by_nickname(nickname)
+            if not nickname:
+                raise CustomException("USER_INVALID_USERNAME", code=409)
+            user = UserRepository(db).find_one_by_nickname(nickname)
 
-        if user is not None:
-            raise CustomException("USER_DUPLICATE_NICKNAME", code=409)
+            if user:
+                raise CustomException("USER_DUPLICATE_NICKNAME", code=409)
 
-        return custom_response("SUCCESS")
+            return custom_response("SUCCESS")
+        except CustomException as e:
+            return e.get_response()
+        except Exception as e:
+            return custom_response("FAIL", code=500)
 
     @staticmethod
     @ServiceReceiver.database

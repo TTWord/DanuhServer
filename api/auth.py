@@ -44,6 +44,14 @@ user_sign_up = api.model(
     },
 )
 
+nickname = api.model(
+    "닉네임 중복 확인",
+    {
+
+        "nickname": fields.String(required=True, description="닉네임", example="김흐긴")
+    },
+)
+
 
 # TODO : model 정리 필요
 #       - 부가적인 정보에 따라서 많은 모델을 생성해야함
@@ -63,6 +71,7 @@ class UserSignIn(Resource):
 
 @api.route("/check/nickname")
 class CheckNickname(Resource):
+    @api.expect(nickname, validate=True)
     @api.response(200, "SUCCESS")
     @api.response(409, "USER_INVALID_USERNAME, USER_DUPLICATE_NICKNAME")
     @api.response(500, "FAIL")
