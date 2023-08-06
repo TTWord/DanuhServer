@@ -238,12 +238,11 @@ class UserService:
     def report_to_danuh(data, client: MongoDatabase):
         try:
             if "type" in data.keys():
-                client.danuh.report.insert_one({"type": data['type'],
+                client.ttword.report.insert_one({"type": data['type'],
                                            'str': data['contents']})
             else:
-                contents = data['contents'].split(",")
-                for content in contents:
-                    client.danuh.survey.insert_one({'str': content})
+                for content in data['contents']:
+                    client.ttword.survey.insert_one({'str': content})
                     
             return custom_response("SUCCESS")
         except CustomException as e:

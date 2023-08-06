@@ -66,8 +66,8 @@ report_info = api.model(
 survey_info = api.model(
     "삭제 시 불편한 점",
     {
-        "contents": fields.String(
-            required=True, description="불만 사항", example="너무 느려요.."
+        "contents": fields.List(
+            fields.String, required=True, description="불만 사항", example=["사용하기 불편함", "학습하기 불편함", "단어를 외우기 싫음", "더이상 사용하지 않음", "사용자가 직접 입력하는 텍스트"]
         )
     },
 )
@@ -78,7 +78,7 @@ post_parser.add_argument("file", type=FileStorage, location="files")
 
 # TODO : 닉네임으로 조회하기 필요(상대방 프로필 보기)
 # TODO : model 정리 필요
-#       - 부가적인 정보에 따라서 많은 모델을 생성해야함
+#       - 부가적인 정보에 따라서 많은 모델을 생성해탈퇴 설문조사 데이터
 @api.route("/userservice")
 @api.doc(security="Bearer Auth")
 class User(Resource):
