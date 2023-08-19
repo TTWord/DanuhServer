@@ -12,7 +12,7 @@ class QuizService:
     @ServiceReceiver.database
     def generate_multiple_quiz_service(data, auth, db: Database):
         try:
-            if "book_ids" not in data.keys():
+            if "book_ids" not in data.keys() or not data['book_ids']:
                 raise CustomException("BOOK_IDS_NOT_INSERTED", code=403)
             elif "count" not in data.keys():
                 data['count'] = 10
@@ -75,7 +75,7 @@ class QuizService:
     @ServiceReceiver.database
     def generate_short_quiz_service(data, auth, db: Database):
         try:
-            if "book_ids" not in data.keys():
+            if "book_ids" not in data.keys() or not data['book_ids']:
                 raise CustomException("BOOK_IDS_NOT_INSERTED", code=403)
             elif "count" not in data.keys():
                 data['count'] = 10
@@ -124,7 +124,7 @@ class QuizService:
     @ServiceReceiver.database
     def generate_blind_multiple_quiz_service(data, auth, db: Database):
         try:
-            if "book_ids" not in data.keys():
+            if "book_ids" not in data.keys() or not data['book_ids']:
                 raise CustomException("BOOK_IDS_NOT_INSERTED", code=403)
             elif "count" not in data.keys():
                 data['count'] = 10
@@ -191,7 +191,7 @@ class QuizService:
     @ServiceReceiver.database
     def generate_blind_short_quiz_service(data, auth, db: Database):
         try:
-            if "book_ids" not in data.keys():
+            if "book_ids" not in data.keys() or not data['book_ids']:
                 raise CustomException("BOOK_IDS_NOT_INSERTED", code=403)
             elif "count" not in data.keys():
                 data['count'] = 10
@@ -241,7 +241,7 @@ class QuizService:
     @ServiceReceiver.database
     def get_result_service(db: Database, auth, data):
         try:
-            if "book_ids" not in data.keys():
+            if "book_ids" not in data.keys() or not data['book_ids']:
                 raise CustomException("BOOK_IDS_NOT_INSERTED", code=403)
             elif "count" not in data.keys():
                 data['count'] = 10

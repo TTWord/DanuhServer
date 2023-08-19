@@ -12,7 +12,7 @@ class MemoService:
     @ServiceReceiver.database
     def generate_flash_memo_service(db: Database, auth, data):
         try:
-            if "book_ids" not in data.keys():
+            if "book_ids" not in data.keys() or not data['book_ids']:
                 raise CustomException("BOOK_IDS_NOT_INSERTED", code=403)
             elif "count" not in data.keys():
                 data['count'] = 10
@@ -77,7 +77,7 @@ class MemoService:
     @ServiceReceiver.database
     def generate_blind_memo_service(data, auth, db: Database):
         try:
-            if "book_ids" not in data.keys():
+            if "book_ids" not in data.keys() or not data['book_ids']:
                 raise CustomException("BOOK_IDS_NOT_INSERTED", code=403)
             elif "count" not in data.keys():
                 data['count'] = 10
