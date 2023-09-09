@@ -160,10 +160,11 @@ class OAuth(Resource):
 class FindPassword(Resource):
     @api.response(200, "SUCCESS")
     @api.response(500, "FAIL")
+    @api.response(409, "USER_INVALID_USERNAME, USER_INVALID_FORMAT_USERNAME, USER_SOCIAL_LOGIN")
     @api.expect(user_name, validate=True)
     def post(self):
         """
-        이메일 전송
+        비밀번호 찾기
         """
         input_data = request.get_json()
         return AuthService.send_mail_find_password(input_data)
@@ -173,6 +174,7 @@ class FindPassword(Resource):
 class CheckCert(Resource):
     @api.response(200, "SUCCESS")
     @api.response(500, "FAIL")
+    @api.response(403, "AUTH_EXPIRED_CODE, AUTH_INCORRECT_CODE")
     @api.expect(cert_key, validate=True)
     def post(self):
         """

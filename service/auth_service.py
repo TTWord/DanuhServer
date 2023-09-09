@@ -243,6 +243,8 @@ class AuthService:
             elif not validate_email(input_data["username"]):
                 # 유효하지 않은 이메일 형식
                 raise CustomException("USER_INVALID_FORMAT_USERNAME", code=409)
+            elif is_username['login_type'] != 'local':
+                raise CustomException("USER_SOCIAL_LOGIN", code=409, data={"login_type": is_username['login_type']})
 
             to_email = input_data["username"]
             subject = config["STML_SUBJECT"]
