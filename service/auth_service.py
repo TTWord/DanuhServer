@@ -232,6 +232,73 @@ class AuthService:
 
     @staticmethod
     @ServiceReceiver.database
+    def send_mail_find_password(input_data, db: Database):
+        try:
+            user_repo = UserRepository(db)
+            is_username = user_repo.find_one_by_username(input_data["username"])
+
+            if not is_username:
+                # 존재하지 않는 유저입니다
+                raise CustomException("USER_INVALID_USERNAME", code=409)
+            elif not validate_email(input_data["username"]):
+                # 유효하지 않은 이메일 형식
+                raise CustomException("USER_INVALID_FORMAT_USERNAME", code=409)
+
+            to_email = input_data["username"]
+            subject = config["STML_SUBJECT"]
+            body = config["STML_BODY"]
+            verification_id = str(random.randint(0, 999)).zfill(3) + str(
+                random.randint(0, 999)
+            ).zfill(3)
+            response = EmailSender.send_email(to_email, subject, body, verification_id)
+
+            now = datetime.now()
+            expiration_date = now + timedelta(minutes=3)
+            expiration_date_str = expiration_date.strftime("%Y-%m-%d %H:%M:%S")
+            verification_info = {
+                "cert_type": "email",
+                "cert_key": input_data["username"],
+                "cert_code": verification_id,
+                "expired_time": expiration_date_str,
+            }
+            if response[1] == 200:
+                cert_repo = CertificationRepository(db)
+                if cert_repo.find_one_by_cert_key(verification_info["cert_key"]):
+                    verification_id = cert_repo.update(
+                        verification_info["cert_key"],
+                        verification_info["cert_code"],
+                        verification_info["expired_time"],
+                    )
+                else:
+                    verification_id = cert_repo.add(verification_info)
+                return custom_response("SUCCESS", data=verification_info)
+        except CustomException as e:
+            return e.get_response()
+        except Exception as e:
+            return custom_response("FAIL", code=500)
+        
+    @staticmethod
+    @ServiceReceiver.database
+    def validation_key(data, db: Database):
+        try:
+            cert_repo = CertificationRepository(db)
+            cert_info = cert_repo.find_one_by_cert_key(data["username"])
+
+            if cert_info["expired_time"] < datetime.now():
+                # 인증코드 만료
+                raise CustomException("AUTH_EXPIRED_CODE", code=403)
+            elif not cert_info["cert_code"] == data["certification_id"]:
+                # 인증코드 불일치
+                raise CustomException("AUTH_INCORRECT_CODE", code=403)
+
+            return custom_response("SUCCESS")
+        except CustomException as e:
+            return e.get_response()
+        except Exception as e:
+            return custom_response("FAIL", code=500)
+        
+    @staticmethod
+    @ServiceReceiver.database
     def signup_service(data, db: Database):
         try:
             cert_repo = CertificationRepository(db)
