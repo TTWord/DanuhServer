@@ -52,6 +52,16 @@ nickname = api.model(
     },
 )
 
+cert_key = api.model(
+    "인증키",
+    {
+        **user_name,
+        "certification_id": fields.String(
+            required=True, description="인증ID", example="474825"
+        )
+    },
+)
+
 
 # TODO : model 정리 필요
 #       - 부가적인 정보에 따라서 많은 모델을 생성해야함
@@ -144,3 +154,29 @@ class OAuth(Resource):
         소셜 로그인
         """
         return AuthService.signin_with_social_service(service)
+    
+
+@api.route("/findpassword")
+class FindPassword(Resource):
+    @api.response(200, "SUCCESS")
+    @api.response(500, "FAIL")
+    @api.expect(user_name, validate=True)
+    def post(self):
+        """
+        이메일 전송
+        """
+        input_data = request.get_json()
+        return AuthService.send_mail_find_password(input_data)
+
+
+@api.route("/checkcert")
+class CheckCert(Resource):
+    @api.response(200, "SUCCESS")
+    @api.response(500, "FAIL")
+    @api.expect(cert_key, validate=True)
+    def post(self):
+        """
+        인증키 검증
+        """
+        input_data = request.get_json()
+        return AuthService.validation_key(input_data)
