@@ -40,7 +40,7 @@ class ShareService:
 
                 # 책 이름이나 유저 이름에 검색값이 들어가는지 확인
                 if data['name']:
-                    if not (data['name'] in book['name'] or data['name'] in user['nickname']):
+                    if not (str.lower(data['name']) in str.lower(book['name']) or data['name'] in user['nickname']):
                         continue
                 del share['is_shared']
                 share['word_count'] = len(word_repo.find_all_by_book_id(book['id']))
