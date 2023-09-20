@@ -62,6 +62,30 @@ cert_key = api.model(
     },
 )
 
+change_password = api.model(
+    "비밀번호 변경",
+    {
+        "from_password": fields.String(
+            required=True, description="변경전 비밀번호"
+        ),
+        "to_password": fields.String(
+            required=True, description="변경할 비밀번호"
+        )
+    },
+)
+
+change_password_for_unlogin = api.model(
+    "비로그인 회원에 대한 비밀번호 변경",
+    {
+        **user_name,
+        "certification_id": fields.String(
+            required=True, description="인증ID", example="474825"
+        ),
+        "to_password": fields.String(
+            required=True, description="변경할 비밀번호"
+        )
+    },
+)
 
 # TODO : model 정리 필요
 #       - 부가적인 정보에 따라서 많은 모델을 생성해야함
@@ -168,6 +192,36 @@ class FindPassword(Resource):
         """
         input_data = request.get_json()
         return AuthService.send_mail_find_password(input_data)
+
+
+@api.route("/findpassword/login")
+@api.doc(security="Bearer Auth")
+class Login(Resource):
+    @api.response(200, "SUCCESS")
+    @api.response(409, "USER_NOT_FOUND, USER_INVALID_ACESSSS, USER_INVALID_FORMAT_PASSWORD, USER_SAME_PASSWORD")
+    @api.response(500, "FAIL")
+    @api.expect(change_password)
+    @Authorization.check_authorization
+    def patch(self, auth):
+        """
+        비밀번호 수정
+        """
+        data = request.get_json()
+        return AuthService.update_user_password(auth=auth, data=data)
+
+
+@api.route("/findpassword/notlogin")
+class NotLogin(Resource):
+    @api.response(200, "SUCCESS")
+    @api.response(409, "USER_INVALID_ACESSSS")
+    @api.response(500, "FAIL")
+    @api.expect(change_password_for_unlogin)
+    def patch(self):
+        """
+        비로그인 유저에 대한 비밀번호 수정
+        """
+        data = request.get_json()
+        return AuthService.update_notlogin_password(data=data)
 
 
 @api.route("/checkcert")

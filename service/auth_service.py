@@ -19,7 +19,7 @@ class AuthService:
     @ServiceReceiver.database
     def signin_service(data, db: Database):
         try:
-            user = UserRepository(db).find_one_by_username(data["username"])
+            user = UserRepository(db).find_one_by_username(data["username"], True)
 
             if not user:
                 raise CustomException("USER_NOT_FOUND", code=409)
@@ -293,7 +293,7 @@ class AuthService:
                 # 인증코드 불일치
                 raise CustomException("AUTH_INCORRECT_CODE", code=403)
 
-            return custom_response("SUCCESS")
+            return custom_response("SUCCESS", data={"certification_id": cert_info['cert_code']})
         except CustomException as e:
             return e.get_response()
         except Exception as e:
@@ -351,3 +351,54 @@ class AuthService:
         secret = config["SECRET_KEY"]
         token = {"access_token": generate_token(payload_access, secret)}
         return custom_response("SUCCESS", data=token)
+
+
+    @staticmethod
+    @ServiceReceiver.database
+    def update_user_password(auth, data, db: Database):
+        try:
+            user_repo = UserRepository(db)
+            user = user_repo.find_one_by_user_id(auth['id'], True)
+
+            if not user:
+                raise CustomException("USER_NOT_FOUND", code=409)
+            
+            if not compare_passwords(data['from_password'], user['password']):
+                raise CustomException("USER_INVALID_ACESSSS", code=409)
+            
+            if not validate_password(data['to_password']):
+                raise CustomException("USER_INVALID_FORMAT_PASSWORD", code=409)
+
+            if data['from_password'] == data['to_password']:
+                raise CustomException("USER_SAME_PASSWORD", code=409)
+            
+            new_password = encrypt_password(data["to_password"]).decode("utf-8")
+            user = user_repo.update(auth['id'], user["username"], new_password, user["nickname"])
+            return custom_response("SUCCESS")
+        except CustomException as e:
+            return e.get_response()
+        except Exception as e:
+            return custom_response("FAIL", code=500)
+    
+    @staticmethod
+    @ServiceReceiver.database
+    def update_notlogin_password(data, db: Database):
+        try:
+            cert_repo = CertificationRepository(db)
+            user_repo = UserRepository(db)
+            user = user_repo.find_one_by_username(data["username"], True)
+            cert_info = cert_repo.find_one_by_cert_key(data['username'])
+
+            if data['certification_id'] != cert_info['cert_code']:
+                raise CustomException("USER_INVALID_ACESSSS", code=409)
+
+            if compare_passwords(data['to_password'], user['password']):
+                raise CustomException("USER_SAME_PASSWORD", code=409)
+            
+            new_password = encrypt_password(data["to_password"]).decode("utf-8")
+            user = user_repo.update(user['id'], user["username"], new_password, user["nickname"])
+            return custom_response("SUCCESS")
+        except CustomException as e:
+            return e.get_response()
+        except Exception as e:
+            return custom_response("FAIL", code=500)
