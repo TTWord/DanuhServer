@@ -28,14 +28,15 @@ class UserService:
         except CustomException as e:
             return e.get_response()
         except Exception as e:
+            print(e)
             return custom_response("FAIL", code=500)
 
     @staticmethod
     @ServiceReceiver.database
-    def update_user_password(auth, data, db: Database):
+    def update_user_password(data, db: Database):
         try:
             user_repo = UserRepository(db)
-            user = user_repo.find_one_by_user_id(auth['id'], True)
+            user = user_repo.find_one_by_username(data['username'], True)
 
             if not user:
                 raise CustomException("USER_NOT_FOUND", code=409)
@@ -50,7 +51,7 @@ class UserService:
                 raise CustomException("USER_SAME_PASSWORD", code=409)
             
             new_password = encrypt_password(data["to_password"]).decode("utf-8")
-            user = user_repo.update(auth['id'], user["username"], new_password, user["nickname"])
+            user = user_repo.update(user['id'], user["username"], new_password, user["nickname"])
             return custom_response("SUCCESS")
         except CustomException as e:
             return e.get_response()

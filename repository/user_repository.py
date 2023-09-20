@@ -29,7 +29,7 @@ class UserRepository(Connect):
 
         return {'id': id}
 
-    def find_one_by_username(self, user_name: str) -> dict:
+    def find_one_by_username(self, user_name: str, password: bool = False) -> dict:
         sql = f'SELECT * FROM user where username = "{user_name}"'
         self.cursor.execute(sql)
         result = self.cursor.fetchone()
@@ -38,6 +38,8 @@ class UserRepository(Connect):
             user = UserModel(id=result['id'], username=result['username'], 
                              nickname=result['nickname'], password=result['password'],
                              login_type=result['login_type'])
+            if not password:
+                del user.password
             
             return user.__dict__
         else:
@@ -59,9 +61,9 @@ class UserRepository(Connect):
             user = UserModel(id=result['id'], username=result['username'], 
                              nickname=result['nickname'], password=result['password'],
                              login_type=result['login_type'])
-            if password:
-                del user['password']
-            
+            if not password:
+                del user.password
+
             return user.__dict__
         else:
             return None

@@ -11,7 +11,7 @@ user_name = api.model(
     "유저이름",
     {
         "username": fields.String(
-            required=True, description="아이디", example="kimjunghyun696@google.com"
+            required=True, description="아이디", example="kimjunghyun696@gmail.com"
         )
     },
 )
@@ -28,6 +28,7 @@ change_nickname = api.model(
 change_password = api.model(
     "비밀번호 변경",
     {
+        **user_name,
         "from_password": fields.String(
             required=True, description="변경전 비밀번호"
         ),
@@ -128,13 +129,12 @@ class User(Resource):
     @api.response(409, "USER_NOT_FOUND, USER_INVALID_ACESSSS, USER_INVALID_FORMAT_PASSWORD, USER_SAME_PASSWORD")
     @api.response(500, "FAIL")
     @api.expect(change_password)
-    @Authorization.check_authorization
-    def patch(self, auth):
+    def patch(self):
         """
         유저 ID로 비밀번호 수정
         """
         data = request.get_json()
-        return UserService.update_user_password(auth=auth, data=data)
+        return UserService.update_user_password(data=data)
 
 
 @api.route("/<int:id>")
