@@ -395,6 +395,9 @@ class AuthService:
             if compare_passwords(data['to_password'], user['password']):
                 raise CustomException("USER_SAME_PASSWORD", code=409)
             
+            if not validate_password(data['to_password']):
+                raise CustomException("USER_INVALID_FORMAT_PASSWORD", code=409)
+             
             new_password = encrypt_password(data["to_password"]).decode("utf-8")
             user = user_repo.update(user['id'], user["username"], new_password, user["nickname"])
             return custom_response("SUCCESS")

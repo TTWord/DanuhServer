@@ -213,7 +213,7 @@ class Login(Resource):
 @api.route("/findpassword/notlogin")
 class NotLogin(Resource):
     @api.response(200, "SUCCESS")
-    @api.response(409, "USER_INVALID_ACESSSS")
+    @api.response(409, "USER_INVALID_ACESSSS, USER_INVALID_FORMAT_PASSWORD, USER_SAME_PASSWORD")
     @api.response(500, "FAIL")
     @api.expect(change_password_for_unlogin)
     def patch(self):
