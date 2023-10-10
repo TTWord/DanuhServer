@@ -24,6 +24,7 @@ create table book(
     is_downloaded BOOLEAN default 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    word_count INT default 0 NOT NULL,
     FOREIGN KEY(user_id) REFERENCES user(id) ON DELETE CASCADE
 );
 

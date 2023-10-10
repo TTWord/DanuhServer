@@ -74,7 +74,12 @@ class WordService:
                 if word['word'] == data['word'] and word['mean'] == data['mean']:
                     raise CustomException("WORD_ALREADY_EXIST", code=409)
             
-            word = word_repo.add(book_id= book_id, word=data["word"], mean=data["mean"])
+            word = word_repo.add(book_id=book_id, word=data["word"], mean=data["mean"])
+            
+            # 단어 추가가 완료되었다면 word_count 추가
+            if word is not None:
+                book_repo.patch_book_word_count(id=book["id"], count=(book["word_count"] + 1))
+            
             return custom_response("SUCCESS", data=word)
         except CustomException as e:
             return e.get_response()
@@ -111,6 +116,7 @@ class WordService:
     def delete(id, auth, db: Database):
         try:
             word_repo = WordRepository(db)
+            book_repo = BookRepository(db)
 
             # 데이터 중복 검사
             word = word_repo.find_one_by_id(id)
@@ -121,8 +127,17 @@ class WordService:
             user_info = BookRepository(db).find_one_by_id(word['book_id'])
             if user_info['user_id'] != auth['id']:
                 raise CustomException("BOOK_ACCESS_DENIED", code=403)
+            
+            book_id = word["book_id"]
 
             word = word_repo.delete(id=id)
+            
+            # 단어 삭제가 성공했다면 북 카운트 감소
+            if word is not None:
+                book = book_repo.find_one_by_id(book_id)
+                
+                book_repo.patch_book_word_count(id=book["id"], count=(book["word_count"] - 1))
+            
             return custom_response("SUCCESS", data=word)
         except CustomException as e:
             return e.get_response()

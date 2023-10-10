@@ -69,5 +69,6 @@ class WordRepository(Connect):
         sql = f"DELETE FROM word WHERE id={id}"
         self.cursor.execute(sql)
         self.connect.commit()
+        
 
         return {'id': id}

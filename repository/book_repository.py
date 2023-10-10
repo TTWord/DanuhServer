@@ -13,7 +13,7 @@ class BookRepository(Connect):
         for row in result:
             books.append(BookModel(id=row['id'], name=row['name'], user_id=row['user_id'], 
                                    is_downloaded=row['is_downloaded'],
-                                   created_at=row['created_at'], updated_at=row['updated_at']))
+                                   created_at=row['created_at'], updated_at=row['updated_at'], word_count=row['word_count'], word_memorized_count=row['word_memorized_count']))
         
         return [book.__dict__ for book in books]
     
@@ -25,7 +25,7 @@ class BookRepository(Connect):
         for row in result:
             books.append(BookModel(id=row['id'], name=row['name'], user_id=row['user_id'], 
                                    is_downloaded=row['is_downloaded'],
-                                   created_at=row['created_at'], updated_at=row['updated_at']))
+                                   created_at=row['created_at'], updated_at=row['updated_at'], word_count=row['word_count'], word_memorized_count=row['word_memorized_count']))
         
         return [book.__dict__ for book in books]
     
@@ -38,7 +38,7 @@ class BookRepository(Connect):
         if result is not None:
             book = BookModel(id=result['id'], name=result['name'], user_id=result['user_id'], 
                                    is_downloaded=result['is_downloaded'],
-                                   created_at=result['created_at'], updated_at=result['updated_at'])
+                                   created_at=result['created_at'], updated_at=result['updated_at'], word_count=result['word_count'], word_memorized_count=result['word_memorized_count'])
             return book.__dict__
         else:
             return None
@@ -53,13 +53,13 @@ class BookRepository(Connect):
         if result is not None:
             book = BookModel(id=result['id'], name=result['name'], user_id=result['user_id'], 
                                    is_downloaded=result['is_downloaded'],
-                                   created_at=result['created_at'], updated_at=result['updated_at'])
+                                   created_at=result['created_at'], updated_at=result['updated_at'], word_count=result['word_count'], word_memorized_count=result['word_memorized_count'])
             return book
         else:
             return None
     
-    def add(self, user_id: int, name: str, is_downloaded: bool = False) -> dict:
-        sql = f"INSERT INTO book (user_id, name, is_downloaded) VALUES ({user_id}, '{name}', {is_downloaded})"
+    def add(self, user_id: int, name: str, is_downloaded: bool = False, word_count: int = 0) -> dict:
+        sql = f"INSERT INTO book (user_id, name, is_downloaded, word_count) VALUES ({user_id}, '{name}', {is_downloaded}, {word_count})"
         self.cursor.execute(sql)
         self.connect.commit()
         
@@ -89,3 +89,19 @@ class BookRepository(Connect):
         self.connect.commit()
 
         return {'id': id, 'is_downloaded': is_downloaded}
+    
+    #TODO 작업 남음
+    def patch_book_word_count(self, id: int, count: int) -> dict:
+        update_book_sql = f"UPDATE book SET word_count = {count} where id = {id}"
+        self.cursor.execute(update_book_sql)
+        self.connect.commit()
+        
+        return {'id': id, 'word_count': count}
+    
+    #TODO 작업 남음
+    def patch_book_word_memorized_count(self, id: int, count: int) -> dict:
+        update_book_sql = f"UPDATE book SET word_memorized_count = {count} where id = {id}"
+        self.cursor.execute(update_book_sql)
+        self.connect.commit()
+        
+        return {'id': id, 'word_memorized_count': count}

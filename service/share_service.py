@@ -128,6 +128,7 @@ class ShareService:
             if book['user_id'] == auth['id']:
                 raise CustomException("SHARE_BOOK_OWNER", code=409)
             
+            
             # 다운로드 되어 있는지 확인
             books = book_repo.find_all_by_user_id(auth['id'])
             count = 0
@@ -150,6 +151,7 @@ class ShareService:
 
             for word in words:
                 word_repo.add(book['id'], word['word'], word['mean'])
+                
             return custom_response("SUCCESS", data=words)
         except CustomException as e:
             return e.get_response()

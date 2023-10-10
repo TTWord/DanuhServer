@@ -60,12 +60,28 @@ class MemoService:
     def update_memo_service(db: Database, data):
         try:
             word_repo = WordRepository(db)
+            book_repo = BookRepository(db)
 
             word = word_repo.find_one_by_id(id = data['word_id'])
+            
             if not word:
                 raise CustomException("WORD_NOT_FOUND", code=409)
             
+            # 내가 바꾸려는 값과 바뀌는 값이 다른지 flag 값으로 체크
+            flag = False
+            
+            if data["is_memorized"] is not word["is_memorized"]:
+                flag = True
+            
             data = word_repo.update_memorized(id = data['word_id'], is_memorized = data['is_memorized'])
+            
+            # flag가 True 면서 data 값이 있을 경우
+            if flag and data is not None:
+                book = book_repo.find_one_by_id(word["book_id"])
+                if data["is_memorized"]:
+                    book_repo.patch_book_word_memorized_count(id=book["id"], count=(book["word_memorized_count"] + 1))
+                else:
+                    book_repo.patch_book_word_memorized_count(id=book["id"], count=(book["word_memorized_count"] - 1))
 
             return custom_response("SUCCESS", code=200, data=data)
         except CustomException as e:
