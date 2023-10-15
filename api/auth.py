@@ -168,6 +168,7 @@ class OAuth(Resource):
         """
         소셜 로그인 정보 전달(백엔드 정보 전달용)
         """
+        print(request.args)
         code = request.args.get("code")
         return AuthService.social_auth_api(service, code)
 
