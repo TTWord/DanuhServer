@@ -62,6 +62,11 @@ class AuthService:
                 "url": "https://accounts.google.com/o/oauth2/v2/auth?client_id=%s&redirect_uri=%s&response_type=code&scope=email profile"
                 % (CLIENT_ID, REDIRECT_URI)
             }
+        elif service == "apple":
+            url = {
+                "url": "https://appleid.apple.com/auth/authorize?client_id=%s&redirect_uri=%s&response_type=code&scope=email name&response_mode=form_post"
+                % (CLIENT_ID, REDIRECT_URI)
+            }
 
         return custom_response("SUCCESS", data=url)
 
