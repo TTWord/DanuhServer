@@ -158,6 +158,18 @@ class RefreshToken(Resource):
         """
         return AuthService.get_new_access_token(auth)
 
+@api.route("/auth/apple/redirect")
+class OAuthApple(Resource):
+    @api.response(200, "SUCCESS")
+    @api.response(409, "AUTH_ACCESS_FAILD, USER_ALREADY_REGISTERED")
+    @api.response(500, "FAIL")
+    def post(self, service):
+        """
+        소셜 로그인 정보 전달(백엔드 정보 전달용)
+        """
+        
+        code = request.form["code"]
+        return AuthService.social_auth_api(service, code)
 
 @api.route("/<service>")
 class OAuth(Resource):
@@ -177,9 +189,6 @@ class OAuth(Resource):
         """
         소셜 로그인
         """
-        if service == "apple":
-            print(request.args)
-            # return AuthService.social_auth_api(service)
         return AuthService.signin_with_social_service(service)
     
 

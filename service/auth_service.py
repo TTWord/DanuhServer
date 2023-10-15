@@ -52,6 +52,8 @@ class AuthService:
     def signin_with_social_service(service):
         CLIENT_ID = config[f"{service.upper()}_CLIENT_ID"]
         REDIRECT_URI = config["REDIRECT_URI"] + "/" + service.lower()
+        APPLE_REDIRECT_URI = config["APPLE_REDIRECT_URI"]
+        
         if service == "kakao":
             url = {
                 "url": "https://kauth.kakao.com/oauth/authorize?client_id=%s&redirect_uri=%s&response_type=code"
@@ -65,7 +67,7 @@ class AuthService:
         elif service == "apple":
             url = {
                 "url": "https://appleid.apple.com/auth/authorize?client_id=%s&redirect_uri=%s&response_type=code&scope=email name&response_mode=form_post"
-                % (CLIENT_ID, REDIRECT_URI)
+                % (CLIENT_ID, APPLE_REDIRECT_URI)
             }
 
         return custom_response("SUCCESS", data=url)
