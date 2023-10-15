@@ -168,7 +168,6 @@ class OAuth(Resource):
         """
         소셜 로그인 정보 전달(백엔드 정보 전달용)
         """
-        print(request.args)
         code = request.args.get("code")
         return AuthService.social_auth_api(service, code)
 
@@ -178,6 +177,9 @@ class OAuth(Resource):
         """
         소셜 로그인
         """
+        if service == "apple":
+            print(request.args)
+            # return AuthService.social_auth_api(service)
         return AuthService.signin_with_social_service(service)
     
 
