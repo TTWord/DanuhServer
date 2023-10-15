@@ -15,7 +15,7 @@ app.register_blueprint(main_route)
 
 @app.route("/")
 def root():
-    return "API Server is running."
+    return "API Server is running.test"
 
 if __name__ == "__main__": 
     app.run(host="0.0.0.0", port=5001, debug=True)
