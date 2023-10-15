@@ -12,6 +12,7 @@ from config import config
 from datetime import datetime, timedelta
 import random
 from flask import redirect, url_for
+import jwt
 
 
 class AuthService:
@@ -52,6 +53,8 @@ class AuthService:
     def signin_with_social_service(service):
         CLIENT_ID = config[f"{service.upper()}_CLIENT_ID"]
         REDIRECT_URI = config["REDIRECT_URI"] + "/" + service.lower()
+        APPLE_REDIRECT_URI = config["APPLE_REDIRECT_URI"]
+        
         if service == "kakao":
             url = {
                 "url": "https://kauth.kakao.com/oauth/authorize?client_id=%s&redirect_uri=%s&response_type=code"
@@ -62,8 +65,33 @@ class AuthService:
                 "url": "https://accounts.google.com/o/oauth2/v2/auth?client_id=%s&redirect_uri=%s&response_type=code&scope=email profile"
                 % (CLIENT_ID, REDIRECT_URI)
             }
+        elif service == "apple":
+            url = {
+                "url": "https://appleid.apple.com/auth/authorize?client_id=%s&redirect_uri=%s&response_type=code&scope=email name&response_mode=form_post"
+                % (CLIENT_ID, APPLE_REDIRECT_URI)
+            }
 
         return custom_response("SUCCESS", data=url)
+    
+    @staticmethod
+    @ServiceReceiver.database
+    def social_auth_apple_api(code, db: Database):
+        try:
+            REDIRECT_URI_SOCIAL = config["REDIRECT_URI_SOCIAL"]
+            
+            oauth = OAuth("apple")
+            auth_info = oauth.auth(code)
+            
+            print("동작0")
+            id_token = auth_info['id_token']
+            data = jwt.decode(id_token, algorithms=["RS256"])
+            
+            print(data)
+        except CustomException as e:
+            return e.get_response()
+        except Exception as e:
+            return custom_response("FAIL", code=500)
+            
 
     @staticmethod
     @ServiceReceiver.database

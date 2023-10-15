@@ -3,6 +3,8 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from config import config
 import requests
+import jwt
+from datetime import datetime, timedelta
 
 
 class EmailSender:
@@ -71,6 +73,42 @@ class OAuth:
 
     def auth(self, code):
         service = self.service.upper()
+        
+        if service == "APPLE":
+            # Apple은 Client Secret을 JWT로 인코딩하여 보내야 한다
+            
+            payload = {
+                # TEAM ID
+                "iss": config["APPLE_TEAM_ID"],
+                
+                # 생성시간
+                "iat": datetime.utcnow(),
+                
+                # 만료시간
+                "exp": datetime.utcnow() + timedelta(minutes=30),
+                
+                # 애플 주소
+                "aud": "https://appleid.apple.com",
+                
+                # 서비스 아이디
+                "sub": config["APPLE_CLIENT_ID"],
+            }
+            
+            # ES256으로 인코딩
+            token = jwt.encode(payload, config["APPLE_PRIVATE_KEY"], algorithm="ES256")
+            
+            return requests.post(
+                url=self.auth_url,
+                headers=self.default_header,
+                data={
+                    "client_id": config["APPLE_CLIENT_ID"],
+                    "client_secret": token,
+                    "grant_type": "authorization_code",
+                    "code": code,
+                    "redirect_uri": config['REDIRECT_URI'] + "/apple/redirect",
+                },
+            ).json()
+        
         return requests.post(
             url=self.auth_url,
             headers=self.default_header,
