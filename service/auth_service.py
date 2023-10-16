@@ -13,6 +13,8 @@ from datetime import datetime, timedelta
 import random
 from flask import redirect, url_for
 import jwt
+import requests
+import base64
 
 
 class AuthService:
@@ -80,13 +82,91 @@ class AuthService:
             REDIRECT_URI_SOCIAL = config["REDIRECT_URI_SOCIAL"]
             
             oauth = OAuth("apple")
+            
+            # 토큰 정보 담기
             auth_info = oauth.auth(code)
             
-            print("동작0")
-            id_token = auth_info['id_token']
-            data = jwt.decode(id_token, algorithms=["RS256"])
+            # error 발생 시 로그인 페이지로 redirect
+            if "error" in auth_info:
+                # 409
+                return redirect(
+                    REDIRECT_URI_SOCIAL
+                    + "&message="
+                    + "AUTH_ACCESS_FAILD"
+                )
             
-            print(data)
+            # id token 가져오기
+            id_token = auth_info["id_token"]
+            
+            # id_token의 header 값 decode
+            # header = jwt.get_unverified_header(id_token)
+            # id_token의 payload 값 signature 없이 decode
+            payload = jwt.decode(id_token, options={"verify_signature": False})
+            
+            user_repo = UserRepository(db)
+            
+            username = str(payload["email"])
+            password = encrypt_password(str(payload["email"])).decode("utf-8")
+            
+            user = user_repo.find_one_by_username(username)
+            
+            is_member = "1"
+            if not user:
+                data = {
+                    "username": username,
+                    "password": password,
+                    "nickname": "",
+                    "login_type": "apple"
+                }
+                user = user_repo.add(data)
+                is_member = "0"
+            else:
+                # 유저가 존재하며 서비스가 다른 경우
+                if user['login_type'] != "apple":
+                    return redirect(
+                        REDIRECT_URI_SOCIAL
+                        + "?service="
+                        + user['login_type']
+                        + "&message="
+                        + "USER_ALREADY_REGISTERED"
+                        + "&email="
+                        + username
+                    )
+                
+            nickname = "0"
+            if user['nickname']:
+                nickname = "1"
+
+            payload_access = {
+                "id": user["id"],
+                "username": user["username"],
+                "exp": datetime.utcnow() + timedelta(minutes=30),
+            }
+            payload_refresh = {
+                "id": user["id"],
+                "username": user["username"],
+                "exp": datetime.utcnow() + timedelta(hours=6),
+            }
+            secret = config["SECRET_KEY"]
+            token = {
+                "access_token": generate_token(payload_access, secret),
+                "refresh_token": generate_token(payload_refresh, secret),
+            }
+
+            return redirect(
+                REDIRECT_URI_SOCIAL
+                + "?accesstoken="
+                + token["access_token"]
+                + "&refreshtoken="
+                + token["refresh_token"]
+                + "&ismember="
+                + is_member
+                + "&nickname="
+                + nickname
+                + "&message="
+                + "SUCCESS"
+            )
+            
         except CustomException as e:
             return e.get_response()
         except Exception as e:
@@ -161,7 +241,7 @@ class AuthService:
                 "username": user["username"],
                 "exp": datetime.utcnow() + timedelta(minutes=30),
             }
-            payload_reflash = {
+            payload_refresh = {
                 "id": user["id"],
                 "username": user["username"],
                 "exp": datetime.utcnow() + timedelta(hours=6),
@@ -169,7 +249,7 @@ class AuthService:
             secret = config["SECRET_KEY"]
             token = {
                 "access_token": generate_token(payload_access, secret),
-                "refresh_token": generate_token(payload_reflash, secret),
+                "refresh_token": generate_token(payload_refresh, secret),
             }
 
             return redirect(
