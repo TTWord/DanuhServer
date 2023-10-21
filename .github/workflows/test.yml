@@ -19,6 +19,5 @@ jobs:
         with:
           host: ${{ secrets.TEST_HOST }} # 서버  ip주소
           username: ${{ secrets.TEST_USER }} # 서버 유저이름
-          password: ${{ secrets.TEST_PASSWORD }} # 서버 패스워드
           port: ${{ secrets.TEST_PORT }} # 서버 포트
           script: ./update.sh
