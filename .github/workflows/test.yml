@@ -21,6 +21,7 @@ jobs:
           username: ${{ secrets.TEST_USERNAME }} # 서버 유저이름
           key: ${{ secrets.TEST_SSH_KEY }} # AWS 연결 키
           port: ${{ secrets.TEST_PORT }} # 서버 포트
+          password: ${{ secrets.TEST_PASSWORD }} # 서버 포트
           script: |
             echo "테스트"
             # echo ${{ secrets.TEST_PASSWORD }} | sudo -S systemctl stop ${{ secrets.SERVICE_NAME }}
