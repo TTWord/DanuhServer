@@ -23,7 +23,6 @@ jobs:
           port: ${{ secrets.TEST_PORT }} # 서버 포트
           password: ${{ secrets.TEST_PASSWORD }} # 서버 포트
           script: |
-            echo "테스트"
-            # echo ${{ secrets.TEST_PASSWORD }} | sudo -S systemctl stop ${{ secrets.SERVICE_NAME }}
-            # ./update.sh
-            # echo ${{ secrets.TEST_PASSWORD }} | sudo -S systemctl start ${{ secrets.SERVICE_NAME }}
+            echo ${{ secrets.TEST_PASSWORD }} | sudo -S systemctl stop ${{ secrets.SERVICE_NAME }}
+            ./update.sh
+            echo ${{ secrets.TEST_PASSWORD }} | sudo -S systemctl start ${{ secrets.SERVICE_NAME }}
