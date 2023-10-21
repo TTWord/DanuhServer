@@ -62,8 +62,9 @@ class QuizService:
                         answer_options.append(random_meaning)
                 random.shuffle(answer_options)
                 answer_index = answer_options.index({'word':random_word['word'], 'mean': random_word['mean']})
-                problem.append({"answer_index": answer_index, "answers": answer_options, "word_id": random_word['id']})
-
+                problem.append({"answer_index": answer_index, "answers": answer_options, 
+                                "word_id": random_word['id'], "is_memorized": random_words["is_memorized"]})
+                
             return custom_response("SUCCESS", code=200, data={"problem": problem})
         except CustomException as e:
             return e.get_response()
@@ -112,7 +113,7 @@ class QuizService:
             problem = []
             for dict in random_word:
                 problem.append({"answer": {'word': dict['word'], 'mean': dict['mean']}, 
-                                "word_id": dict['id']})
+                                "word_id": dict['id'], "is_memorized": dict['is_memorized']})
 
             return custom_response("SUCCESS", code=200, data={"problem": problem})
         except CustomException as e:
@@ -179,8 +180,9 @@ class QuizService:
                         answer_options.append(random_meaning)
                 random.shuffle(answer_options)
                 answer_index = answer_options.index({'word':random_word['word'], 'mean': random_word['mean']})
-                problem.append({"answer_index": answer_index, "answers": answer_options, "word_id": random_word['id']})
-
+                problem.append({"answer_index": answer_index, "answers": answer_options, 
+                                "word_id": random_word['id'], "is_memorized": random_words["is_memorized"]})
+                
             return custom_response("SUCCESS", code=200, data={"problem": problem})
         except CustomException as e:
             return e.get_response()
@@ -228,7 +230,7 @@ class QuizService:
             problem = []
             for dict in random_word:
                 problem.append({"answer": {'word': dict['word'], 'mean': dict['mean']}, 
-                                "word_id": dict['id']})
+                                "word_id": dict['id'], "is_memorized": dict['id_memorized']})
 
             return custom_response("SUCCESS", code=200, data={"problem": problem})
 
@@ -299,5 +301,4 @@ class QuizService:
             
             return custom_response("SUCCESS", data=view_books)
         except Exception as e:
-            print(e)
             return custom_response("FAIL", code=500)
