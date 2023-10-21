@@ -3,7 +3,7 @@ name: updateTest
 on:
   push:
     branches:
-      - 'feature/*'  # 테스트 브랜치가 푸쉬되었을 때 동작
+      - 'develop'  # 개발 브랜치가 푸쉬되었을 때 동작
 
   workflow_dispatch:
   
