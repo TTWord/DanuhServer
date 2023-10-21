@@ -20,5 +20,6 @@ jobs:
           host: ${{ secrets.TEST_HOST }} # 서버  ip주소
           username: ${{ secrets.TEST_USERNAME }} # 서버 유저이름
           key: ${{ secrets.TEST_SSH_KEY }} # AWS 연결 키
+          password: ${{ secrets.TEST_PASSWORD }} # AWS 연결 키
           port: ${{ secrets.TEST_PORT }} # 서버 포트
           script: ./update.sh
