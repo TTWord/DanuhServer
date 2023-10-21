@@ -2,6 +2,7 @@ from service.share_service import ShareService
 from flask_restx import Namespace, Resource, Api, reqparse, fields
 from util.decorator.authorization import Authorization
 from flask import request
+import json
 
 
 api = Namespace('share', description='공유 API')

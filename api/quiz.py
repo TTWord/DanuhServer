@@ -2,7 +2,7 @@ from flask_restx import Namespace, Resource, Api, reqparse, fields
 from util.decorator.authorization import Authorization
 from flask import request
 from service.quiz_service import QuizService
-
+import json
 
 api = Namespace('quiz', description='퀴즈 API')
 quiz_info = api.model('퀴즈 정보', {
@@ -113,3 +113,24 @@ class ResultQuiz(Resource):
         data['book_ids'] = [int(book_id) for book_id in data['book_ids'].split("&")]
         return QuizService.get_result_service(auth=auth, data=data)
     
+    
+
+@api.route('/recommend')
+@api.doc(security="Bearer Auth")
+class BookRecommend(Resource):
+    @api.response(200, "SUCCESS")
+    @api.doc(params={'books': (
+                     "배열 안에 book_id 리스트\r\n"
+                     "ex ) recommend?books=[1,2,3,4]\r\n"
+                     "만약 전체인 경우 books=[]로 요청\r\n"
+                     )})
+    @Authorization.check_authorization
+    def get(self, auth):
+        """
+        책 목록 받아서 최초 조회 여부에 따라 추천 북 목록 주는 API
+        """
+        books = json.loads(request.args.get('books'))
+        
+        return QuizService.get_quiz_start_view_books(auth, data={
+            "books": books
+        })

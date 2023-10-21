@@ -273,3 +273,31 @@ class QuizService:
             return e.get_response()
         except Exception as e:
             return custom_response("FAIL", code=500)
+        
+    
+    @staticmethod
+    @ServiceReceiver.database
+    def get_quiz_start_view_books(auth, data, db: Database):
+        try:
+            books = data['books']
+            
+            book_repo = BookRepository(db)
+            
+            zero_view_books = book_repo.find_all_by_user_id_with_zero_start_view(auth['id'])
+            
+            if (books == []):
+                for book in zero_view_books:
+                    book_repo.update_start_view(book['id'])
+                return custom_response("SUCCESS", data=zero_view_books)
+            
+            view_books = []
+            
+            for book in zero_view_books:
+                if book['id'] in books:
+                    book_repo.update_start_view(book['id'])
+                    view_books.append(book)
+            
+            return custom_response("SUCCESS", data=view_books)
+        except Exception as e:
+            print(e)
+            return custom_response("FAIL", code=500)

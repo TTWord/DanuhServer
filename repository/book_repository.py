@@ -13,7 +13,7 @@ class BookRepository(Connect):
         for row in result:
             books.append(BookModel(id=row['id'], name=row['name'], user_id=row['user_id'], 
                                    is_downloaded=row['is_downloaded'],
-                                   created_at=row['created_at'], updated_at=row['updated_at'], word_count=row['word_count'], word_memorized_count=row['word_memorized_count']))
+                                   created_at=row['created_at'], updated_at=row['updated_at'], word_count=row['word_count'], word_memorized_count=row['word_memorized_count'], start_view=row['start_view']))
         
         return [book.__dict__ for book in books]
     
@@ -25,9 +25,23 @@ class BookRepository(Connect):
         for row in result:
             books.append(BookModel(id=row['id'], name=row['name'], user_id=row['user_id'], 
                                    is_downloaded=row['is_downloaded'],
-                                   created_at=row['created_at'], updated_at=row['updated_at'], word_count=row['word_count'], word_memorized_count=row['word_memorized_count']))
+                                   created_at=row['created_at'], updated_at=row['updated_at'], word_count=row['word_count'], word_memorized_count=row['word_memorized_count'], start_view=row['start_view']))
         
         return [book.__dict__ for book in books]
+    
+    def find_all_by_user_id_with_zero_start_view(self, user_id: int):
+        books = []
+        
+        # start_view = 0 이면 최초 조회, 1이면 최초 조회가 아님
+        result = self.select_all(f'SELECT * FROM book WHERE user_id = {user_id} and start_view = 0')
+        
+        for row in result:
+            books.append(BookModel(id=row['id'], name=row['name'], user_id=row['user_id'], 
+                                   is_downloaded=row['is_downloaded'],
+                                   created_at=row['created_at'], updated_at=row['updated_at'], word_count=row['word_count'], word_memorized_count=row['word_memorized_count'],start_view=row['start_view']))
+        
+        return [book.__dict__ for book in books]
+        
     
     def find_one_by_id(self, id: int) -> dict:
         book = None
@@ -38,7 +52,7 @@ class BookRepository(Connect):
         if result is not None:
             book = BookModel(id=result['id'], name=result['name'], user_id=result['user_id'], 
                                    is_downloaded=result['is_downloaded'],
-                                   created_at=result['created_at'], updated_at=result['updated_at'], word_count=result['word_count'], word_memorized_count=result['word_memorized_count'])
+                                   created_at=result['created_at'], updated_at=result['updated_at'], word_count=result['word_count'], word_memorized_count=result['word_memorized_count'], start_view=result['start_view'])
             return book.__dict__
         else:
             return None
@@ -53,7 +67,7 @@ class BookRepository(Connect):
         if result is not None:
             book = BookModel(id=result['id'], name=result['name'], user_id=result['user_id'], 
                                    is_downloaded=result['is_downloaded'],
-                                   created_at=result['created_at'], updated_at=result['updated_at'], word_count=result['word_count'], word_memorized_count=result['word_memorized_count'])
+                                   created_at=result['created_at'], updated_at=result['updated_at'], word_count=result['word_count'], word_memorized_count=result['word_memorized_count'], start_view=result['start_view'])
             return book
         else:
             return None
@@ -73,6 +87,15 @@ class BookRepository(Connect):
         self.connect.commit()
         
         book = BookModel(id=id, name=name)
+        
+        return book.__dict__
+    
+    def update_start_view(self, id: int) -> dict:
+        sql = f"UPDATE book SET start_view = 1 WHERE id = {id}"
+        self.cursor.execute(sql)
+        self.connect.commit()
+        
+        book = BookModel(id=id, start_view=1)
         
         return book.__dict__
         

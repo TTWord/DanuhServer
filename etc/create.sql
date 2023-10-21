@@ -25,6 +25,8 @@ create table book(
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     word_count INT default 0 NOT NULL,
+    word_memorized_count INT default 0 NOT NULL,
+    start_view TINYINT default 0,
     FOREIGN KEY(user_id) REFERENCES user(id) ON DELETE CASCADE
 );
 
