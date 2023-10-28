@@ -63,7 +63,7 @@ class QuizService:
                 random.shuffle(answer_options)
                 answer_index = answer_options.index({'word':random_word['word'], 'mean': random_word['mean']})
                 problem.append({"answer_index": answer_index, "answers": answer_options, 
-                                "word_id": random_word['id'], "is_memorized": random_words["is_memorized"]})
+                                "word_id": random_word['id'], "is_memorized": random_word["is_memorized"]})
                 
             return custom_response("SUCCESS", code=200, data={"problem": problem})
         except CustomException as e:
@@ -181,7 +181,7 @@ class QuizService:
                 random.shuffle(answer_options)
                 answer_index = answer_options.index({'word':random_word['word'], 'mean': random_word['mean']})
                 problem.append({"answer_index": answer_index, "answers": answer_options, 
-                                "word_id": random_word['id'], "is_memorized": random_words["is_memorized"]})
+                                "word_id": random_word['id'], "is_memorized": random_word["is_memorized"]})
                 
             return custom_response("SUCCESS", code=200, data={"problem": problem})
         except CustomException as e:
@@ -230,7 +230,7 @@ class QuizService:
             problem = []
             for dict in random_word:
                 problem.append({"answer": {'word': dict['word'], 'mean': dict['mean']}, 
-                                "word_id": dict['id'], "is_memorized": dict['id_memorized']})
+                                "word_id": dict['id'], "is_memorized": dict['is_memorized']})
 
             return custom_response("SUCCESS", code=200, data={"problem": problem})
 
