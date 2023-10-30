@@ -33,7 +33,7 @@ class BookRepository(Connect):
         books = []
         
         # start_view = 0 이면 최초 조회, 1이면 최초 조회가 아님
-        result = self.select_all(f'SELECT * FROM book WHERE user_id = {user_id} and start_view = 0')
+        result = self.select_all(f'SELECT * FROM book WHERE user_id = {user_id} and start_view = 0 and is_downloaded = 1')
         
         for row in result:
             books.append(BookModel(id=row['id'], name=row['name'], user_id=row['user_id'], 
