@@ -2,14 +2,15 @@ from db.connect import Connect
 
 
 class BookShareRepository(Connect):
-    def add(self, book_id, share_id) -> dict:
+    def add(self, book_id, share_id, user_id) -> dict:
         sql = f"""
             INSERT INTO book_share (
-                book_id, share_id
+                book_id, share_id, user_id
             )
             VALUES(
                 {book_id},
-                {share_id}
+                {share_id},
+                {user_id}
             );
         """
         self.cursor.execute(sql)
@@ -23,7 +24,14 @@ class BookShareRepository(Connect):
         book_share = self.cursor.fetchone()
         
         return book_share
-    
+
+    def find_one_by_user_id_and_share_id(self, user_id: int, share_id: int) -> dict:
+        sql = f'SELECT * FROM book_share WHERE book_id = {user_id} and share_id = {share_id};'
+        self.cursor.execute(sql)
+        book_share = self.cursor.fetchone()
+        
+        return book_share
+     
     def find_one_by_book_id(self, book_id: int) -> dict:
         sql = f'SELECT * FROM book_share WHERE book_id = {book_id};'
         self.cursor.execute(sql)

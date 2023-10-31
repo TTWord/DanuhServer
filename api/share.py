@@ -53,12 +53,12 @@ class ShareById(Resource):
     @api.response(200, "SUCCESS")
     @api.response(409, "SHARE_NOT_FOUND")
     @api.response(500, "FAIL")
-    @Authorization.reject_authorization
-    def get(self, id):
+    @Authorization.check_authorization
+    def get(self, auth, id):
         """
         ID를 통해 조회
         """
-        return ShareService.get_share_by_id(id)
+        return ShareService.get_share_by_id(auth, id)
     
     @api.response(200, "SUCCESS")
     @api.response(409, "SHARE_NOT_FOUND")

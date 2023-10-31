@@ -62,17 +62,28 @@ class ShareService:
             return e.get_response()
         except Exception as e:
             return custom_response("FAIL", code=500)
-             
+    
+    # book_share- share_id, user_id, updated_at
+    # 주인인 경우 "OWNER"
+    # 다운로드 해야하는 경우 "NONE"
+    # 최신화가 안되어 있는 경우 "UPDATE",
+    # 최신화 되어 있는 경우 "DOWNLOADED" 
+    # book_share -> book_id,share_id, user_id, updated_at   
+    # - 프로필 사진 제어 jpg, jpeg, png
+
+    # - 다운로드 북에 대한 단어 수정, 삭제 x      
     @staticmethod
     @ServiceReceiver.database
-    def get_share_by_id(id, db: Database):
+    def get_share_by_id(auth, id, db: Database):
         try:
             share_repo = ShareRepository(db)
             word_repo = WordRepository(db)
             book_repo = BookRepository(db)
             file_repo = FileRepository(db)
             user_repo = UserRepository(db)
+            book_share_repo = BookShareRepository(db)
 
+            status = "NONE"
             share = share_repo.find_one_by_id(id)
             if share is None:
                 raise CustomException("SHARE_NOT_FOUND", code=409)
@@ -80,23 +91,44 @@ class ShareService:
 
             # 데이터 가공
             book_id = share['book_id']
-            book = book_repo.find_one_by_id(book_id)
-            user = user_repo.find_one_by_user_id(id=book['user_id'])
+            shared_book = book_repo.find_one_by_id(book_id)
+            user = user_repo.find_one_by_user_id(id=shared_book['user_id'])
+ 
             share_repo.update_column(id, 'checked')
             [word.pop('book_id') for word in words]
             data = {
                 'user_id': user['id'],
                 'nickname': user['nickname'],
                 'book_id': book_id,
-                'book_name': book['name'],
+                'book_name': shared_book['name'],
                 'comment': share['comment'],
                 'recommended': share['recommended'],
                 'downloaded': share['downloaded'],
                 'checked': share['checked'],
-                'words': words
+                'words': words,
+                'status': status
             }
-            file = file_repo.find_one_by_user_id(user['id'])
 
+            # 1. 주인인 경우
+            if user['id'] == auth['id']:
+                status = "OWNER"
+
+            # 2. 다운로드 해야하는 경우 "NONE"
+            book_share = book_share_repo.find_one_by_user_id_and_share_id(auth['id'], id)
+            if not book_share:
+                status = "NONE"
+            else:
+
+                # 3. 최신화가 안되어 있는 경우 "UPDATE",
+                book = book_repo.find_one_by_id(book_share['book_id'])  # 다운로드 받은 단어장 조회
+                # if shared_book['updated_at'] > book['updated_at']:  # 비교
+                #     status = "UPDATE"
+                # # 4. 최신화 되어 있는 경우 "DOWNLOADED"
+                # else:
+                #     status = "DOWNLOADED"
+
+            data.update({"status": status})
+            file = file_repo.find_one_by_user_id(user['id'])
             if file:
                 url = {"url": config["DOMAIN"]
                             + url_for("static", filename=file["file_path"])}
@@ -106,6 +138,7 @@ class ShareService:
         except CustomException as e:
             return e.get_response()
         except Exception as e:
+            print(e)
             return custom_response("FAIL", code=500)
         
     @staticmethod
@@ -147,7 +180,7 @@ class ShareService:
             book = book_repo.find_one_by_id(share['book_id'])
             words = word_repo.find_all_by_book_id(share['book_id'])
             book = book_repo.add(auth['id'], book['name'], True)
-            book_share_repo.add(book['id'], share['id'])
+            book_share_repo.add(book['id'], share['id'], auth['id'])
 
             for word in words:
                 word_repo.add(book['id'], word['word'], word['mean'])
@@ -314,4 +347,48 @@ class ShareService:
         except CustomException as e:
             return e.get_response()
         except Exception as e:
+            return custom_response("FAIL", code=500)
+    
+    # 다운로드 받은 단어장에 대해서는 수정 삭제 불가
+    # ->단어장 삭제를 해야함
+    @staticmethod
+    @ServiceReceiver.database
+    def update_share_book(auth, id, db: Database):
+        try:
+            book_repo = BookRepository(db)
+            share_repo = ShareRepository(db)
+            word_repo = WordRepository(db)
+            book_share_repo = BookShareRepository(db)
+
+            # 변경할 데이터가 있는지 조회
+            book = share_repo.find_one_by_id(id = id)
+
+            if auth['id'] != book['user_id']:
+                raise CustomException("BOOK_ACCESS_DENIED", code=403)
+            # 데이터가 없을 경우
+            if book is None:
+                raise CustomException("BOOK_NOT_FOUND", code=404)
+            
+            if book['is_downloaded'] is None:
+                raise CustomException("BOOK_NOT_DOWNLOADED", code=409)
+            
+            book_share = book_share_repo.find_one_by_book_id(id)
+            share = share_repo.find_one_by_book_id(book_share['share_id'])
+
+            # 다운로드 증가
+            share_repo.update_column(book_share['share_id'], 'downloaded')
+
+            # 단어장 이름 복사하여 기존의 단어장 삭제, 생성, 단어 생성
+            share_book = book_repo.find_one_by_id(share['book_id'])
+            words = word_repo.find_all_by_book_id(share_book['book_id'])
+            book_repo.delete(id)
+            book = book_repo.add(auth['id'], share_book['name'], True)
+
+            for word in words:
+                word_repo.add(book['id'], word['word'], word['mean'])
+
+            return custom_response("SUCCESS", data=words)
+        except CustomException as e:
+            return e.get_response()
+        except:
             return custom_response("FAIL", code=500)
