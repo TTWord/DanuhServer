@@ -14,6 +14,7 @@ from util.time import get_difference_time
 from util.sort import sorted_by_value
 from collections import defaultdict
 from flask import url_for
+import datetime
 
 
 class ShareService:
@@ -115,17 +116,19 @@ class ShareService:
 
             # 2. 다운로드 해야하는 경우 "NONE"
             book_share = book_share_repo.find_one_by_user_id_and_share_id(auth['id'], id)
+
+            # share_book에 추가되어 있지않은 경우
             if not book_share:
                 status = "NONE"
             else:
-
                 # 3. 최신화가 안되어 있는 경우 "UPDATE",
-                book = book_repo.find_one_by_id(book_share['book_id'])  # 다운로드 받은 단어장 조회
-                # if shared_book['updated_at'] > book['updated_at']:  # 비교
-                #     status = "UPDATE"
-                # # 4. 최신화 되어 있는 경우 "DOWNLOADED"
-                # else:
-                #     status = "DOWNLOADED"
+                share_update_time = datetime.datetime.fromtimestamp(shared_book)
+                book_update_time = datetime.datetime.fromtimestamp(book_share['updated_at'])
+                if share_update_time > book_update_time:  # 비교
+                    status = "UPDATE"
+                # 4. 최신화 되어 있는 경우 "DOWNLOADED"
+                else:
+                    status = "DOWNLOADED"
 
             data.update({"status": status})
             file = file_repo.find_one_by_user_id(user['id'])
