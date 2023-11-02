@@ -1,5 +1,6 @@
 from db.connect import Connect
 from model.book_model import BookModel
+from model.response.share.book_recommend_info_model import BookRecommendInfoModel
 
 
 class BookRepository(Connect):
@@ -33,12 +34,24 @@ class BookRepository(Connect):
         books = []
         
         # start_view = 0 이면 최초 조회, 1이면 최초 조회가 아님
-        result = self.select_all(f'SELECT * FROM book WHERE user_id = {user_id} and start_view = 0 and is_downloaded = 1')
+        result = self.select_all(f'''SELECT
+                                    b.id,
+                                    b.user_id,
+                                    b.name,
+                                    b.is_downloaded,
+                                    b.created_at,
+                                    b.updated_at,
+                                    b.word_count,
+                                    b.word_memorized_count,
+                                    b.start_view,
+                                    bs.share_id
+                                FROM book AS b
+                                INNER JOIN book_share AS bs 
+                                ON b.id = bs.book_id
+                                WHERE b.user_id = {user_id} and b.start_view = 0 and b.is_downloaded = 1''')
         
         for row in result:
-            books.append(BookModel(id=row['id'], name=row['name'], user_id=row['user_id'], 
-                                   is_downloaded=row['is_downloaded'],
-                                   created_at=row['created_at'], updated_at=row['updated_at'], word_count=row['word_count'], word_memorized_count=row['word_memorized_count'],start_view=row['start_view']))
+            books.append(BookRecommendInfoModel(id=row['id'], name=row['name'], share_id=row['share_id']))
         
         return [book.__dict__ for book in books]
         
