@@ -93,8 +93,13 @@ class UserService:
     def update_user_profile(auth, data, db: Database):
         try:
             file_repo = FileRepository(db)
+            file_extension = "." + data.filename.split('.')[1]
 
-            file_name = str(auth["id"]) + "_profile.jpg"
+            if not file_extension in ['.png', '.jpg', '.jpeg']:
+                raise CustomException("FILE_UNEXPECTED_EXTENSION", code=409)
+            
+            file_name = str(auth["id"]) + "_profile" + file_extension
+
             file_path = config["PROFILE_IMAGE"] + "/" + secure_filename(file_name)
             data.save(file_path)
 
