@@ -80,6 +80,7 @@ class User(Resource):
         return UserService.get_user_profile(auth)
 
     @api.response(200, "SUCCESS")
+    @api.response(409, "FILE_UNEXPECTED_EXTENSION")
     @api.response(500, "FAIL")
     @api.expect(post_parser)
     @Authorization.check_authorization
