@@ -63,16 +63,7 @@ class ShareService:
             return e.get_response()
         except Exception as e:
             return custom_response("FAIL", code=500)
-    
-    # book_share- share_id, user_id, updated_at
-    # 주인인 경우 "OWNER"
-    # 다운로드 해야하는 경우 "NONE"
-    # 최신화가 안되어 있는 경우 "UPDATE",
-    # 최신화 되어 있는 경우 "DOWNLOADED" 
-    # book_share -> book_id,share_id, user_id, updated_at   
-    # - 프로필 사진 제어 jpg, jpeg, png
-
-    # - 다운로드 북에 대한 단어 수정, 삭제 x      
+       
     @staticmethod
     @ServiceReceiver.database
     def get_share_by_id(auth, id, db: Database):
@@ -347,9 +338,6 @@ class ShareService:
         except Exception as e:
             return custom_response("FAIL", code=500)
     
-    # 다운로드 받은 단어장에 대해서는 수정 삭제 불가
-    # ->단어장 삭제를 해야함
-    # 다운로드 +1
     @staticmethod
     @ServiceReceiver.database
     def update_share_book(auth, id, db: Database):
