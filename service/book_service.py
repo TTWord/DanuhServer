@@ -174,48 +174,6 @@ class BookService:
             return e.get_response()
         except:
             return custom_response("FAIL", code=500)
-            
-    @staticmethod
-    @ServiceReceiver.database
-    def update_share_book(auth, id, db: Database):
-        try:
-            book_repo = BookRepository(db)
-            share_repo = ShareRepository(db)
-            word_repo = WordRepository(db)
-            book_share_repo = BookShareRepository(db)
-
-            # 변경할 데이터가 있는지 조회
-            book = book_repo.find_one_by_id(id = id)
-
-            if auth['id'] != book['user_id']:
-                raise CustomException("BOOK_ACCESS_DENIED", code=403)
-            # 데이터가 없을 경우
-            if book is None:
-                raise CustomException("BOOK_NOT_FOUND", code=404)
-            
-            if book['is_downloaded'] is None:
-                raise CustomException("BOOK_NOT_DOWNLOADED", code=409)
-            
-            book_share = book_share_repo.find_one_by_book_id(id)
-            share = share_repo.find_one_by_book_id(book_share['share_id'])
-
-            # 다운로드 증가
-            share_repo.update_column(book_share['share_id'], 'downloaded')
-
-            # 단어장 이름 복사하여 기존의 단어장 삭제, 생성, 단어 생성
-            share_book = book_repo.find_one_by_id(share['book_id'])
-            words = word_repo.find_all_by_book_id(share_book['book_id'])
-            book_repo.delete(id)
-            book = book_repo.add(auth['id'], share_book['name'], True)
-
-            for word in words:
-                word_repo.add(book['id'], word['word'], word['mean'])
-
-            return custom_response("SUCCESS", data=words)
-        except CustomException as e:
-            return e.get_response()
-        except:
-            return custom_response("FAIL", code=500)
         
     @staticmethod
     @ServiceReceiver.database
