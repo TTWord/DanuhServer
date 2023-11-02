@@ -53,12 +53,12 @@ class ShareById(Resource):
     @api.response(200, "SUCCESS")
     @api.response(409, "SHARE_NOT_FOUND")
     @api.response(500, "FAIL")
-    @Authorization.check_authorization
-    def get(self, auth, id):
+    @Authorization.reject_authorization
+    def get(self, id):
         """
         ID를 통해 조회
         """
-        return ShareService.get_share_by_id(auth, id)
+        return ShareService.get_share_by_id(id)
     
     @api.response(200, "SUCCESS")
     @api.response(409, "SHARE_NOT_FOUND")
@@ -113,6 +113,7 @@ class ShareByUserDownload(Resource):
 class ShareByOtherUser(Resource):
     @api.response(200, "SUCCESS")
     @api.response(500, "FAIL")
+    @api.response(500, "FAIL")
     @api.doc(params={'type': 'popularity, downloaded, updated_at(기본 updated_at)',
                     'order': 'DESC, ASC(기본 DESC)'})
     @Authorization.reject_authorization
@@ -125,3 +126,17 @@ class ShareByOtherUser(Resource):
 
         return ShareService.get_other_user_shared_books(id=user_id, data={'order': order, 'type': type})
     
+
+@api.route('/update/<int:id>')
+@api.doc(security="Bearer Auth")
+class ShareByUserShare(Resource):
+    @api.response(200, "SUCCESS")
+    @api.response(404, "BOOKSHARE_NOT_FOUND, SHARE_NOT_FOUND")
+    @api.response(409, "BOOK_ALREAY_UPDATED, SHARE_NOT_SHARED, BOOK_NOT_DOWNLOADED")
+    @api.response(500, "FAIL")
+    @Authorization.check_authorization
+    def post(self, auth, id):
+        """
+        유저가 공유 받은 단어장 업데이트
+        """
+        return ShareService.update_share_book(auth, id)

@@ -26,7 +26,7 @@ class BookShareRepository(Connect):
         return book_share
 
     def find_one_by_user_id_and_share_id(self, user_id: int, share_id: int) -> dict:
-        sql = f'SELECT * FROM book_share WHERE book_id = {user_id} and share_id = {share_id};'
+        sql = f'SELECT * FROM book_share WHERE user_id = {user_id} and share_id = {share_id};'
         self.cursor.execute(sql)
         book_share = self.cursor.fetchone()
         

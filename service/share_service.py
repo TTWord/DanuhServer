@@ -110,21 +110,16 @@ class ShareService:
                 'status': status
             }
 
+            book_share = book_share_repo.find_one_by_user_id_and_share_id(auth['id'], id)
             # 1. 주인인 경우
             if user['id'] == auth['id']:
                 status = "OWNER"
-
             # 2. 다운로드 해야하는 경우 "NONE"
-            book_share = book_share_repo.find_one_by_user_id_and_share_id(auth['id'], id)
-
-            # share_book에 추가되어 있지않은 경우
-            if not book_share:
+            elif not book_share:
                 status = "NONE"
             else:
                 # 3. 최신화가 안되어 있는 경우 "UPDATE",
-                share_update_time = datetime.datetime.fromtimestamp(shared_book)
-                book_update_time = datetime.datetime.fromtimestamp(book_share['updated_at'])
-                if share_update_time > book_update_time:  # 비교
+                if shared_book['updated_at'] > book_share['updated_at']:  # 비교
                     status = "UPDATE"
                 # 4. 최신화 되어 있는 경우 "DOWNLOADED"
                 else:
@@ -353,6 +348,7 @@ class ShareService:
     
     # 다운로드 받은 단어장에 대해서는 수정 삭제 불가
     # ->단어장 삭제를 해야함
+    # 다운로드 +1
     @staticmethod
     @ServiceReceiver.database
     def update_share_book(auth, id, db: Database):
@@ -363,34 +359,41 @@ class ShareService:
             book_share_repo = BookShareRepository(db)
 
             # 변경할 데이터가 있는지 조회
-            book = share_repo.find_one_by_id(id = id)
+            share = share_repo.find_one_by_id(id = id)
+            book_share = book_share_repo.find_one_by_user_id_and_share_id(auth['id'], id)
+            book = book_repo.find_one_by_id(book_share['book_id'])
 
-            if auth['id'] != book['user_id']:
-                raise CustomException("BOOK_ACCESS_DENIED", code=403)
+            # updated_at 날짜 비교
+            share_book = book_repo.find_one_by_id(share['book_id'])
+
+            if book['updated_at'] < share_book['updated_at']:
+                raise CustomException("BOOK_ALREAY_UPDATED", code=409)
+
+            # 공유가 존재하지 않는 경우
+            if book_share is None:
+                raise CustomException("BOOKSHARE_NOT_FOUND", code=404)
             # 데이터가 없을 경우
-            if book is None:
-                raise CustomException("BOOK_NOT_FOUND", code=404)
-            
+            if share is None:
+                raise CustomException("SHARE_NOT_FOUND", code=404)
+            if not share['is_shared']:
+                raise CustomException("SHARE_NOT_SHARED", code=409)
+
             if book['is_downloaded'] is None:
                 raise CustomException("BOOK_NOT_DOWNLOADED", code=409)
-            
-            book_share = book_share_repo.find_one_by_book_id(id)
-            share = share_repo.find_one_by_book_id(book_share['share_id'])
 
             # 다운로드 증가
             share_repo.update_column(book_share['share_id'], 'downloaded')
 
             # 단어장 이름 복사하여 기존의 단어장 삭제, 생성, 단어 생성
-            share_book = book_repo.find_one_by_id(share['book_id'])
-            words = word_repo.find_all_by_book_id(share_book['book_id'])
-            book_repo.delete(id)
+            words = word_repo.find_all_by_book_id(share['book_id'])
+            book_repo.delete(book['id'])
             book = book_repo.add(auth['id'], share_book['name'], True)
-
+            book_share_repo.add(book['id'], id, auth['id'])
             for word in words:
                 word_repo.add(book['id'], word['word'], word['mean'])
 
-            return custom_response("SUCCESS", data=words)
+            return custom_response("SUCCESS")
         except CustomException as e:
             return e.get_response()
-        except:
+        except Exception as e:
             return custom_response("FAIL", code=500)
