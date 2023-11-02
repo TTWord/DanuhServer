@@ -53,8 +53,11 @@ create table book_share(
     id INT PRIMARY KEY auto_increment,
     book_id INT default 0,
     share_id INT default 0,
+    user_id INT default 0,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY(book_id) REFERENCES book(id) ON DELETE CASCADE,
-    FOREIGN KEY(share_id) REFERENCES share(id) ON DELETE CASCADE
+    FOREIGN KEY(share_id) REFERENCES share(id) ON DELETE CASCADE,
+    FOREIGN KEY(user_id) REFERENCES user(id) ON DELETE CASCADE
 );
 
 create table word(

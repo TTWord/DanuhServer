@@ -6,3 +6,9 @@ pyvenv.cfg
 __pycache__
 static/
 .env
+.gitignore
+
+bin
+lib
+lib64
+include

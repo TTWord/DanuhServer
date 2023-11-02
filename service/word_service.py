@@ -94,8 +94,15 @@ class WordService:
                 raise CustomException("WORD_COUNT_MORE_THAN_LIMIT", code=400)
             
             word_repo = WordRepository(db)
+            book_repo = BookRepository(db)
+
             # 데이터 중복 검사
             word = word_repo.find_one_by_id(id=id)
+            book = book_repo.find_one_by_id(word['book_id'])
+
+            if book['is_downloaded']:
+                raise CustomException("BOOK_IS_DOWNLOADED", code=409)
+
             if not word:
                 raise CustomException("WORD_NOT_FOUND", code=409)
             
@@ -124,8 +131,10 @@ class WordService:
                 raise CustomException("WORD_NOT_FOUND", code=404)
             
             # user_id와 검사
-            user_info = BookRepository(db).find_one_by_id(word['book_id'])
-            if user_info['user_id'] != auth['id']:
+            book = BookRepository(db).find_one_by_id(word['book_id'])
+            if book['is_downloaded']:
+                raise CustomException("BOOK_IS_DOWNLOADED", code=409)
+            if book['user_id'] != auth['id']:
                 raise CustomException("BOOK_ACCESS_DENIED", code=403)
             
             book_id = word["book_id"]

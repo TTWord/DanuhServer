@@ -82,18 +82,6 @@ class BookById(Resource):
     @api.response(200, "SUCCESS")
     @api.response(403, "BOOK_ACCESS_DENIED")
     @api.response(404, "BOOK_NOT_FOUND")
-    @api.response(409, "BOOK_NOT_DOWNLOADED")
-    @api.response(500, "FAIL")
-    @Authorization.check_authorization
-    def patch(self, id, auth):
-        """
-        공유 단어장 업데이트
-        """        
-        return BookService.update_share_book(auth=auth, id=id)
-
-    @api.response(200, "SUCCESS")
-    @api.response(403, "BOOK_ACCESS_DENIED")
-    @api.response(404, "BOOK_NOT_FOUND")
     @api.response(500, "FAIL")
     @Authorization.check_authorization
     def delete(self, id, auth):
