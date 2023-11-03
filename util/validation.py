@@ -15,8 +15,6 @@ def validate_password(password):
     return False
 
 def validate_word(word, mean):
-    if not word or not mean:
-        return False
     if len(word) <= 15 and len(mean) <= 15:
         return word.strip(), mean.strip()
     return False
