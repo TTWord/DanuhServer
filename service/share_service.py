@@ -169,7 +169,7 @@ class ShareService:
             words = word_repo.find_all_by_book_id(share['book_id'])
 
             book = book_repo.add(auth['id'], book['name'], True, word_count=book['word_count'])
-            book_share_repo.add(book['id'], share['id'])
+            book_share_repo.add(book['id'], share['id'], auth['id'])
             
             for word in words:
                 word_repo.add(book['id'], word['word'], word['mean'])
@@ -355,7 +355,7 @@ class ShareService:
             # updated_at 날짜 비교
             share_book = book_repo.find_one_by_id(share['book_id'])
 
-            if book['updated_at'] < share_book['updated_at']:
+            if book['updated_at'] > share_book['updated_at']:
                 raise CustomException("BOOK_ALREAY_UPDATED", code=409)
 
             # 공유가 존재하지 않는 경우

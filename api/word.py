@@ -28,7 +28,7 @@ class WordByBook(Resource):
     
     @api.response(200, "SUCCESS")
     @api.response(400, "WORD_COUNT_MORE_THAN_LIMIT")
-    @api.response(409, "WORD_MORE_THAN_LIMIT, BOOK_NOT_FOUND, BOOK_ACCESS_DENIED, BOOK_DOWNLOADED, WORD_ALREADY_EXIST")
+    @api.response(409, "WORD_INVALID_INPUT, WORD_MORE_THAN_LIMIT, BOOK_NOT_FOUND, BOOK_ACCESS_DENIED, BOOK_DOWNLOADED, WORD_ALREADY_EXIST")
     @api.response(500, "FAIL")
     @api.expect(word_info)
     @Authorization.check_authorization
@@ -56,7 +56,7 @@ class WordById(Resource):
     @api.response(200, "SUCCESS")
     @api.response(400, "WORD_COUNT_MORE_THAN_LIMIT")
     @api.response(403, "BOOK_ACCESS_DENIED")
-    @api.response(409, "WORD_NOT_FOUND, BOOK_IS_DOWNLOADED")
+    @api.response(409, "WORD_NOT_FOUND, BOOK_IS_DOWNLOADED, WORD_INVALID_INPUT")
     @api.response(500, "FAIL")
     @api.expect(word_info)
     @Authorization.check_authorization

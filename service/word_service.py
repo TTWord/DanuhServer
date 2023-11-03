@@ -47,9 +47,11 @@ class WordService:
             if not validate_word(data['word'], data['mean']):
                 raise CustomException("WORD_COUNT_MORE_THAN_LIMIT", code=400)
             
+            if not data['word'] or not data['mean']:    
+                raise CustomException("WORD_INVALID_INPUT", code=409)
+            
             word_repo = WordRepository(db)
             book_repo = BookRepository(db)
-            share_repo = ShareRepository(db)
 
             word_len = 0
             books = book_repo.find_all_by_user_id(auth['id'])
@@ -93,6 +95,9 @@ class WordService:
             if not validate_word(data['word'], data['mean']):
                 raise CustomException("WORD_COUNT_MORE_THAN_LIMIT", code=400)
             
+            if not data['word'] or not data['mean']:
+                raise CustomException("WORD_INVALID_INPUT", code=400)
+            
             word_repo = WordRepository(db)
             book_repo = BookRepository(db)
 
@@ -116,6 +121,7 @@ class WordService:
         except CustomException as e:
             return e.get_response()
         except Exception as e:
+            print(e)
             return custom_response("FAIL", code=500)
     
     @staticmethod
