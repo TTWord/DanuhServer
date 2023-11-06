@@ -3,6 +3,7 @@ from flask_restx import Namespace, Resource, Api, reqparse, fields
 from werkzeug.datastructures import FileStorage
 from service.user_service import UserService
 from util.decorator.authorization import Authorization
+from util.decorator.logging import logging
 
 
 api = Namespace("user", description="유저 API")
@@ -72,6 +73,7 @@ post_parser.add_argument("file", type=FileStorage, location="files")
 class User(Resource):
     @api.response(200, "SUCCESS")
     @api.response(500, "FAIL")
+    @logging
     @Authorization.check_authorization
     def get(self, auth):
         """
@@ -83,6 +85,7 @@ class User(Resource):
     @api.response(409, "FILE_UNEXPECTED_EXTENSION")
     @api.response(500, "FAIL")
     @api.expect(post_parser)
+    @logging
     @Authorization.check_authorization
     def post(self, auth):
         """
@@ -94,6 +97,7 @@ class User(Resource):
     @api.response(200, "SUCCESS")
     @api.response(409, "USER_NOT_FOUND")
     @api.response(500, "FAIL")
+    @logging
     @Authorization.check_authorization
     def delete(self, auth):
         """
@@ -105,6 +109,7 @@ class User(Resource):
     @api.response(409, "USER_DUPLICATE_NICKNAME")
     @api.response(500, "FAIL")
     @api.expect(change_nickname, validate=True)
+    @logging
     @Authorization.check_authorization
     def put(self, auth):
         """
@@ -120,6 +125,7 @@ class UserById(Resource):
     @api.response(200, "SUCCESS")
     @api.response(409, "USER_NOT_FOUND")
     @api.response(500, "FAIL")
+    @logging
     def get(self, id):
         """
         유저 ID로 유저 조회
@@ -129,6 +135,7 @@ class UserById(Resource):
     @api.response(200, "SUCCESS")
     @api.response(409, "USER_NOT_FOUND")
     @api.response(500, "FAIL")
+    @logging
     def delete(self, id):
         """
         유저 ID로 유저 삭제
@@ -142,6 +149,7 @@ class OtherUser(Resource):
     @api.response(200, "SUCCESS")
     @api.response(409, "USER_NOT_FOUND")
     @api.response(500, "FAIL")
+    @logging
     def get(self, id):
         """
         상대 유저 프로필 보기
@@ -156,6 +164,7 @@ class Report(Resource):
     @api.response(409, "USER_NOT_FOUND")
     @api.response(500, "FAIL")
     @api.expect(report_info)
+    @logging
     # @Authorization.check_authorization
     def post(self):
         """
@@ -173,6 +182,7 @@ class Survey(Resource):
     @api.response(409, "USER_NOT_FOUND")
     @api.response(500, "FAIL")
     @api.expect(survey_info)
+    @logging
     # @Authorization.check_authorization
     def post(self):
         """
