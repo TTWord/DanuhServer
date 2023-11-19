@@ -3,6 +3,8 @@ from util.decorator.authorization import Authorization
 from flask import request
 from service.quiz_service import QuizService
 import json
+from util.decorator.logging import logging
+
 
 api = Namespace('quiz', description='퀴즈 API')
 quiz_info = api.model('퀴즈 정보', {
@@ -35,6 +37,7 @@ class MultipleQuiz(Resource):
     @api.response(409, "BOOK_NOT_FOUND")
     @api.response(500, "FAIL")
     @api.expect(quiz_info)
+    @logging
     @Authorization.check_authorization
     def post(self, auth):
         """
@@ -53,6 +56,7 @@ class ShortQuiz(Resource):
     @api.response(409, "BOOK_NOT_FOUND")
     @api.response(500, "FAIL")
     @api.expect(quiz_info)
+    @logging
     @Authorization.check_authorization
     def post(self, auth):
         """
@@ -70,6 +74,7 @@ class BlindShortQuiz(Resource):
     @api.response(409, "BOOK_NOT_FOUND")
     @api.response(500, "FAIL")
     @api.expect(quiz_info)
+    @logging
     @Authorization.check_authorization
     def post(self, auth):
         """
@@ -88,6 +93,7 @@ class BlindMultipleQuiz(Resource):
     @api.response(409, "BOOK_NOT_FOUND, QUIZ_COUNT_ERROR")
     @api.response(500, "FAIL")
     @api.expect(blind_quiz_info)
+    @logging
     @Authorization.check_authorization
     def post(self, auth):
         """
@@ -104,6 +110,7 @@ class ResultQuiz(Resource):
     @api.response(403, "BOOK_IDS_NOT_INSERTED")
     @api.response(500, "FAIL")
     @api.expect(result_info)
+    @logging
     @Authorization.check_authorization
     def post(self, auth):
         """
@@ -124,6 +131,7 @@ class BookRecommend(Resource):
                      "ex ) recommend?books=[1,2,3,4]\r\n"
                      "만약 전체인 경우 books=[]로 요청\r\n"
                      )})
+    @logging
     @Authorization.check_authorization
     def get(self, auth):
         """

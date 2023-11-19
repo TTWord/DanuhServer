@@ -2,6 +2,7 @@ from flask import request
 from flask_restx import Namespace, Resource, Api, reqparse, fields
 from service.auth_service import AuthService
 from util.decorator.authorization import Authorization, RefreshToken
+from util.decorator.logging import logging
 
 
 api = Namespace("auth", description="관리 API")
@@ -95,6 +96,7 @@ class UserSignIn(Resource):
     @api.response(200, "SUCCESS")
     @api.response(409, "USER_NOT_FOUND, AUTH_ACCESS_FAILD")
     @api.response(500, "FAIL")
+    @logging
     def post(self):
         """
         로그인
@@ -109,6 +111,7 @@ class CheckNickname(Resource):
     @api.response(200, "SUCCESS")
     @api.response(409, "USER_INVALID_USERNAME, USER_DUPLICATE_NICKNAME")
     @api.response(500, "FAIL")
+    @logging
     def post(self):
         """
         닉네임 중복 확인
@@ -124,6 +127,7 @@ class SendMail(Resource):
     @api.response(200, "SUCCESS")
     @api.response(409, "USER_DUPLICATE_USERNAME, USER_INVALID_FORMAT_USERNAME, USER_INVALID_FORMAT_PASSWORD")
     @api.response(500, "FAIL")
+    @logging
     def post(self):
         """
         인증 메일 전송
@@ -137,6 +141,7 @@ class UserSignUp(Resource):
     @api.response(200, "SUCCESS")
     @api.response(403, "AUTH_EXPIRED_CODE, AUTH_INCORRECT_CODE")
     @api.response(500, "FAIL")
+    @logging
     @api.expect(user_sign_up, validate=True)
     def post(self):
         """
@@ -151,6 +156,7 @@ class UserSignUp(Resource):
 class RefreshToken(Resource):
     @api.response(200, "SUCCESS")
     @api.response(500, "FAIL")
+    @logging
     @RefreshToken.check_authorization
     def post(self, auth):
         """
@@ -163,6 +169,7 @@ class OAuthApple(Resource):
     @api.response(200, "SUCCESS")
     @api.response(409, "AUTH_ACCESS_FAILD, USER_ALREADY_REGISTERED")
     @api.response(500, "FAIL")
+    @logging
     def post(self):
         """
         소셜 로그인 정보 전달(백엔드 정보 전달용)
@@ -176,6 +183,7 @@ class OAuth(Resource):
     @api.response(200, "SUCCESS")
     @api.response(409, "AUTH_ACCESS_FAILD, USER_ALREADY_REGISTERED")
     @api.response(500, "FAIL")
+    @logging
     def get(self, service):
         """
         소셜 로그인 정보 전달(백엔드 정보 전달용)
@@ -185,6 +193,7 @@ class OAuth(Resource):
 
     @api.response(200, "SUCCESS")
     @api.response(500, "FAIL")
+    @logging
     def post(self, service):
         """
         소셜 로그인
@@ -197,6 +206,7 @@ class FindPassword(Resource):
     @api.response(200, "SUCCESS")
     @api.response(500, "FAIL")
     @api.response(409, "USER_INVALID_USERNAME, USER_INVALID_FORMAT_USERNAME, USER_SOCIAL_LOGIN")
+    @logging
     @api.expect(user_name, validate=True)
     def post(self):
         """
@@ -213,6 +223,7 @@ class Login(Resource):
     @api.response(409, "USER_NOT_FOUND, USER_INVALID_ACESSSS, USER_INVALID_FORMAT_PASSWORD, USER_SAME_PASSWORD")
     @api.response(500, "FAIL")
     @api.expect(change_password)
+    @logging
     @Authorization.check_authorization
     def patch(self, auth):
         """
@@ -227,6 +238,7 @@ class NotLogin(Resource):
     @api.response(200, "SUCCESS")
     @api.response(409, "USER_INVALID_ACESSSS, USER_INVALID_FORMAT_PASSWORD, USER_SAME_PASSWORD")
     @api.response(500, "FAIL")
+    @logging
     @api.expect(change_password_for_unlogin)
     def patch(self):
         """
@@ -241,6 +253,7 @@ class CheckCert(Resource):
     @api.response(200, "SUCCESS")
     @api.response(500, "FAIL")
     @api.response(403, "AUTH_EXPIRED_CODE, AUTH_INCORRECT_CODE")
+    @logging
     @api.expect(cert_key, validate=True)
     def post(self):
         """

@@ -2,6 +2,7 @@ from flask_restx import Namespace, Resource, Api, reqparse, fields
 from util.decorator.authorization import Authorization
 from flask import request
 from service.memo_service import MemoService
+from util.decorator.logging import logging
 
 
 api = Namespace('memo', description='메모 API')
@@ -24,6 +25,7 @@ class Memo(Resource):
     @api.response(409, "WORD_NOT_FOUND")
     @api.response(500, "FAIL")
     @api.expect(word_info)
+    @logging
     @Authorization.reject_authorization
     def patch(self):
         """
@@ -42,6 +44,7 @@ class FlashCardMemo(Resource):
     @api.response(409, "BOOK_NOT_FOUND")
     @api.response(500, "FAIL")
     @api.expect(memo_info)
+    @logging
     @Authorization.check_authorization
     def post(self, auth):
         """
@@ -60,6 +63,7 @@ class BlindMemo(Resource):
     @api.response(409, "BOOK_NOT_FOUND")
     @api.response(500, "FAIL")
     @api.expect(memo_info)
+    @logging
     @Authorization.check_authorization
     def post(self, auth):
         """
