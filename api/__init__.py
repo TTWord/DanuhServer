@@ -21,11 +21,11 @@ main_route = Blueprint('main', __name__, url_prefix="/api")
 
 api = Api(
     main_route,
-    version='0.10.0',
-    title='TTWordServer',
+    version='1.0.0',
+    title='DanuhServer',
     contact='KimJungHyun',
     contact_email='kimjunghyun696@gmail.com',
-    description="This is TTWord API Documentation.",
+    description="This is Danuh API Documentation.",
     authorizations=authorizations
 )
 
