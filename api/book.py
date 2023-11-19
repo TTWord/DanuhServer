@@ -102,10 +102,28 @@ class BookMaker(Resource):
     @Authorization.check_authorization
     def post(self, auth):
         """
-        문장을 통해 단어장 추가
+       문장을 통해 단어장 추가
         """
         data = request.get_json()
-        return BookService.generate_book(auth, data)
+        return BookService.get_ai_response(auth, data)
+
+
+# AI 모델 생성 이전까지 OpenAI API 사용
+# @api.route('/generate')
+# @api.doc(security='Bearer Auth')
+# class BookMaker(Resource):
+#     @api.response(200, "SUCCESS")
+#     @api.response(404, "BOOK_NOT_HAS_NAME")
+#     @api.response(409, "BOOK_ALREADY_EXIST, WORD_MORE_THAN_LIMIT")
+#     @api.response(500, "FAIL")
+#     @api.expect(book_info)
+#     @Authorization.check_authorization
+#     def post(self, auth):
+#         """
+#         문장을 통해 단어장 추가
+#         """
+#         data = request.get_json()
+#         return BookService.generate_book(auth, data)
 
 
 @api.route('/share')
