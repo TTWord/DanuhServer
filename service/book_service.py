@@ -10,6 +10,7 @@ from config import config
 import requests
 import json
 from collections import defaultdict 
+import openai
 
 
 class BookService:
@@ -248,3 +249,65 @@ class BookService:
             return e.get_response()
         except Exception as e:
             return custom_response("FAIL", code=500)
+
+    @staticmethod
+    @ServiceReceiver.database 
+    def get_ai_response(auth, data, db: Database):
+        try:
+            input_language = "English"
+            output_language = "Korean"
+            prompt_text = f"""
+                Translate each word from {input_language} to {output_language} in json format.
+
+                {data['text']}
+            """
+            if data["name"] is None:
+                raise CustomException("BOOK_NOT_HAS_NAME", code=404)
+            
+            book_repo = BookRepository(db)
+            word_repo = WordRepository(db)
+
+            # 데이터 중복 검사
+            book = book_repo.find_one_by_name_and_user_id(name = data["name"], user_id = auth['id'])
+            
+            if book is not None:
+                raise CustomException("BOOK_ALREADY_EXIST", code=409)
+            
+            result = BookService.get_completion(prompt_text)
+            
+            book = book_repo.add(user_id = auth['id'], name = data["name"], word_count=len(result['words']))
+
+            book_id = book["id"]
+
+            dict_check = defaultdict(str)
+            word_len = 0
+            books = book_repo.find_all_by_user_id(auth['id'])
+            for book in books:
+                word_len += len(word_repo.find_all_by_book_id(book['id']))
+
+            if word_len + len(result['words']) > 200:
+                raise CustomException("WORD_MORE_THAN_LIMIT", code=409)
+            
+            for word, mean in result['words'].items():
+                if word not in dict_check.keys() and mean != dict_check[word]:
+                    dict_check[word] = mean
+ 
+            for word, mean in result['words'].items():
+                word_repo.add(book_id, word, mean)
+
+            return custom_response("SUCCESS", data=book)
+        except CustomException as e:
+            return e.get_response()
+        except Exception as e:
+            return custom_response("FAIL", code=500)
+        
+    def get_completion(prompt, model="gpt-3.5-turbo-1106", temperature=0.8): 
+        openai.api_key = config['OPENAPI_KEY']
+        response = openai.chat.completions.create(
+            model=model,
+            messages=[
+                {"role": "user", "content": prompt},
+            ],
+            temperature=temperature
+        )
+        return {"words": eval(response.choices[0].message.content)}
