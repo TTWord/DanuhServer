@@ -3,6 +3,7 @@ from flask_restx import Namespace, Resource, Api, reqparse, fields
 from util.decorator.authorization import Authorization
 from flask import request
 from util.decorator.logging import logging
+from util.core.limiter import limiter, handle_rate_limit_error
 
 
 api = Namespace('book', description='단어장 API')
@@ -100,9 +101,12 @@ class BookById(Resource):
 @api.route('/generate')
 @api.doc(security='Bearer Auth')
 class BookMaker(Resource):
+    @handle_rate_limit_error
+    @limiter.limit("1 per minute")
     @api.response(200, "SUCCESS")
     @api.response(404, "BOOK_NOT_HAS_NAME")
     @api.response(409, "BOOK_ALREADY_EXIST, WORD_MORE_THAN_LIMIT")
+    @api.response(429, "TOO_MANY_REQUESTS")
     @api.response(500, "FAIL")
     @api.expect(book_info)
     @logging
@@ -113,7 +117,6 @@ class BookMaker(Resource):
         """
         data = request.get_json()
         return BookService.get_ai_response(auth, data)
-
 
 # AI 모델 생성 이전까지 OpenAI API 사용
 # @api.route('/generate')
