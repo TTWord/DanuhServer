@@ -14,6 +14,7 @@ api = Namespace('test', description='테스트 API')
 
 pdf = api.parser()
 pdf.add_argument("file", type=FileStorage, location="files")
+pdf.add_argument('page', type=int, help='page number', location='form')
 
 
 @api.route("")
@@ -30,10 +31,12 @@ class Share(Resource):
         """
         공유 단어장 다운로드
         """
-        pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
         file = request.files["file"]
+        page = request.form["page"]
+
         pdf_content = file.read()
-        images = convert_from_bytes(pdf_content, poppler_path=r'C:\Users\kimju\Downloads\poppler-23.11.0\Library\bin')
-        txt = pytesseract.image_to_string(images[2], lang='kor+eng').encode("utf-8")
+        images = convert_from_bytes(pdf_content)
+
+        txt = pytesseract.image_to_string(images[int(page)], lang='kor+eng').encode("utf-8")
 
         return custom_response("SUCCESS", code=200, data=txt.decode('utf-8'))
