@@ -7,6 +7,7 @@ from api.auth import api as auth_ns
 from api.memo import api as memo_ns
 from api.quiz import api as quiz_ns
 from api.share import api as share_ns
+from api.test import api as test_ns
 
 
 authorizations = {
@@ -36,3 +37,4 @@ api.add_namespace(auth_ns)
 api.add_namespace(memo_ns)
 api.add_namespace(quiz_ns)
 api.add_namespace(share_ns)
+api.add_namespace(test_ns)
