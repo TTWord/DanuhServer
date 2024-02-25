@@ -22,4 +22,4 @@ def root():
     return "API Server is running"
 
 if __name__ == "__main__": 
-    app.run(host="0.0.0.0", port=5001, debug=config['FLASK_DEBUG'])
+    app.run(host="0.0.0.0", port=config['PORT'], debug=config['FLASK_DEBUG'])
