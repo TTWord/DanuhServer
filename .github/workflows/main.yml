@@ -1,4 +1,4 @@
-name: updateEC2
+name: updateMain
 
 on:
   push:
