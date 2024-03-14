@@ -37,6 +37,9 @@ class Share(Resource):
         pdf_content = file.read()
         images = convert_from_bytes(pdf_content)
 
-        txt = pytesseract.image_to_string(images[int(page)], lang='kor+eng').encode("utf-8")
-
-        return custom_response("SUCCESS", code=200, data=txt.decode('utf-8'))
+        oem= 3
+        psm =6
+        # txt = pytesseract.image_to_string(images[int(page)], lang=r"/home/afsd721/DanuhServer/kor.traineddata").encode("utf-8")
+        txt = pytesseract.image_to_data(image=images[int(page)], lang="kor+eng", config='--oem ' + str(oem) + ' --psm ' + str(psm))
+        print(txt)
+        return custom_response("SUCCESS", code=200, data=txt)
