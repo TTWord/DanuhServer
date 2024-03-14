@@ -2,6 +2,7 @@ from service.word_service import WordService
 from flask_restx import Namespace, Resource, Api, reqparse, fields
 from util.decorator.authorization import Authorization
 from flask import request
+from util.decorator.logging import logging
 
 
 api = Namespace('word', description='단어 API')
@@ -19,6 +20,7 @@ class WordByBook(Resource):
     @api.response(403, "BOOK_ACCESS_DENIED")
     @api.response(409, "BOOK_NOT_FOUND")
     @api.response(500, "FAIL")
+    @logging
     @Authorization.check_authorization
     def get(self, book_id, auth):
         """
@@ -31,6 +33,7 @@ class WordByBook(Resource):
     @api.response(409, "WORD_INVALID_INPUT, WORD_MORE_THAN_LIMIT, BOOK_NOT_FOUND, BOOK_ACCESS_DENIED, BOOK_DOWNLOADED, WORD_ALREADY_EXIST")
     @api.response(500, "FAIL")
     @api.expect(word_info)
+    @logging
     @Authorization.check_authorization
     def post(self, book_id, auth):
         """
@@ -46,6 +49,7 @@ class WordById(Resource):
     @api.response(200, "SUCCESS")
     @api.response(409, "BOOK_NOT_FOUND")
     @api.response(500, "FAIL")
+    @logging
     @Authorization.reject_authorization
     def get(self, id):
         """
@@ -59,6 +63,7 @@ class WordById(Resource):
     @api.response(409, "WORD_NOT_FOUND, BOOK_IS_DOWNLOADED, WORD_INVALID_INPUT")
     @api.response(500, "FAIL")
     @api.expect(word_info)
+    @logging
     @Authorization.check_authorization
     def put(self, id, auth):
         """
@@ -72,6 +77,7 @@ class WordById(Resource):
     @api.response(404, "WORD_NOT_FOUND")
     @api.response(409, "BOOK_IS_DOWNLOADED")
     @api.response(500, "FAIL")
+    @logging
     @Authorization.check_authorization
     def delete(self, id, auth):
         """

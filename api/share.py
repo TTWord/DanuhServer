@@ -2,7 +2,7 @@ from service.share_service import ShareService
 from flask_restx import Namespace, Resource, Api, reqparse, fields
 from util.decorator.authorization import Authorization
 from flask import request
-import json
+from util.decorator.logging import logging
 
 
 api = Namespace('share', description='공유 API')
@@ -23,6 +23,7 @@ class Share(Resource):
     @api.response(500, "FAIL")
     @api.doc(params={'name': '이름 필터', 'type': 'popularity, downloaded, updated_at(기본 updated_at)',
                     'order': 'DESC, ASC(기본 DESC)'})
+    @logging
     @Authorization.reject_authorization
     def get(self):
         """
@@ -38,6 +39,7 @@ class Share(Resource):
     @api.response(409, "SHARE_NOT_FOUND, SHARE_BOOK_OWNER, SHARE_ALREADY_EXIST")
     @api.response(500, "FAIL")
     @api.expect(share_info)
+    @logging
     @Authorization.check_authorization
     def post(self, auth):
         """
@@ -53,6 +55,7 @@ class ShareById(Resource):
     @api.response(200, "SUCCESS")
     @api.response(409, "SHARE_NOT_FOUND")
     @api.response(500, "FAIL")
+    @logging
     @Authorization.check_authorization
     def get(self, auth, id):
         """
@@ -63,6 +66,7 @@ class ShareById(Resource):
     @api.response(200, "SUCCESS")
     @api.response(409, "SHARE_NOT_FOUND")
     @api.response(500, "FAIL")
+    @logging
     @Authorization.check_authorization
     def post(self, auth, id):
         """
@@ -78,6 +82,7 @@ class ShareByUserShare(Resource):
     @api.response(500, "FAIL")
     @api.doc(params={'type': 'updated_at',
                     'order': 'DESC, ASC(기본 DESC)'})
+    @logging
     @Authorization.check_authorization
     def get(self, auth):
         """
@@ -96,6 +101,7 @@ class ShareByUserDownload(Resource):
     @api.response(500, "FAIL")
     @api.doc(params={'type': 'updated_at(기본 updated_at)', 'filter': '추천 단어장 필터링(기본 true)',
                     'order': 'DESC, ASC(기본 DESC)'})
+    @logging
     @Authorization.check_authorization
     def get(self, auth):
         """
@@ -116,6 +122,7 @@ class ShareByOtherUser(Resource):
     @api.response(500, "FAIL")
     @api.doc(params={'type': 'popularity, downloaded, updated_at(기본 updated_at)',
                     'order': 'DESC, ASC(기본 DESC)'})
+    @logging
     @Authorization.reject_authorization
     def get(self, user_id):
         """
@@ -134,6 +141,7 @@ class ShareByUserShare(Resource):
     @api.response(404, "BOOKSHARE_NOT_FOUND, SHARE_NOT_FOUND")
     @api.response(409, "BOOK_ALREAY_UPDATED, SHARE_NOT_SHARED, BOOK_NOT_DOWNLOADED")
     @api.response(500, "FAIL")
+    @logging
     @Authorization.check_authorization
     def post(self, auth, id):
         """
